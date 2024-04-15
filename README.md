@@ -13,9 +13,8 @@ Framework for Rigging Assets in Games
 
 1) Make sure that you have installed a clean Python 3 interpreter in your machine.
 2) Clone <a href="https://github.com/ncomes/MechanicalArt" target="_blank">
-3) Execute setup_repos.bat to clone all the necessary repos into ```packages``` folder (it will be created)
-4) Execute MCA Launcher.exe to create a Python 3 virtual environment and to install all the mca repos and their dependencies.
-5) Execute the following code if you want to start manually.
+3) Execute MCA Launcher.exe to setup all the tools and dependencies.
+4) Execute the following code if you want to start manually.
 
 ```python
 ## Start up ##

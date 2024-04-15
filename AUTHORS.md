@@ -14,6 +14,6 @@
 
 
 
-** My apologies is we forget any name. Please contact us! :)  
+** If we have forgotten anyone, please contact us!  
 
 

@@ -680,7 +680,7 @@ class MSVCCompiler(CCompiler):
                 raise LinkError(msg)
 
             # embed the manifest
-            # XXX - this is somewhat fragile - if mt.exe fails, distutils
+            # XXX - this is somewhat tekile - if mt.exe fails, distutils
             # will still consider the DLL up-to-date, but it will not have a
             # manifest.  Maybe we should link to a temp file?  OTOH, that
             # implies a build environment error that shouldn't go undetected.

@@ -57,7 +57,7 @@ Effect {
     Shader {
         id: luminosityFrag
         stage: Shader.Fragment
-        shader: "shaders/luminosity.frag"
+        shader: "shaders/luminosity.tek"
     }
 
     Shader {
@@ -68,13 +68,13 @@ Effect {
     Shader {
         id: blurFrag
         stage: Shader.Fragment
-        shader: "shaders/poissonblur.frag"
+        shader: "shaders/poissonblur.tek"
     }
 
     Shader {
         id: combiner
         stage: Shader.Fragment
-        shader: "shaders/combiner.frag"
+        shader: "shaders/combiner.tek"
     }
 
     Buffer {

@@ -185,6 +185,6 @@ Item {
 
         anchors.fill: parent
 
-        fragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/displace.frag"
+        tekmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/displace.tek"
     }
 }

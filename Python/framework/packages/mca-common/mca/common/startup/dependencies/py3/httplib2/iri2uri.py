@@ -62,12 +62,12 @@ def iri2uri(uri):
     passed in a unicode strings. That is, do not utf-8 encode
     the IRI before passing it into the function."""
     if isinstance(uri, str):
-        (scheme, authority, path, query, fragment) = urllib.parse.urlsplit(uri)
+        (scheme, authority, path, query, tekment) = urllib.parse.urlsplit(uri)
         authority = authority.encode("idna").decode("utf-8")
         # For each character in 'ucschar' or 'iprivate'
         #  1. encode as utf-8
         #  2. then %-encode each octet of that utf-8
-        uri = urllib.parse.urlunsplit((scheme, authority, path, query, fragment))
+        uri = urllib.parse.urlunsplit((scheme, authority, path, query, tekment))
         uri = "".join([encode(c) for c in uri])
     return uri
 

@@ -86,18 +86,18 @@ class ImplicitGrant(GrantTypeBase):
    (C)  Assuming the resource owner grants access, the authorization
         server redirects the user-agent back to the client using the
         redirection URI provided earlier.  The redirection URI includes
-        the access token in the URI fragment.
+        the access token in the URI tekment.
 
    (D)  The user-agent follows the redirection instructions by making a
         request to the web-hosted client resource (which does not
-        include the fragment per [RFC2616]).  The user-agent retains the
-        fragment information locally.
+        include the tekment per [RFC2616]).  The user-agent retains the
+        tekment information locally.
 
    (E)  The web-hosted client resource returns a web page (typically an
         HTML document with an embedded script) capable of accessing the
-        full redirection URI including the fragment retained by the
+        full redirection URI including the tekment retained by the
         user-agent, and extracting the access token (and other
-        parameters) contained in the fragment.
+        parameters) contained in the tekment.
 
    (F)  The user-agent executes the script provided by the web-hosted
         client resource locally, which extracts the access token.
@@ -163,7 +163,7 @@ class ImplicitGrant(GrantTypeBase):
         return self.create_token_response(request, token_handler)
 
     def create_token_response(self, request, token_handler):
-        """Return token or error embedded in the URI fragment.
+        """Return token or error embedded in the URI tekment.
 
         :param request: OAuthlib request.
         :type request: oauthlib.common.Request
@@ -172,7 +172,7 @@ class ImplicitGrant(GrantTypeBase):
 
         If the resource owner grants the access request, the authorization
         server issues an access token and delivers it to the client by adding
-        the following parameters to the fragment component of the redirection
+        the following parameters to the tekment component of the redirection
         URI using the "application/x-www-form-urlencoded" format, per
         `Appendix B`_:
 
@@ -222,13 +222,13 @@ class ImplicitGrant(GrantTypeBase):
         # If the resource owner denies the access request or if the request
         # fails for reasons other than a missing or invalid redirection URI,
         # the authorization server informs the client by adding the following
-        # parameters to the fragment component of the redirection URI using the
+        # parameters to the tekment component of the redirection URI using the
         # "application/x-www-form-urlencoded" format, per Appendix B:
         # https://tools.ietf.org/html/rfc6749#appendix-B
         except errors.OAuth2Error as e:
             log.debug('Client error during validation of %r. %r.', request, e)
             return {'Location': common.add_params_to_uri(request.redirect_uri, e.twotuples,
-                                                         fragment=True)}, None, 302
+                                                         tekment=True)}, None, 302
 
         # In OIDC implicit flow it is possible to have a request_type that does not include the access_token!
         # "id_token token" - return the access token and the id token
@@ -316,7 +316,7 @@ class ImplicitGrant(GrantTypeBase):
         # If the resource owner denies the access request or if the request
         # fails for reasons other than a missing or invalid redirection URI,
         # the authorization server informs the client by adding the following
-        # parameters to the fragment component of the redirection URI using the
+        # parameters to the tekment component of the redirection URI using the
         # "application/x-www-form-urlencoded" format, per Appendix B.
         # https://tools.ietf.org/html/rfc6749#appendix-B
 

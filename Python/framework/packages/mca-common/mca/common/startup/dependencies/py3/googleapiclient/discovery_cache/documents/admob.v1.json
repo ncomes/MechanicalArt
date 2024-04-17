@@ -352,7 +352,7 @@
           "type": "string"
         },
         "name": {
-          "description": "Resource name for this ad unit. Format is accounts/{publisher_id}/adUnits/{ad_unit_id_fragment} Example: accounts/pub-9876543210987654/adUnits/0123456789",
+          "description": "Resource name for this ad unit. Format is accounts/{publisher_id}/adUnits/{ad_unit_id_tekment} Example: accounts/pub-9876543210987654/adUnits/0123456789",
           "type": "string"
         }
       },
@@ -375,7 +375,7 @@
           "description": "The information for an app that is not linked to any app store. After an app is linked, this information is still retrivable. If no name is provided for the app upon creation, a placeholder name will be used."
         },
         "name": {
-          "description": "Resource name for this app. Format is accounts/{publisher_id}/apps/{app_id_fragment} Example: accounts/pub-9876543210987654/apps/0123456789",
+          "description": "Resource name for this app. Format is accounts/{publisher_id}/apps/{app_id_tekment} Example: accounts/pub-9876543210987654/apps/0123456789",
           "type": "string"
         },
         "platform": {

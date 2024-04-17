@@ -53,7 +53,7 @@ Effect {
     Shader {
         id: brushstrokes
         stage: Shader.Fragment
-        shader: "shaders/brushstrokes.frag"
+        shader: "shaders/brushstrokes.tek"
     }
 
     passes: [

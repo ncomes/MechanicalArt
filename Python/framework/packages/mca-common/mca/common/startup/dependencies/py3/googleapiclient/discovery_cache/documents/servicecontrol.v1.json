@@ -422,7 +422,7 @@
           "type": "string"
         },
         "principal": {
-          "description": "The authenticated principal. Reflects the issuer (`iss`) and subject (`sub`) claims within a JWT. The issuer and subject should be `/` delimited, with `/` percent-encoded within the subject fragment. For Google accounts, the principal format is: \"https://accounts.google.com/{id}\"",
+          "description": "The authenticated principal. Reflects the issuer (`iss`) and subject (`sub`) claims within a JWT. The issuer and subject should be `/` delimited, with `/` percent-encoded within the subject tekment. For Google accounts, the principal format is: \"https://accounts.google.com/{id}\"",
           "type": "string"
         }
       },

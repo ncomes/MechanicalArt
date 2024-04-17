@@ -96,11 +96,11 @@ class MobileApplicationClient(Client):
                                  redirect_uri=redirect_uri, state=state, scope=scope, **kwargs)
 
     def parse_request_uri_response(self, uri, state=None, scope=None):
-        """Parse the response URI fragment.
+        """Parse the response URI tekment.
 
         If the resource owner grants the access request, the authorization
         server issues an access token and delivers it to the client by adding
-        the following parameters to the fragment component of the redirection
+        the following parameters to the tekment component of the redirection
         URI using the "application/x-www-form-urlencoded" format:
 
         :param uri: The callback URI that resulted from the user being redirected

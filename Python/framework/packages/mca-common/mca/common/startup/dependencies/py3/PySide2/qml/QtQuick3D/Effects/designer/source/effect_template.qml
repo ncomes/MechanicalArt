@@ -36,12 +36,12 @@ Effect {
 
     Pass {
         id: renderPass
-        shaders: [fragShader]
+        shaders: [tekShader]
     }
 
     Shader {
-        id: fragShader
+        id: tekShader
         stage: Shader.Fragment
-        shader: "/* Set to a fragment shader file */"
+        shader: "/* Set to a tekment shader file */"
     }
 }

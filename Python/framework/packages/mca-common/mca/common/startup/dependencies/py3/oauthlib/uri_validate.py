@@ -135,8 +135,8 @@ path = r"""(?: %(path_abempty)s |
 #   query         = *( pchar / "/" / "?" )
 query = r"(?: %(pchar)s | / | \? )*" % locals()
 
-#   fragment      = *( pchar / "/" / "?" )
-fragment = r"(?: %(pchar)s | / | \? )*" % locals()
+#   tekment      = *( pchar / "/" / "?" )
+tekment = r"(?: %(pchar)s | / | \? )*" % locals()
 
 # URIs
 
@@ -162,12 +162,12 @@ relative_part = r"""(?: (?: // %(authority)s %(path_abempty)s ) |
                     )
 """ % locals()
 
-# relative-ref  = relative-part [ "?" query ] [ "#" fragment ]
-relative_ref = r"%(relative_part)s (?: \? %(query)s)? (?: \# %(fragment)s)?" % locals(
+# relative-ref  = relative-part [ "?" query ] [ "#" tekment ]
+relative_ref = r"%(relative_part)s (?: \? %(query)s)? (?: \# %(tekment)s)?" % locals(
 )
 
-# URI           = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
-URI = r"^(?: %(scheme)s : %(hier_part)s (?: \? %(query)s )? (?: \# %(fragment)s )? )$" % locals(
+# URI           = scheme ":" hier-part [ "?" query ] [ "#" tekment ]
+URI = r"^(?: %(scheme)s : %(hier_part)s (?: \? %(query)s )? (?: \# %(tekment)s )? )$" % locals(
 )
 
 #   URI-reference = URI / relative-ref

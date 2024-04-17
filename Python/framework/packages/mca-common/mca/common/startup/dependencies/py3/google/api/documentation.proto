@@ -49,7 +49,7 @@ option objc_class_prefix = "GAPI";
 // standard markdown features, definition lists, tables and fenced
 // code blocks are supported. Section headers can be provided and are
 // interpreted relative to the section nesting of the context where
-// a documentation fragment is embedded.
+// a documentation tekment is embedded.
 //
 // Documentation from the IDL is merged with documentation defined
 // via the config at normalization time, where documentation provided

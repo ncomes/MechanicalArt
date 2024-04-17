@@ -37,7 +37,7 @@ Effect {
     Shader {
         id: desaturate
         stage: Shader.Fragment
-        shader: "shaders/desaturate.frag"
+        shader: "shaders/desaturate.tek"
     }
 
     passes: [

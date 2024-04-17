@@ -429,7 +429,7 @@
           ],
           "parameters": {
             "reportFragment": {
-              "description": "The index of the report fragment to download.",
+              "description": "The index of the report tekment to download.",
               "format": "int32",
               "location": "path",
               "minimum": "0",

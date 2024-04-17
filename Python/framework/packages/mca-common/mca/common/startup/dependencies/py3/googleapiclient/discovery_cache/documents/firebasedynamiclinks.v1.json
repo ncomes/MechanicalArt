@@ -548,7 +548,7 @@
             "NOT_URI_SOCIAL_URL",
             "BAD_URI_SCHEME_SOCIAL_URL",
             "LINK_LENGTH_TOO_LONG",
-            "LINK_WITH_FRAGMENTS",
+            "LINK_WITH_TEKMENTS",
             "NOT_MATCHING_IOS_BUNDLE_ID_AND_STORE_ID"
           ],
           "enumDescriptions": [
@@ -579,7 +579,7 @@
             "",
             "",
             "Dynamic Link URL length is too long.",
-            "Dynamic Link URL contains fragments.",
+            "Dynamic Link URL contains tekments.",
             "The iOS bundle ID does not match with the given iOS store ID."
           ],
           "type": "string"

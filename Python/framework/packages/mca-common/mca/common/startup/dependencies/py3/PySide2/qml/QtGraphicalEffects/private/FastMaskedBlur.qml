@@ -70,7 +70,7 @@ Item {
 
     property string __internalBlurVertexShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/fastblur_internal.vert"
 
-    property string __internalBlurFragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/fastblur_internal.frag"
+    property string __internalBlurFragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/fastblur_internal.tek"
 
     ShaderEffect {
         id: mask0
@@ -119,7 +119,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -141,7 +141,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -163,7 +163,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -185,7 +185,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -207,7 +207,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -242,6 +242,6 @@ Item {
         width: transparentBorder ? parent.width + 128 : parent.width
         height: transparentBorder ? parent.height + 128 : parent.height
 
-        fragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/fastmaskedblur.frag"
+        tekmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/fastmaskedblur.tek"
     }
 }

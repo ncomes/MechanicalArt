@@ -809,7 +809,7 @@
       "id": "SourcePosition",
       "properties": {
         "column": {
-          "description": "First column on the source line associated with the source fragment.",
+          "description": "First column on the source line associated with the source tekment.",
           "format": "int32",
           "type": "integer"
         },
@@ -828,7 +828,7 @@
           "type": "string"
         },
         "line": {
-          "description": "Line number of the source fragment. 1-based.",
+          "description": "Line number of the source tekment. 1-based.",
           "format": "int32",
           "type": "integer"
         }

@@ -98,7 +98,7 @@ CustomMaterial {
     Shader {
         id: aluminumFragShader
         stage: Shader.Fragment
-        shader: "shaders/aluminum.frag"
+        shader: "shaders/aluminum.tek"
     }
 
     passes: [

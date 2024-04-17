@@ -37,7 +37,7 @@ Effect {
     Shader {
         id: emboss
         stage: Shader.Fragment
-        shader: "shaders/emboss.frag"
+        shader: "shaders/emboss.tek"
     }
 
     passes: [

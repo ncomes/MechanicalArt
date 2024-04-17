@@ -71,7 +71,7 @@ class MetadataEndpoint(BaseEndpoint):
             if not utils.is_secure_transport(array[key]):
                 raise ValueError("key {}: {} must be an HTTPS URL".format(key, array[key]))
             if "?" in array[key] or "&" in array[key] or "#" in array[key]:
-                raise ValueError("key {}: {} must not contain query or fragment components".format(key, array[key]))
+                raise ValueError("key {}: {} must not contain query or tekment components".format(key, array[key]))
 
         elif is_url:
             if not array[key].startswith("http"):
@@ -101,7 +101,7 @@ class MetadataEndpoint(BaseEndpoint):
     def validate_metadata_authorization(self, claims, endpoint):
         claims.setdefault("response_types_supported",
                           list(filter(lambda x: x != "none", endpoint._response_types.keys())))
-        claims.setdefault("response_modes_supported", ["query", "fragment"])
+        claims.setdefault("response_modes_supported", ["query", "tekment"])
 
         # The OAuth2.0 Implicit flow is defined as a "grant type" but it is not
         # using the "token" endpoint, as such, we have to add it explicitly to

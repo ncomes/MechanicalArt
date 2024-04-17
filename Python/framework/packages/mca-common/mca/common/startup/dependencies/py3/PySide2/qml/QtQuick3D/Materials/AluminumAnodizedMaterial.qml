@@ -66,7 +66,7 @@ CustomMaterial {
     Shader {
         id: aluminumAnodizedShader
         stage: Shader.Fragment
-        shader: "shaders/aluminumAnodized.frag"
+        shader: "shaders/aluminumAnodized.tek"
     }
 
     passes: [

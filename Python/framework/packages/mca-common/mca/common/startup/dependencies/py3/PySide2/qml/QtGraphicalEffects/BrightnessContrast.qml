@@ -189,6 +189,6 @@ Item {
         anchors.fill: parent
         blending: !rootItem.cached
 
-        fragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/brightnesscontrast.frag"
+        tekmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/brightnesscontrast.tek"
     }
 }

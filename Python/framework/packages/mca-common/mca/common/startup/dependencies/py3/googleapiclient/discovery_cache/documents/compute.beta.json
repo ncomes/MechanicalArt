@@ -63569,7 +63569,7 @@
           "type": "array"
         },
         "requestUrisToExclude": {
-          "description": "A list of request URIs from the request line to be excluded from inspection during preconfigured WAF evaluation. When specifying this field, the query or fragment part should be excluded.",
+          "description": "A list of request URIs from the request line to be excluded from inspection during preconfigured WAF evaluation. When specifying this field, the query or tekment part should be excluded.",
           "items": {
             "$ref": "SecurityPolicyRulePreconfiguredWafConfigExclusionFieldParams"
           },

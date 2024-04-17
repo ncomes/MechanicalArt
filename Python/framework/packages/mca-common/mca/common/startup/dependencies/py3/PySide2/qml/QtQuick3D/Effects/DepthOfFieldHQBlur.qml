@@ -50,7 +50,7 @@ Effect {
     Shader {
         id: downsampleFrag
         stage: Shader.Fragment
-        shader: "shaders/downsample.frag"
+        shader: "shaders/downsample.tek"
     }
 
     Shader {
@@ -61,7 +61,7 @@ Effect {
     Shader {
         id: blurFrag
         stage: Shader.Fragment
-        shader: "shaders/depthoffieldblur.frag"
+        shader: "shaders/depthoffieldblur.tek"
     }
 
     Buffer {

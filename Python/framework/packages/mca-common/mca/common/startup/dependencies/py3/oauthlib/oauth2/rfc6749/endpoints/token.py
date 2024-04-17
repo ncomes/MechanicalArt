@@ -31,10 +31,10 @@ class TokenEndpoint(BaseEndpoint):
     The endpoint URI MAY include an "application/x-www-form-urlencoded"
     formatted (per `Appendix B`_) query component,
     which MUST be retained when adding additional query parameters.  The
-    endpoint URI MUST NOT include a fragment component::
+    endpoint URI MUST NOT include a tekment component::
 
         https://example.com/path?query=component             # OK
-        https://example.com/path?query=component#fragment    # Not OK
+        https://example.com/path?query=component#tekment    # Not OK
 
     Since requests to the token endpoint result in the transmission of
     clear-text credentials (in the HTTP request and response), the

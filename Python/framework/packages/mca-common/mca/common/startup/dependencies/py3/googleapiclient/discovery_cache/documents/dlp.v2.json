@@ -12,7 +12,7 @@
   "baseUrl": "https://dlp.googleapis.com/",
   "batchPath": "batch",
   "canonicalName": "DLP",
-  "description": "Provides methods for detection, risk analysis, and de-identification of privacy-sensitive fragments in text, images, and Google Cloud Platform storage repositories.",
+  "description": "Provides methods for detection, risk analysis, and de-identification of privacy-sensitive tekments in text, images, and Google Cloud Platform storage repositories.",
   "discoveryVersion": "v1",
   "documentationLink": "https://cloud.google.com/dlp/docs/",
   "fullyEncodeReservedExpansion": true,

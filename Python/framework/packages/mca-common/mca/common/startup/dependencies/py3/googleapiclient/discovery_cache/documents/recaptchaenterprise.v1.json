@@ -1184,7 +1184,7 @@
           "type": "boolean"
         },
         "allowedDomains": {
-          "description": "Domains or subdomains of websites allowed to use the key. All subdomains of an allowed domain are automatically allowed. A valid domain requires a host and must not include any path, port, query or fragment. Examples: 'example.com' or 'subdomain.example.com'",
+          "description": "Domains or subdomains of websites allowed to use the key. All subdomains of an allowed domain are automatically allowed. A valid domain requires a host and must not include any path, port, query or tekment. Examples: 'example.com' or 'subdomain.example.com'",
           "items": {
             "type": "string"
           },

@@ -40,7 +40,7 @@ Effect {
     Shader {
         id: colormaster
         stage: Shader.Fragment
-        shader: "shaders/colormaster.frag"
+        shader: "shaders/colormaster.tek"
     }
 
     passes: [

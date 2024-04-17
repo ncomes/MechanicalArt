@@ -89,7 +89,7 @@ class Request(transport.Request):
         # http.client needs the host and path parts specified separately.
         parts = urllib.parse.urlsplit(url)
         path = urllib.parse.urlunsplit(
-            ("", "", parts.path, parts.query, parts.fragment)
+            ("", "", parts.path, parts.query, parts.tekment)
         )
 
         if parts.scheme != "http":

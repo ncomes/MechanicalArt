@@ -431,7 +431,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
 
         # Support for unicode domain names and paths.
         try:
-            scheme, auth, host, port, path, query, fragment = parse_url(url)
+            scheme, auth, host, port, path, query, tekment = parse_url(url)
         except LocationParseError as e:
             raise InvalidURL(*e.args)
 
@@ -478,7 +478,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
             else:
                 query = enc_params
 
-        url = requote_uri(urlunparse([scheme, netloc, path, None, query, fragment]))
+        url = requote_uri(urlunparse([scheme, netloc, path, None, query, tekment]))
         self.url = url
 
     def prepare_headers(self, headers):

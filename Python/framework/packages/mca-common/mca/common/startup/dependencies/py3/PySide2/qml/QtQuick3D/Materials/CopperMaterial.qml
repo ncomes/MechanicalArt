@@ -62,7 +62,7 @@ CustomMaterial {
     Shader {
         id: copperFragShader
         stage: Shader.Fragment
-        shader: "shaders/copper.frag"
+        shader: "shaders/copper.tek"
     }
 
     passes: [ Pass {

@@ -41,7 +41,7 @@ from setuptools.wheel import Wheel
 from setuptools.extern.more_itertools import unique_everseen
 
 
-EGG_FRAGMENT = re.compile(r'^egg=([-A-Za-z0-9_.+!]+)$')
+EGG_TEKMENT = re.compile(r'^egg=([-A-Za-z0-9_.+!]+)$')
 HREF = re.compile(r"""href\s*=\s*['"]?([^'"> ]+)""", re.I)
 PYPI_MD5 = re.compile(
     r'<a href="([^"#]+)">([^<]+)</a>\n\s+\(<a (?:title="MD5 hash"\n\s+)'
@@ -100,22 +100,22 @@ def parse_bdist_wininst(name):
 
 def egg_info_for_url(url):
     parts = urllib.parse.urlparse(url)
-    scheme, server, path, parameters, query, fragment = parts
+    scheme, server, path, parameters, query, tekment = parts
     base = urllib.parse.unquote(path.split('/')[-1])
     if server == 'sourceforge.net' and base == 'download':  # XXX Yuck
         base = urllib.parse.unquote(path.split('/')[-2])
     if '#' in base:
-        base, fragment = base.split('#', 1)
-    return base, fragment
+        base, tekment = base.split('#', 1)
+    return base, tekment
 
 
 def distros_for_url(url, metadata=None):
     """Yield egg or source distribution objects that might be found at a URL"""
-    base, fragment = egg_info_for_url(url)
+    base, tekment = egg_info_for_url(url)
     for dist in distros_for_location(url, base, metadata):
         yield dist
-    if fragment:
-        match = EGG_FRAGMENT.match(fragment)
+    if tekment:
+        match = EGG_TEKMENT.match(tekment)
         if match:
             for dist in interpret_distro_name(
                 url, match.group(1), metadata, precedence=CHECKOUT_DIST
@@ -276,10 +276,10 @@ class HashChecker(ContentChecker):
     @classmethod
     def from_url(cls, url):
         "Construct a (possibly null) ContentChecker from a URL"
-        fragment = urllib.parse.urlparse(url)[-1]
-        if not fragment:
+        tekment = urllib.parse.urlparse(url)[-1]
+        if not tekment:
             return ContentChecker()
-        match = cls.pattern.search(fragment)
+        match = cls.pattern.search(tekment)
         if not match:
             return ContentChecker()
         return cls(**match.groupdict())
@@ -468,8 +468,8 @@ class PackageIndex(Environment):
         # process individual package page
         for new_url in find_external_links(url, page):
             # Process the found URL
-            base, frag = egg_info_for_url(new_url)
-            if base.endswith('.py') and not frag:
+            base, tek = egg_info_for_url(new_url)
+            if base.endswith('.py') and not tek:
                 if ver:
                     new_url += '#egg=%s-%s' % (pkg, ver)
                 else:
@@ -587,9 +587,9 @@ class PackageIndex(Environment):
             if scheme:
                 # It's a url, download it to tmpdir
                 found = self._download_url(scheme.group(1), spec, tmpdir)
-                base, fragment = egg_info_for_url(spec)
+                base, tekment = egg_info_for_url(spec)
                 if base.endswith('.py'):
-                    found = self.gen_setup(found, fragment, tmpdir)
+                    found = self.gen_setup(found, tekment, tmpdir)
                 return found
             elif os.path.exists(spec):
                 # Existing file or directory, just return it
@@ -691,8 +691,8 @@ class PackageIndex(Environment):
             return dist.location
         return None
 
-    def gen_setup(self, filename, fragment, tmpdir):
-        match = EGG_FRAGMENT.match(fragment)
+    def gen_setup(self, filename, tekment, tmpdir):
+        match = EGG_TEKMENT.match(tekment)
         dists = (
             match
             and [
@@ -703,7 +703,7 @@ class PackageIndex(Environment):
             or []
         )
 
-        if len(dists) == 1:  # unambiguous ``#egg`` fragment
+        if len(dists) == 1:  # unambiguous ``#egg`` tekment
             basename = os.path.basename(filename)
 
             # Make sure the file has been downloaded to the temp dir.
@@ -729,7 +729,7 @@ class PackageIndex(Environment):
             raise DistutilsError(
                 "Can't unambiguously interpret project/version identifier %r; "
                 "any dashes in the name or version should be escaped using "
-                "underscores. %r" % (fragment, dists)
+                "underscores. %r" % (tekment, dists)
             )
         else:
             raise DistutilsError(
@@ -816,7 +816,7 @@ class PackageIndex(Environment):
     def _download_url(self, scheme, url, tmpdir):
         # Determine download filename
         #
-        name, fragment = egg_info_for_url(url)
+        name, tekment = egg_info_for_url(url)
         if name:
             while '..' in name:
                 name = name.replace('..', '.').replace('\\', '_')
@@ -861,18 +861,18 @@ class PackageIndex(Environment):
 
     @staticmethod
     def _vcs_split_rev_from_url(url, pop_prefix=False):
-        scheme, netloc, path, query, frag = urllib.parse.urlsplit(url)
+        scheme, netloc, path, query, tek = urllib.parse.urlsplit(url)
 
         scheme = scheme.split('+', 1)[-1]
 
-        # Some fragment identification fails
+        # Some tekment identification fails
         path = path.split('#', 1)[0]
 
         rev = None
         if '@' in path:
             path, rev = path.rsplit('@', 1)
 
-        # Also, discard fragment
+        # Also, discard tekment
         url = urllib.parse.urlunsplit((scheme, netloc, path, query, ''))
 
         return url, rev
@@ -1043,7 +1043,7 @@ def open_with_auth(url, opener=urllib.request.urlopen):
     """Open a urllib2 request, handling HTTP authentication"""
 
     parsed = urllib.parse.urlparse(url)
-    scheme, netloc, path, params, query, frag = parsed
+    scheme, netloc, path, params, query, tek = parsed
 
     # Double scheme does not raise on macOS as revealed by a
     # failing test. We would expect "nonnumeric port". Refs #20.
@@ -1064,7 +1064,7 @@ def open_with_auth(url, opener=urllib.request.urlopen):
 
     if auth:
         auth = "Basic " + _encode_auth(auth)
-        parts = scheme, address, path, params, query, frag
+        parts = scheme, address, path, params, query, tek
         new_url = urllib.parse.urlunparse(parts)
         request = urllib.request.Request(new_url)
         request.add_header("Authorization", auth)
@@ -1077,9 +1077,9 @@ def open_with_auth(url, opener=urllib.request.urlopen):
     if auth:
         # Put authentication info back into request URL if same host,
         # so that links found on the page will work
-        s2, h2, path2, param2, query2, frag2 = urllib.parse.urlparse(fp.url)
+        s2, h2, path2, param2, query2, tek2 = urllib.parse.urlparse(fp.url)
         if s2 == scheme and h2 == address:
-            parts = s2, netloc, path2, param2, query2, frag2
+            parts = s2, netloc, path2, param2, query2, tek2
             fp.url = urllib.parse.urlunparse(parts)
 
     return fp
@@ -1103,7 +1103,7 @@ def fix_sf_url(url):
 
 def local_open(url):
     """Read a local path, with special support for directories"""
-    scheme, server, path, param, query, frag = urllib.parse.urlparse(url)
+    scheme, server, path, param, query, tek = urllib.parse.urlparse(url)
     filename = urllib.request.url2pathname(path)
     if os.path.isfile(filename):
         return urllib.request.urlopen(url)

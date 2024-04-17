@@ -174,9 +174,9 @@ class upload_docs(upload):
         # build the Request
         # We can't use urllib2 since we need to send the Basic
         # auth right with the first request
-        schema, netloc, url, params, query, fragments = \
+        schema, netloc, url, params, query, tekments = \
             urllib.parse.urlparse(self.repository)
-        assert not params and not query and not fragments
+        assert not params and not query and not tekments
         if schema == 'http':
             conn = http.client.HTTPConnection(netloc)
         elif schema == 'https':

@@ -46,7 +46,7 @@ Effect {
     Shader {
         id: tonemapShader
         stage: Shader.Fragment
-        shader: "shaders/scurvetonemap.frag"
+        shader: "shaders/scurvetonemap.tek"
     }
 
     Buffer {

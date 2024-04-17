@@ -182,8 +182,8 @@ Item {
 
             var shader = ""
             if (GraphicsInfo.profile == GraphicsInfo.OpenGLCoreProfile)
-                shader += "#version 150 core\n#define varying in\n#define gl_FragColor fragColor\n#define texture2D texture\nout vec4 fragColor;\n"
-            shader += fragmentShaderBegin
+                shader += "#version 150 core\n#define varying in\n#define gl_FragColor tekColor\n#define texture2D texture\nout vec4 tekColor;\n"
+            shader += tekmentShaderBegin
             var samples = maxRadius * 2
             if (samples > 32) {
                 console.log("DirectionalGaussianBlur.qml WARNING: Maximum of blur radius (16) exceeded!")
@@ -194,7 +194,7 @@ Item {
                 shader += shaderSteps[i]
             }
 
-            shader += fragmentShaderEnd
+            shader += tekmentShaderEnd
 
             var colorizeSteps = ""
             var colorizeUniforms = ""
@@ -218,7 +218,7 @@ Item {
             shader = shader.replace("PLACEHOLDER_MASK_STEPS", maskSteps)
             shader = shader.replace("PLACEHOLDER_MASK_UNIFORMS", maskUniforms)
 
-            fragmentShader = shader
+            tekmentShader = shader
         }
 
         onDeviationChanged: updateGaussianWeights()
@@ -240,7 +240,7 @@ Item {
             updateGaussianWeights()
         }
 
-        property string fragmentShaderBegin: "
+        property string tekmentShaderBegin: "
             varying mediump vec2 qt_TexCoord0;
             uniform highp float qt_Opacity;
             uniform lowp sampler2D source;
@@ -276,7 +276,7 @@ Item {
                 gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
         "
 
-        property string fragmentShaderEnd: "
+        property string tekmentShaderEnd: "
 
                 gl_FragColor /= gaussianSum;
 

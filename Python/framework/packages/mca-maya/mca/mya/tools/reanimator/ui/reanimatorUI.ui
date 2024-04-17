@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>reanimator</class>
+ <widget class="QWidget" name="reanimator">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>283</width>
+    <height>626</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Reanimator</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_7">
+   <item>
+    <widget class="QGroupBox" name="frame_range_override_groupBox">
+     <property name="title">
+      <string>Frame range override</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QHBoxLayout" name="frame_horizontalLayout">
+        <item>
+         <widget class="QCheckBox" name="use_frame_range_checkBox">
+          <property name="toolTip">
+           <string>Use the given values to set a specific frame range. Otherwise the default will use either the total length of keys in the scene or the total length of keys on a skeleton.</string>
+          </property>
+          <property name="text">
+           <string>Frame Range</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="start_frame_spinBox">
+          <property name="toolTip">
+           <string>This is the starting frame range for the override.</string>
+          </property>
+          <property name="minimum">
+           <number>-10000</number>
+          </property>
+          <property name="maximum">
+           <number>9999</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="end_frame_spinBox">
+          <property name="toolTip">
+           <string>This is the ending frame range for the override.</string>
+          </property>
+          <property name="minimum">
+           <number>-9999</number>
+          </property>
+          <property name="maximum">
+           <number>10000</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="bake_selected_pushButton">
+        <property name="text">
+         <string>Bake Selected</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="mirror_rig_groupBox">
+     <property name="title">
+      <string>Mirror Rig</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_6">
+      <item>
+       <widget class="QPushButton" name="mirror_rig_pushButton">
+        <property name="text">
+         <string>Mirror Rig</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="attach_rigs_groupBox">
+     <property name="title">
+      <string>Attach Rigs</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QPushButton" name="attach_rigs_pushButton">
+        <property name="text">
+         <string>Attach Selected Rigs</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="detach_rig_pushButton">
+        <property name="text">
+         <string>Detach Selected Rig</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="bake_and_detach_pushButton">
+        <property name="text">
+         <string>Bake and Detach Selected Rig</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Overdrivers</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <layout class="QHBoxLayout" name="overdriver_translate_horizontalLayout">
+        <item>
+         <widget class="QCheckBox" name="translate_x_checkBox">
+          <property name="text">
+           <string>Translate X</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="translate_y_checkBox">
+          <property name="text">
+           <string>Translate Y</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="translate_z_checkBox">
+          <property name="text">
+           <string>Translate Z</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QCheckBox" name="rotate_x_checkBox">
+          <property name="text">
+           <string>Rotate X</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="rotate_y_checkBox">
+          <property name="text">
+           <string>Rotate Y</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="rotate_z_checkBox">
+          <property name="text">
+           <string>Rotate Z</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="add_overdriver_pushButton">
+        <property name="text">
+         <string>Add Overdriver</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="remove_overdriver_pushButton">
+        <property name="text">
+         <string>Remove Overdriver</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="bake_and_remover_overdriver_pushButton">
+        <property name="text">
+         <string>Bake and Remove Overdriver</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="bake_to_rig_groupBox">
+     <property name="title">
+      <string>Bake to Rig</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="append_horizontalLayout">
+        <item>
+         <widget class="QCheckBox" name="append_checkBox">
+          <property name="toolTip">
+           <string>If the animation should be added to the end of existing animation on the rig. If no animation is present on the rig the animation will be shifted to frame 0.</string>
+          </property>
+          <property name="text">
+           <string>Append Animation</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="motion_encode_checkBox">
+          <property name="toolTip">
+           <string>(Optional) Use with append. If toggled on appended animation will try to match the position of the hierarchy start between the existing rig and the incoming skeletal animation.</string>
+          </property>
+          <property name="text">
+           <string>Motion Encode</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="bake_to_rig_pushButton">
+        <property name="toolTip">
+         <string>Bake it so! Process animation from a selected skeleton to a selected rig.</string>
+        </property>
+        <property name="text">
+         <string>Bake to Rig</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="bake_to_skeleton_groupBox">
+     <property name="title">
+      <string>Bake to Skeleton</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QCheckBox" name="start_at_zero_checkBox">
+        <property name="toolTip">
+         <string>After baking animation to a skeleton, move all keyframes to start at frame zero.</string>
+        </property>
+        <property name="text">
+         <string>Start to Zero</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="bake_to_skeleton_pushButton">
+        <property name="toolTip">
+         <string>Bake it so! From a selected rig, bake animation to a duplicate skeleton.</string>
+        </property>
+        <property name="text">
+         <string>Bake to Skeleton</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

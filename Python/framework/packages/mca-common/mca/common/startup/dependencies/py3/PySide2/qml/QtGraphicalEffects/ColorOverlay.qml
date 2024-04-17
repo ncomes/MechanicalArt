@@ -143,6 +143,6 @@ Item {
 
         anchors.fill: parent
 
-        fragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/coloroverlay.frag"
+        tekmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/coloroverlay.tek"
     }
 }

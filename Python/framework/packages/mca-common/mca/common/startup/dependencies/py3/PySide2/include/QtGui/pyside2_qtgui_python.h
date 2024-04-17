@@ -81,7 +81,7 @@
 #include <QtGui/qpaintengine.h>
 #include <QtGui/qkeysequence.h>
 #include <QtGui/qpalette.h>
-#include <QtGui/qtextdocumentfragment.h>
+#include <QtGui/qtextdocumenttekment.h>
 #include <QtGui/qtextlayout.h>
 #include <QtGui/qcolor.h>
 #include <QtGui/qopengltexture.h>
@@ -395,11 +395,11 @@ enum : int {
     SBK_QPAINTEVENT_IDX                                      = 228,
     SBK_QPAINTER_RENDERHINT_IDX                              = 233,
     SBK_QFLAGS_QPAINTER_RENDERHINT_IDX                       = 71,
-    SBK_QPAINTER_PIXMAPFRAGMENTHINT_IDX                      = 232,
-    SBK_QFLAGS_QPAINTER_PIXMAPFRAGMENTHINT_IDX               = 70,
+    SBK_QPAINTER_PIXMAPTEKMENTHINT_IDX                      = 232,
+    SBK_QFLAGS_QPAINTER_PIXMAPTEKMENTHINT_IDX               = 70,
     SBK_QPAINTER_COMPOSITIONMODE_IDX                         = 230,
     SBK_QPAINTER_IDX                                         = 229,
-    SBK_QPAINTER_PIXMAPFRAGMENT_IDX                          = 231,
+    SBK_QPAINTER_PIXMAPTEKMENT_IDX                          = 231,
     SBK_QPAINTERPATH_ELEMENTTYPE_IDX                         = 236,
     SBK_QPAINTERPATH_IDX                                     = 234,
     SBK_QPAINTERPATH_ELEMENT_IDX                             = 235,
@@ -492,7 +492,7 @@ enum : int {
     SBK_QTEXTDOCUMENT_RESOURCETYPE_IDX                       = 317,
     SBK_QTEXTDOCUMENT_STACKS_IDX                             = 318,
     SBK_QTEXTDOCUMENT_IDX                                    = 313,
-    SBK_QTEXTDOCUMENTFRAGMENT_IDX                            = 319,
+    SBK_QTEXTDOCUMENTTEKMENT_IDX                            = 319,
     SBK_QTEXTDOCUMENTWRITER_IDX                              = 320,
     SBK_QTEXTFORMAT_FORMATTYPE_IDX                           = 322,
     SBK_QTEXTFORMAT_PROPERTY_IDX                             = 325,
@@ -500,7 +500,7 @@ enum : int {
     SBK_QTEXTFORMAT_PAGEBREAKFLAG_IDX                        = 324,
     SBK_QFLAGS_QTEXTFORMAT_PAGEBREAKFLAG_IDX                 = 76,
     SBK_QTEXTFORMAT_IDX                                      = 321,
-    SBK_QTEXTFRAGMENT_IDX                                    = 326,
+    SBK_QTEXTTEKMENT_IDX                                    = 326,
     SBK_QTEXTFRAME_IDX                                       = 327,
     SBK_QTEXTFRAME_ITERATOR_IDX                              = 328,
     SBK_QTEXTFRAMEFORMAT_POSITION_IDX                        = 331,
@@ -855,11 +855,11 @@ template<> inline PyTypeObject *SbkType< ::QPaintEngineState >() { return reinte
 template<> inline PyTypeObject *SbkType< ::QPaintEvent >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QPAINTEVENT_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QPainter::RenderHint >() { return SbkPySide2_QtGuiTypes[SBK_QPAINTER_RENDERHINT_IDX]; }
 template<> inline PyTypeObject *SbkType< ::QFlags<QPainter::RenderHint> >() { return SbkPySide2_QtGuiTypes[SBK_QFLAGS_QPAINTER_RENDERHINT_IDX]; }
-template<> inline PyTypeObject *SbkType< ::QPainter::PixmapFragmentHint >() { return SbkPySide2_QtGuiTypes[SBK_QPAINTER_PIXMAPFRAGMENTHINT_IDX]; }
-template<> inline PyTypeObject *SbkType< ::QFlags<QPainter::PixmapFragmentHint> >() { return SbkPySide2_QtGuiTypes[SBK_QFLAGS_QPAINTER_PIXMAPFRAGMENTHINT_IDX]; }
+template<> inline PyTypeObject *SbkType< ::QPainter::PixmapFragmentHint >() { return SbkPySide2_QtGuiTypes[SBK_QPAINTER_PIXMAPTEKMENTHINT_IDX]; }
+template<> inline PyTypeObject *SbkType< ::QFlags<QPainter::PixmapFragmentHint> >() { return SbkPySide2_QtGuiTypes[SBK_QFLAGS_QPAINTER_PIXMAPTEKMENTHINT_IDX]; }
 template<> inline PyTypeObject *SbkType< ::QPainter::CompositionMode >() { return SbkPySide2_QtGuiTypes[SBK_QPAINTER_COMPOSITIONMODE_IDX]; }
 template<> inline PyTypeObject *SbkType< ::QPainter >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QPAINTER_IDX]); }
-template<> inline PyTypeObject *SbkType< ::QPainter::PixmapFragment >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QPAINTER_PIXMAPFRAGMENT_IDX]); }
+template<> inline PyTypeObject *SbkType< ::QPainter::PixmapFragment >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QPAINTER_PIXMAPTEKMENT_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QPainterPath::ElementType >() { return SbkPySide2_QtGuiTypes[SBK_QPAINTERPATH_ELEMENTTYPE_IDX]; }
 template<> inline PyTypeObject *SbkType< ::QPainterPath >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QPAINTERPATH_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QPainterPath::Element >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QPAINTERPATH_ELEMENT_IDX]); }
@@ -950,7 +950,7 @@ template<> inline PyTypeObject *SbkType< ::QFlags<QTextDocument::FindFlag> >() {
 template<> inline PyTypeObject *SbkType< ::QTextDocument::ResourceType >() { return SbkPySide2_QtGuiTypes[SBK_QTEXTDOCUMENT_RESOURCETYPE_IDX]; }
 template<> inline PyTypeObject *SbkType< ::QTextDocument::Stacks >() { return SbkPySide2_QtGuiTypes[SBK_QTEXTDOCUMENT_STACKS_IDX]; }
 template<> inline PyTypeObject *SbkType< ::QTextDocument >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QTEXTDOCUMENT_IDX]); }
-template<> inline PyTypeObject *SbkType< ::QTextDocumentFragment >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QTEXTDOCUMENTFRAGMENT_IDX]); }
+template<> inline PyTypeObject *SbkType< ::QTextDocumentFragment >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QTEXTDOCUMENTTEKMENT_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QTextDocumentWriter >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QTEXTDOCUMENTWRITER_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QTextFormat::FormatType >() { return SbkPySide2_QtGuiTypes[SBK_QTEXTFORMAT_FORMATTYPE_IDX]; }
 template<> inline PyTypeObject *SbkType< ::QTextFormat::Property >() { return SbkPySide2_QtGuiTypes[SBK_QTEXTFORMAT_PROPERTY_IDX]; }
@@ -958,7 +958,7 @@ template<> inline PyTypeObject *SbkType< ::QTextFormat::ObjectTypes >() { return
 template<> inline PyTypeObject *SbkType< ::QTextFormat::PageBreakFlag >() { return SbkPySide2_QtGuiTypes[SBK_QTEXTFORMAT_PAGEBREAKFLAG_IDX]; }
 template<> inline PyTypeObject *SbkType< ::QFlags<QTextFormat::PageBreakFlag> >() { return SbkPySide2_QtGuiTypes[SBK_QFLAGS_QTEXTFORMAT_PAGEBREAKFLAG_IDX]; }
 template<> inline PyTypeObject *SbkType< ::QTextFormat >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QTEXTFORMAT_IDX]); }
-template<> inline PyTypeObject *SbkType< ::QTextFragment >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QTEXTFRAGMENT_IDX]); }
+template<> inline PyTypeObject *SbkType< ::QTextFragment >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QTEXTTEKMENT_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QTextFrame >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QTEXTFRAME_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QTextFrame::iterator >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtGuiTypes[SBK_QTEXTFRAME_ITERATOR_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QTextFrameFormat::Position >() { return SbkPySide2_QtGuiTypes[SBK_QTEXTFRAMEFORMAT_POSITION_IDX]; }

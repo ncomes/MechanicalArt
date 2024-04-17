@@ -74,7 +74,7 @@ _UNRESERVED_CHARS = set(
 _SUB_DELIM_CHARS = set("!$&'()*+,;=")
 _USERINFO_CHARS = _UNRESERVED_CHARS | _SUB_DELIM_CHARS | {":"}
 _PATH_CHARS = _USERINFO_CHARS | {"@", "/"}
-_QUERY_CHARS = _FRAGMENT_CHARS = _PATH_CHARS | {"?"}
+_QUERY_CHARS = _TEKMENT_CHARS = _PATH_CHARS | {"?"}
 
 
 class Url(
@@ -87,7 +87,7 @@ class Url(
             ("port", typing.Optional[int]),
             ("path", typing.Optional[str]),
             ("query", typing.Optional[str]),
-            ("fragment", typing.Optional[str]),
+            ("tekment", typing.Optional[str]),
         ],
     )
 ):
@@ -105,13 +105,13 @@ class Url(
         port: int | None = None,
         path: str | None = None,
         query: str | None = None,
-        fragment: str | None = None,
+        tekment: str | None = None,
     ):
         if path and not path.startswith("/"):
             path = "/" + path
         if scheme is not None:
             scheme = scheme.lower()
-        return super().__new__(cls, scheme, auth, host, port, path, query, fragment)
+        return super().__new__(cls, scheme, auth, host, port, path, query, tekment)
 
     @property
     def hostname(self) -> str | None:
@@ -180,12 +180,12 @@ class Url(
             # "https://google.com/mail/"
 
             print( urllib3.util.Url("https", "username:password",
-                                    "host.com", 80, "/path", "query", "fragment"
+                                    "host.com", 80, "/path", "query", "tekment"
                                     ).url
                 )
-            # "https://username:password@host.com:80/path?query#fragment"
+            # "https://username:password@host.com:80/path?query#tekment"
         """
-        scheme, auth, host, port, path, query, fragment = self
+        scheme, auth, host, port, path, query, tekment = self
         url = ""
 
         # We use "is not None" we want things to happen with empty strings (or 0 port)
@@ -201,8 +201,8 @@ class Url(
             url += path
         if query is not None:
             url += "?" + query
-        if fragment is not None:
-            url += "#" + fragment
+        if tekment is not None:
+            url += "#" + tekment
 
         return url
 
@@ -410,10 +410,10 @@ def parse_url(url: str) -> Url:
     port_int: int | None
     path: str | None
     query: str | None
-    fragment: str | None
+    tekment: str | None
 
     try:
-        scheme, authority, path, query, fragment = _URI_RE.match(url).groups()  # type: ignore[union-attr]
+        scheme, authority, path, query, tekment = _URI_RE.match(url).groups()  # type: ignore[union-attr]
         normalize_uri = scheme is None or scheme.lower() in _NORMALIZABLE_SCHEMES
 
         if scheme:
@@ -444,8 +444,8 @@ def parse_url(url: str) -> Url:
             path = _encode_invalid_chars(path, _PATH_CHARS)
         if normalize_uri and query:
             query = _encode_invalid_chars(query, _QUERY_CHARS)
-        if normalize_uri and fragment:
-            fragment = _encode_invalid_chars(fragment, _FRAGMENT_CHARS)
+        if normalize_uri and tekment:
+            tekment = _encode_invalid_chars(tekment, _TEKMENT_CHARS)
 
     except (ValueError, AttributeError) as e:
         raise LocationParseError(source_url) from e
@@ -455,7 +455,7 @@ def parse_url(url: str) -> Url:
     # beyond the path in the URL.
     # TODO: Remove this when we break backwards compatibility.
     if not path:
-        if query is not None or fragment is not None:
+        if query is not None or tekment is not None:
             path = ""
         else:
             path = None
@@ -467,5 +467,5 @@ def parse_url(url: str) -> Url:
         port=port_int,
         path=path,
         query=query,
-        fragment=fragment,
+        tekment=tekment,
     )

@@ -41,7 +41,7 @@ def _dnsname_match(
     wildcards = leftmost.count("*")
     if wildcards > max_wildcards:
         # Issue #17980: avoid denials of service by refusing more
-        # than one wildcard per fragment.  A survey of established
+        # than one wildcard per tekment.  A survey of established
         # policy among SSL implementations showed it to be a
         # reasonable choice.
         raise CertificateError(
@@ -56,8 +56,8 @@ def _dnsname_match(
     # The client SHOULD NOT attempt to match a presented identifier in which
     # the wildcard character comprises a label other than the left-most label.
     if leftmost == "*":
-        # When '*' is a fragment by itself, it matches a non-empty dotless
-        # fragment.
+        # When '*' is a tekment by itself, it matches a non-empty dotless
+        # tekment.
         pats.append("[^.]+")
     elif leftmost.startswith("xn--") or hostname.startswith("xn--"):
         # RFC 6125, section 6.4.3, subitem 3.
@@ -69,9 +69,9 @@ def _dnsname_match(
         # Otherwise, '*' matches any dotless string, e.g. www*
         pats.append(re.escape(leftmost).replace(r"\*", "[^.]*"))
 
-    # add the remaining fragments, ignore any wildcards
-    for frag in remainder:
-        pats.append(re.escape(frag))
+    # add the remaining tekments, ignore any wildcards
+    for tek in remainder:
+        pats.append(re.escape(tek))
 
     pat = re.compile(r"\A" + r"\.".join(pats) + r"\Z", re.IGNORECASE)
     return pat.match(hostname)

@@ -132,11 +132,11 @@ AbstractColorDialog {
                     anchors.centerIn: parent
                     property real hue: hueSlider.value
 
-                    fragmentShader: content.OpenGLInfo.profile === OpenGLInfo.CoreProfile ? "#version 150
+                    tekmentShader: content.OpenGLInfo.profile === OpenGLInfo.CoreProfile ? "#version 150
                     in vec2 qt_TexCoord0;
                     uniform float qt_Opacity;
                     uniform float hue;
-                    out vec4 fragColor;
+                    out vec4 tekColor;
 
                     float hueToIntensity(float v1, float v2, float h) {
                         h = fract(h);
@@ -177,7 +177,7 @@ AbstractColorDialog {
                     void main() {
                         vec4 c = vec4(1.0);
                         c.rgb = HSLtoRGB(vec3(hue, 1.0 - qt_TexCoord0.t, qt_TexCoord0.s));
-                        fragColor = c * qt_Opacity;
+                        tekColor = c * qt_Opacity;
                     }
                     " : "
                     varying mediump vec2 qt_TexCoord0;

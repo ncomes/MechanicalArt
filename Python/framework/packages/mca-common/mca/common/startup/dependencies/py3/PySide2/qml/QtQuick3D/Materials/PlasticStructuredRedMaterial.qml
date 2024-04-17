@@ -94,7 +94,7 @@ CustomMaterial {
     Shader {
         id: plasticStructuredRedFragShader
         stage: Shader.Fragment
-        shader: "shaders/plasticStructuredRed.frag"
+        shader: "shaders/plasticStructuredRed.tek"
     }
 
     passes: [ Pass {

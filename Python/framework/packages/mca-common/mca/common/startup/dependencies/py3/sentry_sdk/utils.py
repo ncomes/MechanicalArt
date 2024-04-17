@@ -1350,7 +1350,7 @@ def from_base64(base64_string):
     return utf8_string
 
 
-Components = namedtuple("Components", ["scheme", "netloc", "path", "query", "fragment"])
+Components = namedtuple("Components", ["scheme", "netloc", "path", "query", "tekment"])
 
 
 def sanitize_url(url, remove_authority=True, remove_query_values=True, split=False):
@@ -1388,7 +1388,7 @@ def sanitize_url(url, remove_authority=True, remove_query_values=True, split=Fal
         netloc=netloc,
         query=query_string,
         path=parsed_url.path,
-        fragment=parsed_url.fragment,
+        tekment=parsed_url.tekment,
     )
 
     if split:
@@ -1397,13 +1397,13 @@ def sanitize_url(url, remove_authority=True, remove_query_values=True, split=Fal
         return urlunsplit(components)
 
 
-ParsedUrl = namedtuple("ParsedUrl", ["url", "query", "fragment"])
+ParsedUrl = namedtuple("ParsedUrl", ["url", "query", "tekment"])
 
 
 def parse_url(url, sanitize=True):
     # type: (str, bool) -> ParsedUrl
     """
-    Splits a URL into a url (including path), query and fragment. If sanitize is True, the query
+    Splits a URL into a url (including path), query and tekment. If sanitize is True, the query
     parameters will be sanitized to remove sensitive data. The autority (username and password)
     in the URL will always be removed.
     """
@@ -1417,14 +1417,14 @@ def parse_url(url, sanitize=True):
             netloc=parsed_url.netloc,  # type: ignore
             query="",
             path=parsed_url.path,  # type: ignore
-            fragment="",
+            tekment="",
         )
     )
 
     return ParsedUrl(
         url=base_url,
         query=parsed_url.query,  # type: ignore
-        fragment=parsed_url.fragment,  # type: ignore
+        tekment=parsed_url.tekment,  # type: ignore
     )
 
 

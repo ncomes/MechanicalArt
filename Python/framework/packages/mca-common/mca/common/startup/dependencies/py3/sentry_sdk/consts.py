@@ -98,7 +98,7 @@ class SPANDATA:
     Example: ?foo=bar&bar=baz
     """
 
-    HTTP_FRAGMENT = "http.fragment"
+    HTTP_TEKMENT = "http.tekment"
     """
     The Fragments present in the URL.
     Example: #foo=bar

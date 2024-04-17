@@ -310,18 +310,18 @@ class GLWidget(QOpenGLWidget, QOpenGLFunctions):
                    gl_Position = projMatrix * mvMatrix * vertex;
                 }"""
 
-    def fragmentShaderSourceCore(self):
+    def tekmentShaderSourceCore(self):
         return """#version 150
                 in highp vec3 vert;
                 in highp vec3 vertNormal;
-                out highp vec4 fragColor;
+                out highp vec4 tekColor;
                 uniform highp vec3 lightPos;
                 void main() {
                    highp vec3 L = normalize(lightPos - vert);
                    highp float NL = max(dot(normalize(vertNormal), L), 0.0);
                    highp vec3 color = vec3(0.39, 1.0, 0.0);
                    highp vec3 col = clamp(color * 0.2 + color * 0.8 * NL, 0.0, 1.0);
-                   fragColor = vec4(col, 1.0);
+                   tekColor = vec4(col, 1.0);
                 }"""
 
 
@@ -339,7 +339,7 @@ class GLWidget(QOpenGLWidget, QOpenGLFunctions):
                    gl_Position = projMatrix * mvMatrix * vertex;
                 }"""
 
-    def fragmentShaderSource(self):
+    def tekmentShaderSource(self):
         return """varying highp vec3 vert;
                 varying highp vec3 vertNormal;
                 uniform highp vec3 lightPos;
@@ -360,13 +360,13 @@ class GLWidget(QOpenGLWidget, QOpenGLFunctions):
 
         if self.core:
             self.vertexShader = self.vertexShaderSourceCore()
-            self.fragmentShader = self.fragmentShaderSourceCore()
+            self.tekmentShader = self.tekmentShaderSourceCore()
         else:
             self.vertexShader = self.vertexShaderSource()
-            self.fragmentShader = self.fragmentShaderSource()
+            self.tekmentShader = self.tekmentShaderSource()
 
         self.program.addShaderFromSourceCode(QOpenGLShader.Vertex, self.vertexShader)
-        self.program.addShaderFromSourceCode(QOpenGLShader.Fragment, self.fragmentShader)
+        self.program.addShaderFromSourceCode(QOpenGLShader.Fragment, self.tekmentShader)
         self.program.bindAttributeLocation("vertex", 0)
         self.program.bindAttributeLocation("normal", 1)
         self.program.link()

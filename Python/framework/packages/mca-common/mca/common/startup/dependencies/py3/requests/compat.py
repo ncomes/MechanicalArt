@@ -56,7 +56,7 @@ from urllib.parse import (
     quote_plus,
     unquote,
     unquote_plus,
-    urldefrag,
+    urldetek,
     urlencode,
     urljoin,
     urlparse,

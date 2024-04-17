@@ -114,27 +114,27 @@ CustomMaterial {
     Shader {
         id: mainShader
         stage: Shader.Fragment
-        shader: "shaders/frostedThinGlass.frag"
+        shader: "shaders/frostedThinGlass.tek"
     }
     Shader {
         id: noopShader
         stage: Shader.Fragment
-        shader: "shaders/frostedThinGlassNoop.frag"
+        shader: "shaders/frostedThinGlassNoop.tek"
     }
     Shader {
         id: preBlurShader
         stage: Shader.Fragment
-        shader: "shaders/frostedThinGlassPreBlur.frag"
+        shader: "shaders/frostedThinGlassPreBlur.tek"
     }
     Shader {
         id: blurXShader
         stage: Shader.Fragment
-        shader: "shaders/frostedThinGlassBlurX.frag"
+        shader: "shaders/frostedThinGlassBlurX.tek"
     }
     Shader {
         id: blurYShader
         stage: Shader.Fragment
-        shader: "shaders/frostedThinGlassBlurY.frag"
+        shader: "shaders/frostedThinGlassBlurY.tek"
     }
 
     Buffer {

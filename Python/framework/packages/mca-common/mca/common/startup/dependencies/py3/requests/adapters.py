@@ -50,7 +50,7 @@ from .utils import (
     get_encoding_from_headers,
     prepend_scheme_if_needed,
     select_proxy,
-    urldefragauth,
+    urldetekauth,
 )
 
 try:
@@ -392,7 +392,7 @@ class HTTPAdapter(BaseAdapter):
 
         url = request.path_url
         if is_proxied_http_request and not using_socks_proxy:
-            url = urldefragauth(request.url)
+            url = urldetekauth(request.url)
 
         return url
 

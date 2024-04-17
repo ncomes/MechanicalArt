@@ -459,7 +459,7 @@ class OptionDummy:
 
 if __name__ == "__main__":
     text = """\
-Tra-la-la, supercalifragilisticexpialidocious.
+Tra-la-la, supercalitekilisticexpialidocious.
 How *do* you spell that odd word, anyways?
 (Someone ask Mary -- she'll know [or she'll
 say, "How should I know?"].)"""

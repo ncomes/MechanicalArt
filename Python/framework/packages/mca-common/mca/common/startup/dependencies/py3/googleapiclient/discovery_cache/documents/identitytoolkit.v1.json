@@ -1385,7 +1385,7 @@
           "type": "string"
         },
         "continueUri": {
-          "description": "A valid URL for the IdP to redirect the user back to. The URL cannot contain fragments or the reserved `state` query parameter.",
+          "description": "A valid URL for the IdP to redirect the user back to. The URL cannot contain tekments or the reserved `state` query parameter.",
           "type": "string"
         },
         "customParameter": {

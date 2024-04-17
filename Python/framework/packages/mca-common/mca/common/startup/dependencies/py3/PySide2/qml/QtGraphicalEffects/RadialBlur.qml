@@ -249,7 +249,7 @@ Item {
         width: transparentBorder ? parent.width + expandPixels.width * 2.0 + 2 : parent.width
         height: transparentBorder ? parent.height + expandPixels.height * 2.0 + 2 : parent.height
 
-        property string fragmentShaderSkeleton: "
+        property string tekmentShaderSkeleton: "
             varying highp vec2 qt_TexCoord0;
             uniform highp float qt_Opacity;
             uniform lowp sampler2D source;
@@ -288,8 +288,8 @@ Item {
         function buildFragmentShader() {
             var shader = ""
             if (GraphicsInfo.profile == GraphicsInfo.OpenGLCoreProfile)
-                shader += "#version 150 core\n#define varying in\n#define gl_FragColor fragColor\n#define texture2D texture\nout vec4 fragColor;\n"
-            shader += fragmentShaderSkeleton
+                shader += "#version 150 core\n#define varying in\n#define gl_FragColor tekColor\n#define texture2D texture\nout vec4 tekColor;\n"
+            shader += tekmentShaderSkeleton
             var expandSteps = ""
 
             if (transparentBorder) {
@@ -305,7 +305,7 @@ Item {
             }
 
             shader = shader.replace("PLACEHOLDER_EXPAND_STEPS", expandSteps)
-            fragmentShader = shader.replace("PLACEHOLDER_UNROLLED_LOOP", unrolledLoop)
+            tekmentShader = shader.replace("PLACEHOLDER_UNROLLED_LOOP", unrolledLoop)
         }
 
         onFragmentShaderChanged: sourceChanged()

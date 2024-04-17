@@ -323,11 +323,11 @@ Gradient {
 
         anchors.fill: parent
 
-        fragmentShader: maskSource == undefined ? noMaskShader : maskShader
+        tekmentShader: maskSource == undefined ? noMaskShader : maskShader
 
         onFragmentShaderChanged: startAngleChanged()
 
-        property string noMaskShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/conicalgradient_nomask.frag"
-        property string maskShader:   "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/conicalgradient_mask.frag"
+        property string noMaskShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/conicalgradient_nomask.tek"
+        property string maskShader:   "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/conicalgradient_mask.tek"
     }
 }

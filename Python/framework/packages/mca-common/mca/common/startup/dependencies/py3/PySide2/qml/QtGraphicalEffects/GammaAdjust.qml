@@ -179,6 +179,6 @@ luminance = pow(original_luminance, 1.0 / gamma); // The luminance is assumed to
 
         anchors.fill: parent
 
-        fragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/gammaadjust.frag"
+        tekmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/gammaadjust.tek"
     }
 }

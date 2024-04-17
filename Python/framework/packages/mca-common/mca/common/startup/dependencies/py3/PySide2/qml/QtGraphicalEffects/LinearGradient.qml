@@ -313,11 +313,11 @@ Item {
 
         vertexShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/lineargradient.vert"
 
-        fragmentShader: maskSource == undefined ? noMaskShader : maskShader
+        tekmentShader: maskSource == undefined ? noMaskShader : maskShader
 
         onFragmentShaderChanged: lChanged()
 
-        property string maskShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/lineargradient_mask.frag"
-        property string noMaskShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/lineargradient_nomask.frag"
+        property string maskShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/lineargradient_mask.tek"
+        property string noMaskShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/lineargradient_nomask.tek"
     }
 }

@@ -71,8 +71,8 @@ class OAuth2Error(Exception):
             self.grant_type = None
 
     def in_uri(self, uri):
-        fragment = self.response_mode == "fragment"
-        return add_params_to_uri(uri, self.twotuples, fragment)
+        tekment = self.response_mode == "tekment"
+        return add_params_to_uri(uri, self.twotuples, tekment)
 
     @property
     def twotuples(self):

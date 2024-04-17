@@ -991,7 +991,7 @@ def prepend_scheme_if_needed(url, new_scheme):
     :rtype: str
     """
     parsed = parse_url(url)
-    scheme, auth, host, port, path, query, fragment = parsed
+    scheme, auth, host, port, path, query, tekment = parsed
 
     # A defect in urlparse determines that there isn't a netloc present in some
     # urls. We previously assumed parsing was overly cautious, and swapped the
@@ -1010,7 +1010,7 @@ def prepend_scheme_if_needed(url, new_scheme):
     if path is None:
         path = ""
 
-    return urlunparse((scheme, netloc, path, "", query, fragment))
+    return urlunparse((scheme, netloc, path, "", query, tekment))
 
 
 def get_auth_from_url(url):
@@ -1059,13 +1059,13 @@ def _validate_header_part(header, header_part, header_validator_index):
         )
 
 
-def urldefragauth(url):
+def urldetekauth(url):
     """
-    Given a url remove the fragment and the authentication part.
+    Given a url remove the tekment and the authentication part.
 
     :rtype: str
     """
-    scheme, netloc, path, params, query, fragment = urlparse(url)
+    scheme, netloc, path, params, query, tekment = urlparse(url)
 
     # see func:`prepend_scheme_if_needed`
     if not netloc:

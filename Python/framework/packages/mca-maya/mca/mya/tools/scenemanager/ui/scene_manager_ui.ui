@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>240</width>
+    <height>330</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTreeWidget" name="rigs_treeWidget">
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="dragDropMode">
+       <enum>QAbstractItemView::NoDragDrop</enum>
+      </property>
+      <property name="defaultDropAction">
+       <enum>Qt::IgnoreAction</enum>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>false</bool>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::SingleSelection</enum>
+      </property>
+      <property name="headerHidden">
+       <bool>false</bool>
+      </property>
+      <property name="columnCount">
+       <number>2</number>
+      </property>
+      <attribute name="headerVisible">
+       <bool>true</bool>
+      </attribute>
+      <column>
+       <property name="text">
+        <string notr="true">Layer Groups</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string notr="true">Layer Status</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="refresh_pushButton">
+      <property name="toolTip">
+       <string>Refresh the UI </string>
+      </property>
+      <property name="text">
+       <string>Refresh</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>240</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionCheck_Out_in_Plastic"/>
+   </widget>
+   <widget class="QMenu" name="menuScene">
+    <property name="title">
+     <string>Scene</string>
+    </property>
+    <addaction name="actionRemove_Dead_TEK_Nodes"/>
+    <addaction name="actionClean_Scene"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuScene"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionRemove_Dead_TEK_Nodes">
+   <property name="text">
+    <string>Remove Dead TEK Nodes</string>
+   </property>
+  </action>
+  <action name="actionClean_Scene">
+   <property name="text">
+    <string>Clean Scene</string>
+   </property>
+  </action>
+  <action name="actionNamespace_Check">
+   <property name="text">
+    <string>Namespace Check</string>
+   </property>
+  </action>
+  <action name="actionCheck_Out_in_Plastic">
+   <property name="text">
+    <string>Check Out in Plastic</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

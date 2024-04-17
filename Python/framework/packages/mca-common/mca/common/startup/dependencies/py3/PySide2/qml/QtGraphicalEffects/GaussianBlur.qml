@@ -295,7 +295,7 @@ Item {
             fallback: root.radius != _kernelRadius
         }
         var shaders = ShaderBuilder.gaussianBlur(params);
-        horizontalBlur.fragmentShader = shaders.fragmentShader;
+        horizontalBlur.tekmentShader = shaders.tekmentShader;
         horizontalBlur.vertexShader = shaders.vertexShader;
     }
 
@@ -343,7 +343,7 @@ Item {
         y: x;
         width: root.transparentBorder ? root._paddedTexWidth: root.width
         height: root.transparentBorder ? root._paddedTexHeight : root.height;
-        fragmentShader: horizontalBlur.fragmentShader
+        tekmentShader: horizontalBlur.tekmentShader
         vertexShader: horizontalBlur.vertexShader
 
         property Item source: horizontalBlur

@@ -400,11 +400,11 @@ Item {
 
         vertexShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/radialgradient.vert"
 
-        fragmentShader: maskSource == undefined ? noMaskShader : maskShader
+        tekmentShader: maskSource == undefined ? noMaskShader : maskShader
 
         onFragmentShaderChanged: horizontalRatioChanged()
 
-        property string maskShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/radialgradient_mask.frag"
-        property string noMaskShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/radialgradient_nomask.frag"
+        property string maskShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/radialgradient_mask.tek"
+        property string noMaskShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/radialgradient_nomask.tek"
     }
 }

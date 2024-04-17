@@ -157,6 +157,6 @@ Item {
 
         anchors.fill: parent
 
-        fragmentShader: invert ? "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/opacitymask_invert.frag" : "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/opacitymask.frag"
+        tekmentShader: invert ? "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/opacitymask_invert.tek" : "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/opacitymask.tek"
     }
 }

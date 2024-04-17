@@ -65,7 +65,7 @@ Item {
 
     property string __internalBlurVertexShader: "qrc:/QtQuick/Controls/Shaders/blur.vert"
 
-    property string __internalBlurFragmentShader: "qrc:/QtQuick/Controls/Shaders/blur.frag"
+    property string __internalBlurFragmentShader: "qrc:/QtQuick/Controls/Shaders/blur.tek"
 
     ShaderEffect {
         id: level0
@@ -95,7 +95,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -117,7 +117,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -139,7 +139,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -161,7 +161,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -183,7 +183,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -325,6 +325,6 @@ Item {
 
         onLodChanged: calculateWeights()
 
-        fragmentShader: "qrc:/QtQuick/Controls/Shaders/glow.frag"
+        tekmentShader: "qrc:/QtQuick/Controls/Shaders/glow.tek"
     }
 }

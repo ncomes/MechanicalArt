@@ -131,7 +131,7 @@ class SOCKSConnection(HTTPConnection):
             ) from e
 
         except socks.ProxyError as e:
-            # This is fragile as hell, but it seems to be the only way to raise
+            # This is tekile as hell, but it seems to be the only way to raise
             # useful errors here.
             if e.socket_err:
                 error = e.socket_err

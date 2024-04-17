@@ -223,14 +223,14 @@ URI = re.compile(r"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?")
 def parse_uri(uri):
     """Parses a URI using the regex given in Appendix B of RFC 3986.
 
-        (scheme, authority, path, query, fragment) = parse_uri(uri)
+        (scheme, authority, path, query, tekment) = parse_uri(uri)
     """
     groups = URI.match(uri).groups()
     return (groups[1], groups[3], groups[4], groups[6], groups[8])
 
 
 def urlnorm(uri):
-    (scheme, authority, path, query, fragment) = parse_uri(uri)
+    (scheme, authority, path, query, tekment) = parse_uri(uri)
     if not scheme or not authority:
         raise RelativeURIError("Only absolute URIs are allowed. uri = %s" % uri)
     authority = authority.lower()
@@ -241,8 +241,8 @@ def urlnorm(uri):
     # computing the digest. See Section 6.2.2 of Std 66.
     request_uri = query and "?".join([path, query]) or path
     scheme = scheme.lower()
-    defrag_uri = scheme + "://" + authority + request_uri
-    return scheme, authority, request_uri, defrag_uri
+    detek_uri = scheme + "://" + authority + request_uri
+    return scheme, authority, request_uri, detek_uri
 
 
 # Cache filename construction (original borrowed from Venus http://intertwingly.net/code/venus/)
@@ -495,19 +495,19 @@ def _wsse_username_token(cnonce, iso_now, password):
 
 class Authentication(object):
     def __init__(self, credentials, host, request_uri, headers, response, content, http):
-        (scheme, authority, path, query, fragment) = parse_uri(request_uri)
+        (scheme, authority, path, query, tekment) = parse_uri(request_uri)
         self.path = path
         self.host = host
         self.credentials = credentials
         self.http = http
 
     def depth(self, request_uri):
-        (scheme, authority, path, query, fragment) = parse_uri(request_uri)
+        (scheme, authority, path, query, tekment) = parse_uri(request_uri)
         return request_uri[len(self.path) :].count("/")
 
     def inscope(self, host, request_uri):
         # XXX Should we normalize the request_uri?
-        (scheme, authority, path, query, fragment) = parse_uri(request_uri)
+        (scheme, authority, path, query, tekment) = parse_uri(request_uri)
         return (host == self.host) and path.startswith(self.path)
 
     def request(self, method, request_uri, headers, content):
@@ -1470,7 +1470,7 @@ class Http(object):
                     # Fix-up relative redirects (which violate an RFC 2616 MUST)
                     if "location" in response:
                         location = response["location"]
-                        (scheme, authority, path, query, fragment) = parse_uri(location)
+                        (scheme, authority, path, query, tekment) = parse_uri(location)
                         if authority == None:
                             response["location"] = urllib.parse.urljoin(absolute_uri, location)
                     if response.status == 308 or (response.status == 301 and (method in self.safe_methods)):
@@ -1555,7 +1555,7 @@ a string that contains the response entity body.
             # Prevent CWE-93 CRLF injection to modify headers via part of uri.
             uri = uri.replace(" ", "%20").replace("\r", "%0D").replace("\n", "%0A")
 
-            (scheme, authority, request_uri, defrag_uri) = urlnorm(uri)
+            (scheme, authority, request_uri, detek_uri) = urlnorm(uri)
 
             conn_key = scheme + ":" + authority
             conn = self.connections.get(conn_key)
@@ -1600,7 +1600,7 @@ a string that contains the response entity body.
             cachekey = None
             cached_value = None
             if self.cache:
-                cachekey = defrag_uri
+                cachekey = detek_uri
                 cached_value = self.cache.get(cachekey)
                 if cached_value:
                     try:

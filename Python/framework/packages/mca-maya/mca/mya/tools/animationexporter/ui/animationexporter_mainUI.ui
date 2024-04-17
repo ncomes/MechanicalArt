@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AnimationExporter</class>
+ <widget class="QWidget" name="AnimationExporter">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>710</width>
+    <height>522</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Animation Exporter</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="export_and_refresh_horizontalLayout">
+     <item>
+      <widget class="QCheckBox" name="export_all_checkBox">
+       <property name="text">
+        <string>Export All Toggle</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="refresh_pushButton">
+       <property name="text">
+        <string>Reset Rig List</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="main_verticalLayout">
+     <item>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="usesScrollButtons">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="all_rigs_groupBox">
+     <property name="title">
+      <string>All Rigs Export</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QHBoxLayout" name="all_rigs_horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="all_rigs_export_selected_pushButton">
+          <property name="toolTip">
+           <string>Export all animations on all rigs that are marked for export.</string>
+          </property>
+          <property name="text">
+           <string>Export Selected</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="all_rigs_export_all_pushButton">
+          <property name="toolTip">
+           <string>Export all animations on all rigs.</string>
+          </property>
+          <property name="text">
+           <string>Export All</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

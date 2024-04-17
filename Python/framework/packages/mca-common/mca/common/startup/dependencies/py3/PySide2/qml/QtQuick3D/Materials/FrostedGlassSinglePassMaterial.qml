@@ -99,7 +99,7 @@ CustomMaterial {
     Shader {
         id: frostedGlassSpFragShader
         stage: Shader.Fragment
-        shader: "shaders/frostedThinGlassSp.frag"
+        shader: "shaders/frostedThinGlassSp.tek"
     }
 
     Buffer {

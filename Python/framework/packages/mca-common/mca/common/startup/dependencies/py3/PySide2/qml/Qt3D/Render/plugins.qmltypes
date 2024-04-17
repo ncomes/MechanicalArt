@@ -3480,7 +3480,7 @@ Module {
         Property { name: "tessellationControlShaderCode"; type: "QByteArray" }
         Property { name: "tessellationEvaluationShaderCode"; type: "QByteArray" }
         Property { name: "geometryShaderCode"; type: "QByteArray" }
-        Property { name: "fragmentShaderCode"; type: "QByteArray" }
+        Property { name: "tekmentShaderCode"; type: "QByteArray" }
         Property { name: "computeShaderCode"; type: "QByteArray" }
         Property { name: "log"; revision: 9; type: "string"; isReadonly: true }
         Property { name: "status"; revision: 9; type: "Status"; isReadonly: true }
@@ -3502,8 +3502,8 @@ Module {
             Parameter { name: "geometryShaderCode"; type: "QByteArray" }
         }
         Signal {
-            name: "fragmentShaderCodeChanged"
-            Parameter { name: "fragmentShaderCode"; type: "QByteArray" }
+            name: "tekmentShaderCodeChanged"
+            Parameter { name: "tekmentShaderCode"; type: "QByteArray" }
         }
         Signal {
             name: "computeShaderCodeChanged"
@@ -3539,7 +3539,7 @@ Module {
         }
         Method {
             name: "setFragmentShaderCode"
-            Parameter { name: "fragmentShaderCode"; type: "QByteArray" }
+            Parameter { name: "tekmentShaderCode"; type: "QByteArray" }
         }
         Method {
             name: "setComputeShaderCode"
@@ -3565,7 +3565,7 @@ Module {
         Property { name: "tessellationControlShaderGraph"; type: "QUrl" }
         Property { name: "tessellationEvaluationShaderGraph"; type: "QUrl" }
         Property { name: "geometryShaderGraph"; type: "QUrl" }
-        Property { name: "fragmentShaderGraph"; type: "QUrl" }
+        Property { name: "tekmentShaderGraph"; type: "QUrl" }
         Property { name: "computeShaderGraph"; type: "QUrl" }
         Property { name: "vertexShaderCode"; revision: 13; type: "QByteArray"; isReadonly: true }
         Property {
@@ -3581,7 +3581,7 @@ Module {
             isReadonly: true
         }
         Property { name: "geometryShaderCode"; revision: 13; type: "QByteArray"; isReadonly: true }
-        Property { name: "fragmentShaderCode"; revision: 13; type: "QByteArray"; isReadonly: true }
+        Property { name: "tekmentShaderCode"; revision: 13; type: "QByteArray"; isReadonly: true }
         Property { name: "computeShaderCode"; revision: 13; type: "QByteArray"; isReadonly: true }
         Signal {
             name: "shaderProgramChanged"
@@ -3608,8 +3608,8 @@ Module {
             Parameter { name: "geometryShaderGraph"; type: "QUrl" }
         }
         Signal {
-            name: "fragmentShaderGraphChanged"
-            Parameter { name: "fragmentShaderGraph"; type: "QUrl" }
+            name: "tekmentShaderGraphChanged"
+            Parameter { name: "tekmentShaderGraph"; type: "QUrl" }
         }
         Signal {
             name: "computeShaderGraphChanged"
@@ -3636,9 +3636,9 @@ Module {
             Parameter { name: "geometryShaderCode"; type: "QByteArray" }
         }
         Signal {
-            name: "fragmentShaderCodeChanged"
+            name: "tekmentShaderCodeChanged"
             revision: 13
-            Parameter { name: "fragmentShaderCode"; type: "QByteArray" }
+            Parameter { name: "tekmentShaderCode"; type: "QByteArray" }
         }
         Signal {
             name: "computeShaderCodeChanged"
@@ -3671,7 +3671,7 @@ Module {
         }
         Method {
             name: "setFragmentShaderGraph"
-            Parameter { name: "fragmentShaderGraph"; type: "QUrl" }
+            Parameter { name: "tekmentShaderGraph"; type: "QUrl" }
         }
         Method {
             name: "setComputeShaderGraph"

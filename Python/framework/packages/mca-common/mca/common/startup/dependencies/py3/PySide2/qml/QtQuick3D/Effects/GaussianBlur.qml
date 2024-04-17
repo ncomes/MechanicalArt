@@ -46,7 +46,7 @@ Effect {
     Shader {
         id: gaussianblur
         stage: Shader.Fragment
-        shader: "shaders/gaussianblur.frag"
+        shader: "shaders/gaussianblur.tek"
     }
 
     Buffer {

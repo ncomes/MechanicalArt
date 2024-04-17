@@ -39,12 +39,12 @@ Effect {
     Shader {
         id: rgbl
         stage: Shader.Fragment
-        shader: "shaders/fxaaRgbl.frag"
+        shader: "shaders/fxaaRgbl.tek"
     }
     Shader {
         id: blur
         stage: Shader.Fragment
-        shader: "shaders/fxaaBlur.frag"
+        shader: "shaders/fxaaBlur.tek"
     }
     Buffer {
         id: rgblBuffer

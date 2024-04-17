@@ -76,7 +76,7 @@ vertexShaderSource110 = dedent("""
     }
     """)
 
-fragmentShaderSource110 = dedent("""
+tekmentShaderSource110 = dedent("""
     // version 110
     varying lowp vec4 col;
     void main() {
@@ -96,12 +96,12 @@ vertexShaderSource = dedent("""
     }
     """)
 
-fragmentShaderSource = dedent("""
+tekmentShaderSource = dedent("""
     // version 150
     in vec4 col;
-    out vec4 fragColor;
+    out vec4 tekColor;
     void main() {
-       fragColor = col;
+       tekColor = col;
     }
     """)
 
@@ -142,11 +142,11 @@ class RenderWindow(QWindow):
             useNewStyleShader = not format.testOption(QSurfaceFormat.DeprecatedFunctions)
 
         vertexShader = vertexShaderSource if useNewStyleShader else vertexShaderSource110
-        fragmentShader = fragmentShaderSource if useNewStyleShader else fragmentShaderSource110
+        tekmentShader = tekmentShaderSource if useNewStyleShader else tekmentShaderSource110
         if not self.program.addShaderFromSourceCode(QOpenGLShader.Vertex, vertexShader):
             raise Exception("Vertex shader could not be added: {} ({})".format(self.program.log(), vertexShader))
-        if not self.program.addShaderFromSourceCode(QOpenGLShader.Fragment, fragmentShader):
-            raise Exception("Fragment shader could not be added: {} ({})".format(self.program.log(), fragmentShader))
+        if not self.program.addShaderFromSourceCode(QOpenGLShader.Fragment, tekmentShader):
+            raise Exception("Fragment shader could not be added: {} ({})".format(self.program.log(), tekmentShader))
         if not self.program.link():
             raise Exception("Could not link shaders: {}".format(self.program.log()))
 

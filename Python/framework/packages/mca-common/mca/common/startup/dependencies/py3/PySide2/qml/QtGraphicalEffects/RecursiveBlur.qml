@@ -272,7 +272,7 @@ Item {
 
         vertexShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/recursiveblur.vert"
 
-        fragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/recursiveblur.frag"
+        tekmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/recursiveblur.tek"
     }
 
     ShaderEffectSource {

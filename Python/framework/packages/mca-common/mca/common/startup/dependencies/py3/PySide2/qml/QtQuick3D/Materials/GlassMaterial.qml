@@ -66,7 +66,7 @@ CustomMaterial {
     Shader {
         id: simpleGlassFragShader
         stage: Shader.Fragment
-        shader: "shaders/simpleGlass.frag"
+        shader: "shaders/simpleGlass.tek"
     }
 
     passes: [ Pass {

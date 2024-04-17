@@ -46,7 +46,7 @@ Effect {
     Shader {
         id: scatter
         stage: Shader.Fragment
-        shader: "shaders/scatter.frag"
+        shader: "shaders/scatter.tek"
     }
 
     passes: [

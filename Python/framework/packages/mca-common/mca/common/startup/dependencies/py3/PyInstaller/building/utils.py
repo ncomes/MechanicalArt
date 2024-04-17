@@ -471,7 +471,7 @@ def _rmtree(path):
 
 # TODO Refactor to prohibit empty target directories. As the docstring below documents, this function currently permits
 # the second item of each 2-tuple in "hook.datas" to be the empty string, in which case the target directory defaults to
-# the source directory's basename. However, this functionality is very fragile and hence bad. Instead:
+# the source directory's basename. However, this functionality is very tekile and hence bad. Instead:
 #
 # * An exception should be raised if such item is empty.
 # * All hooks currently passing the empty string for such item (e.g.,

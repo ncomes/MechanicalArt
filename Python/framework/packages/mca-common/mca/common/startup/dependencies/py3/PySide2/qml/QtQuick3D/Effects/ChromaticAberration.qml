@@ -51,7 +51,7 @@ Effect {
     Shader {
         id: chromaticAberration
         stage: Shader.Fragment
-        shader: "shaders/chromaticaberration.frag"
+        shader: "shaders/chromaticaberration.tek"
     }
 
     passes: [

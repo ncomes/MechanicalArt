@@ -1501,7 +1501,7 @@
                           "type": "string"
                         },
                         "uri": {
-                          "description": "The URL including cgi-parameters but excluding the hash fragment with a length limit of 5,000 characters. This is often more useful than the referer URL, because many browsers only send the domain for 3rd party requests.",
+                          "description": "The URL including cgi-parameters but excluding the hash tekment with a length limit of 5,000 characters. This is often more useful than the referer URL, because many browsers only send the domain for 3rd party requests.",
                           "location": "query",
                           "type": "string"
                         },

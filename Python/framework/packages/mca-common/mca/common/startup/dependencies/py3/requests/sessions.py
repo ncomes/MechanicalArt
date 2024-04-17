@@ -173,7 +173,7 @@ class SessionRedirectMixin:
         hist = []  # keep track of history
 
         url = self.get_redirect_target(resp)
-        previous_fragment = urlparse(req.url).fragment
+        previous_tekment = urlparse(req.url).tekment
         while url:
             prepared_request = req.copy()
 
@@ -200,12 +200,12 @@ class SessionRedirectMixin:
                 parsed_rurl = urlparse(resp.url)
                 url = ":".join([to_native_string(parsed_rurl.scheme), url])
 
-            # Normalize url case and attach previous fragment if needed (RFC 7231 7.1.2)
+            # Normalize url case and attach previous tekment if needed (RFC 7231 7.1.2)
             parsed = urlparse(url)
-            if parsed.fragment == "" and previous_fragment:
-                parsed = parsed._replace(fragment=previous_fragment)
-            elif parsed.fragment:
-                previous_fragment = parsed.fragment
+            if parsed.tekment == "" and previous_tekment:
+                parsed = parsed._replace(tekment=previous_tekment)
+            elif parsed.tekment:
+                previous_tekment = parsed.tekment
             url = parsed.geturl()
 
             # Facilitate relative 'location' headers, as allowed by RFC 7231.

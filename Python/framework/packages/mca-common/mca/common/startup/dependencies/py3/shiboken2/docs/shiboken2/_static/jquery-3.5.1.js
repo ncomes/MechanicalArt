@@ -1617,7 +1617,7 @@ Sizzle.matchesSelector = function( elem, expr ) {
 			if ( ret || support.disconnectedMatch ||
 
 				// As well, disconnected nodes are said to be in a document
-				// fragment in IE 9
+				// tekment in IE 9
 				elem.document && elem.document.nodeType !== 11 ) {
 				return ret;
 			}
@@ -3273,7 +3273,7 @@ jQuery.fn.extend( {
 			for ( ; i < l; i++ ) {
 				for ( cur = this[ i ]; cur && cur !== context; cur = cur.parentNode ) {
 
-					// Always skip document fragments
+					// Always skip document tekments
 					if ( cur.nodeType < 11 && ( targets ?
 						targets.index( cur ) > -1 :
 
@@ -4904,8 +4904,8 @@ var rscriptType = ( /^$|^module$|\/(?:java|ecma)script/i );
 
 
 ( function() {
-	var fragment = document.createDocumentFragment(),
-		div = fragment.appendChild( document.createElement( "div" ) ),
+	var tekment = document.createDocumentFragment(),
+		div = tekment.appendChild( document.createElement( "div" ) ),
 		input = document.createElement( "input" );
 
 	// Support: Android 4.0 - 4.3 only
@@ -4919,7 +4919,7 @@ var rscriptType = ( /^$|^module$|\/(?:java|ecma)script/i );
 	div.appendChild( input );
 
 	// Support: Android <=4.1 only
-	// Older WebKit doesn't clone checked state correctly in fragments
+	// Older WebKit doesn't clone checked state correctly in tekments
 	support.checkClone = div.cloneNode( true ).cloneNode( true ).lastChild.checked;
 
 	// Support: IE <=11 only
@@ -5001,7 +5001,7 @@ var rhtml = /<|&#?\w+;/;
 
 function buildFragment( elems, context, scripts, selection, ignored ) {
 	var elem, tmp, tag, wrap, attached, j,
-		fragment = context.createDocumentFragment(),
+		tekment = context.createDocumentFragment(),
 		nodes = [],
 		i = 0,
 		l = elems.length;
@@ -5024,7 +5024,7 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 
 			// Convert html into DOM nodes
 			} else {
-				tmp = tmp || fragment.appendChild( context.createElement( "div" ) );
+				tmp = tmp || tekment.appendChild( context.createElement( "div" ) );
 
 				// Deserialize a standard representation
 				tag = ( rtagName.exec( elem ) || [ "", "" ] )[ 1 ].toLowerCase();
@@ -5042,7 +5042,7 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 				jQuery.merge( nodes, tmp.childNodes );
 
 				// Remember the top-level container
-				tmp = fragment.firstChild;
+				tmp = tekment.firstChild;
 
 				// Ensure the created nodes are orphaned (#12392)
 				tmp.textContent = "";
@@ -5050,8 +5050,8 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 		}
 	}
 
-	// Remove wrapper from fragment
-	fragment.textContent = "";
+	// Remove wrapper from tekment
+	tekment.textContent = "";
 
 	i = 0;
 	while ( ( elem = nodes[ i++ ] ) ) {
@@ -5066,8 +5066,8 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 
 		attached = isAttached( elem );
 
-		// Append to fragment
-		tmp = getAll( fragment.appendChild( elem ), "script" );
+		// Append to tekment
+		tmp = getAll( tekment.appendChild( elem ), "script" );
 
 		// Preserve script evaluation history
 		if ( attached ) {
@@ -5085,7 +5085,7 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 		}
 	}
 
-	return fragment;
+	return tekment;
 }
 
 
@@ -6049,14 +6049,14 @@ function domManip( collection, args, callback, ignored ) {
 	// Flatten any nested arrays
 	args = flat( args );
 
-	var fragment, first, scripts, hasScripts, node, doc,
+	var tekment, first, scripts, hasScripts, node, doc,
 		i = 0,
 		l = collection.length,
 		iNoClone = l - 1,
 		value = args[ 0 ],
 		valueIsFunction = isFunction( value );
 
-	// We can't cloneNode fragments that contain checked, in WebKit
+	// We can't cloneNode tekments that contain checked, in WebKit
 	if ( valueIsFunction ||
 			( l > 1 && typeof value === "string" &&
 				!support.checkClone && rchecked.test( value ) ) ) {
@@ -6070,23 +6070,23 @@ function domManip( collection, args, callback, ignored ) {
 	}
 
 	if ( l ) {
-		fragment = buildFragment( args, collection[ 0 ].ownerDocument, false, collection, ignored );
-		first = fragment.firstChild;
+		tekment = buildFragment( args, collection[ 0 ].ownerDocument, false, collection, ignored );
+		first = tekment.firstChild;
 
-		if ( fragment.childNodes.length === 1 ) {
-			fragment = first;
+		if ( tekment.childNodes.length === 1 ) {
+			tekment = first;
 		}
 
 		// Require either new content or an interest in ignored elements to invoke the callback
 		if ( first || ignored ) {
-			scripts = jQuery.map( getAll( fragment, "script" ), disableScript );
+			scripts = jQuery.map( getAll( tekment, "script" ), disableScript );
 			hasScripts = scripts.length;
 
-			// Use the original fragment for the last item
+			// Use the original tekment for the last item
 			// instead of the first because it can end up
 			// being emptied incorrectly in certain situations (#8070).
 			for ( ; i < l; i++ ) {
-				node = fragment;
+				node = tekment;
 
 				if ( i !== iNoClone ) {
 					node = jQuery.clone( node, true, true );
@@ -10294,7 +10294,7 @@ support.createHTMLDocument = ( function() {
 
 
 // Argument "data" should be string of html
-// context (optional): If specified, the fragment will be created in this context,
+// context (optional): If specified, the tekment will be created in this context,
 // defaults to document
 // keepScripts (optional): If true, will include scripts passed in the html string
 jQuery.parseHTML = function( data, context, keepScripts ) {

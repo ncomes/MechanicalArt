@@ -2874,9 +2874,9 @@ class Word(Token):
         # see if we can make a regex for this Word
         if " " not in (self.initChars | self.bodyChars):
             if len(self.initChars) == 1:
-                re_leading_fragment = re.escape(self.initCharsOrig)
+                re_leading_tekment = re.escape(self.initCharsOrig)
             else:
-                re_leading_fragment = f"[{_collapse_string_to_ranges(self.initChars)}]"
+                re_leading_tekment = f"[{_collapse_string_to_ranges(self.initChars)}]"
 
             if self.bodyChars == self.initChars:
                 if max == 0:
@@ -2888,13 +2888,13 @@ class Word(Token):
                         repeat = f"{{{self.minLen},{'' if self.maxLen == _MAX_INT else self.maxLen}}}"
                     else:
                         repeat = f"{{{self.minLen}}}"
-                self.reString = f"{re_leading_fragment}{repeat}"
+                self.reString = f"{re_leading_tekment}{repeat}"
             else:
                 if max == 1:
-                    re_body_fragment = ""
+                    re_body_tekment = ""
                     repeat = ""
                 else:
-                    re_body_fragment = f"[{_collapse_string_to_ranges(self.bodyChars)}]"
+                    re_body_tekment = f"[{_collapse_string_to_ranges(self.bodyChars)}]"
                     if max == 0:
                         repeat = "*"
                     elif max == 2:
@@ -2906,7 +2906,7 @@ class Word(Token):
                             repeat = f"{{{min - 1 if min > 0 else 0}}}"
 
                 self.reString = (
-                    f"{re_leading_fragment}" f"{re_body_fragment}" f"{repeat}"
+                    f"{re_leading_tekment}" f"{re_body_tekment}" f"{repeat}"
                 )
 
             if self.asKeyword:

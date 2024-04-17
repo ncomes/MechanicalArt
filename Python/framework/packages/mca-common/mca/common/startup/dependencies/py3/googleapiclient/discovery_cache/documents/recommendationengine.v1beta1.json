@@ -589,7 +589,7 @@
                               "type": "string"
                             },
                             "uri": {
-                              "description": "Optional. The url including cgi-parameters but excluding the hash fragment. The URL must be truncated to 1.5K bytes to conservatively be under the 2K bytes. This is often more useful than the referer url, because many browsers only send the domain for 3rd party requests.",
+                              "description": "Optional. The url including cgi-parameters but excluding the hash tekment. The URL must be truncated to 1.5K bytes to conservatively be under the 2K bytes. This is often more useful than the referer url, because many browsers only send the domain for 3rd party requests.",
                               "location": "query",
                               "type": "string"
                             },

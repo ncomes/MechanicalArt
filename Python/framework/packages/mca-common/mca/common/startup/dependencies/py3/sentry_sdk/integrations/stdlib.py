@@ -99,7 +99,7 @@ def _install_httplib():
         if parsed_url is not None:
             span.set_data("url", parsed_url.url)
             span.set_data(SPANDATA.HTTP_QUERY, parsed_url.query)
-            span.set_data(SPANDATA.HTTP_FRAGMENT, parsed_url.fragment)
+            span.set_data(SPANDATA.HTTP_TEKMENT, parsed_url.tekment)
 
         rv = real_putrequest(self, method, url, *args, **kwargs)
 

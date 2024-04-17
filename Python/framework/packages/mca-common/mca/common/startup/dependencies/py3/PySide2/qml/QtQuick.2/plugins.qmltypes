@@ -3850,7 +3850,7 @@ Module {
             name: "Status"
             values: ["Compiled", "Uncompiled", "Error"]
         }
-        Property { name: "fragmentShader"; type: "QByteArray" }
+        Property { name: "tekmentShader"; type: "QByteArray" }
         Property { name: "vertexShader"; type: "QByteArray" }
         Property { name: "blending"; type: "bool" }
         Property { name: "mesh"; type: "QVariant" }

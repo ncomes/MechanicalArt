@@ -403,8 +403,8 @@ class pyparsing_common:
         r"(?P<path>\/[^?# ]*)?" +
         # query string (optional)
         r"(\?(?P<query>[^#]*))?" +
-        # fragment (optional)
-        r"(#(?P<fragment>\S*))?" +
+        # tekment (optional)
+        r"(#(?P<tekment>\S*))?" +
         r")"
     ).set_name("url")
     """URL (http/https/ftp scheme)"""

@@ -37,7 +37,7 @@ Effect {
     Shader {
         id: blur
         stage: Shader.Fragment
-        shader: "shaders/blur.frag"
+        shader: "shaders/blur.tek"
     }
 
     passes: [

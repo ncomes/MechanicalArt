@@ -115,7 +115,7 @@ CustomMaterial {
     Shader {
         id: aluminumBrushedFragShader
         stage: Shader.Fragment
-        shader: "shaders/aluminumBrushed.frag"
+        shader: "shaders/aluminumBrushed.tek"
     }
 
     passes: [

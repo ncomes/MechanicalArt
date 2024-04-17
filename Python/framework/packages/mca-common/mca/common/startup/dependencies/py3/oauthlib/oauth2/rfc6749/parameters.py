@@ -291,7 +291,7 @@ def parse_implicit_response(uri, state=None, scope=None):
 
     If the resource owner grants the access request, the authorization
     server issues an access token and delivers it to the client by adding
-    the following parameters to the fragment component of the redirection
+    the following parameters to the tekment component of the redirection
     URI using the ``application/x-www-form-urlencoded`` format:
 
     **access_token**
@@ -323,7 +323,7 @@ def parse_implicit_response(uri, state=None, scope=None):
     :param scope:
 
     Similar to the authorization code response, but with a full token provided
-    in the URL fragment:
+    in the URL tekment:
 
     .. code-block:: http
 
@@ -334,8 +334,8 @@ def parse_implicit_response(uri, state=None, scope=None):
     if not is_secure_transport(uri):
         raise InsecureTransportError()
 
-    fragment = urlparse.urlparse(uri).fragment
-    params = dict(urlparse.parse_qsl(fragment, keep_blank_values=True))
+    tekment = urlparse.urlparse(uri).tekment
+    params = dict(urlparse.parse_qsl(tekment, keep_blank_values=True))
 
     for key in ('expires_in',):
         if key in params:  # cast things to int

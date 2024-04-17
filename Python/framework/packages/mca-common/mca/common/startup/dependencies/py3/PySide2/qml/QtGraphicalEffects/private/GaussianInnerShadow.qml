@@ -76,7 +76,7 @@ Item {
         property real verticalOffset: rootItem.verticalOffset / rootItem.height
 
         visible: false
-        fragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/gaussianinnershadow_shadow.frag"
+        tekmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/gaussianinnershadow_shadow.tek"
     }
 
     GaussianDirectionalBlur {
@@ -118,6 +118,6 @@ Item {
         property real spread: 1.0 - (rootItem.spread * 0.98)
         property color color: rootItem.color
 
-        fragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/gaussianinnershadow.frag"
+        tekmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/gaussianinnershadow.tek"
     }
 }

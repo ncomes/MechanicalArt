@@ -891,7 +891,7 @@ def _urljoin(base, url):
     """Custom urljoin replacement supporting : before / in url."""
     # In general, it's unsafe to simply join base and url. However, for
     # the case of discovery documents, we know:
-    #  * base will never contain params, query, or fragment
+    #  * base will never contain params, query, or tekment
     #  * url will never contain a scheme or net_loc.
     # In general, this means we can safely join on /; we just need to
     # ensure we end up with precisely one / joining base and url. The
@@ -1000,7 +1000,7 @@ def createMethod(methodName, methodDesc, rootDesc, schema):
 
     Args:
       methodName: string, name of the method to use.
-      methodDesc: object, fragment of deserialized discovery document that
+      methodDesc: object, tekment of deserialized discovery document that
         describes the method.
       rootDesc: object, the entire deserialized discovery document.
       schema: object, mapping of schema names to schema descriptions.
@@ -1463,7 +1463,7 @@ class Resource(object):
 
                 Args:
                   methodName: string, name of the method to use.
-                  methodDesc: object, fragment of deserialized discovery document that
+                  methodDesc: object, tekment of deserialized discovery document that
                     describes the method.
                 """
                 methodName = fix_method_name(methodName)
@@ -1542,13 +1542,13 @@ def _methodProperties(methodDesc, schema, name):
     """Get properties of a field in a method description.
 
     Args:
-      methodDesc: object, fragment of deserialized discovery document that
+      methodDesc: object, tekment of deserialized discovery document that
         describes the method.
       schema: object, mapping of schema names to schema descriptions.
       name: string, name of top-level field in method description.
 
     Returns:
-      Object representing fragment of deserialized discovery document
+      Object representing tekment of deserialized discovery document
       corresponding to 'properties' field of object corresponding to named field
       in method description, if it exists, otherwise empty dict.
     """

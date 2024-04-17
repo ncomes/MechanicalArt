@@ -43,7 +43,7 @@ Effect {
     Shader {
         id: edgeFrag
         stage: Shader.Fragment
-        shader: "shaders/edgedetect.frag"
+        shader: "shaders/edgedetect.tek"
     }
 
     passes: [

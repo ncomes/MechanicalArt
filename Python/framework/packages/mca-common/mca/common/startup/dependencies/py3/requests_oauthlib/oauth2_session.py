@@ -32,7 +32,7 @@ class OAuth2Session(requests.Session):
     - :class:`oauthlib.oauth2.BackendApplicationClient`: Client Credentials Grant
 
     Note that the only time you will be using Implicit Grant from python is if
-    you are driving a user agent able to obtain URL fragments.
+    you are driving a user agent able to obtain URL tekments.
     """
 
     def __init__(
@@ -195,7 +195,7 @@ class OAuth2Session(requests.Session):
         """Generic method for fetching an access token from the token endpoint.
 
         If you are using the MobileApplicationClient you will want to use
-        `token_from_fragment` instead of `fetch_token`.
+        `token_from_tekment` instead of `fetch_token`.
 
         The current implementation enforces the RFC guidelines.
 
@@ -368,8 +368,8 @@ class OAuth2Session(requests.Session):
         log.debug("Obtained token %s.", self.token)
         return self.token
 
-    def token_from_fragment(self, authorization_response):
-        """Parse token from the URI fragment, used by MobileApplicationClients.
+    def token_from_tekment(self, authorization_response):
+        """Parse token from the URI tekment, used by MobileApplicationClients.
 
         :param authorization_response: The full URL of the redirect back to you
         :return: A token dict

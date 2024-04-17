@@ -64,7 +64,7 @@ def _install_httpx_client():
             if parsed_url is not None:
                 span.set_data("url", parsed_url.url)
                 span.set_data(SPANDATA.HTTP_QUERY, parsed_url.query)
-                span.set_data(SPANDATA.HTTP_FRAGMENT, parsed_url.fragment)
+                span.set_data(SPANDATA.HTTP_TEKMENT, parsed_url.tekment)
 
             if should_propagate_trace(hub, str(request.url)):
                 for key, value in hub.iter_trace_propagation_headers():
@@ -117,7 +117,7 @@ def _install_httpx_async_client():
             if parsed_url is not None:
                 span.set_data("url", parsed_url.url)
                 span.set_data(SPANDATA.HTTP_QUERY, parsed_url.query)
-                span.set_data(SPANDATA.HTTP_FRAGMENT, parsed_url.fragment)
+                span.set_data(SPANDATA.HTTP_TEKMENT, parsed_url.tekment)
 
             if should_propagate_trace(hub, str(request.url)):
                 for key, value in hub.iter_trace_propagation_headers():

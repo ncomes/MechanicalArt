@@ -46,7 +46,7 @@ Effect {
     Shader {
         id: vblurFrag
         stage: Shader.Fragment
-        shader: "shaders/motionblurvertical.frag"
+        shader: "shaders/motionblurvertical.tek"
     }
 
     Shader {
@@ -57,13 +57,13 @@ Effect {
     Shader {
         id: hblurFrag
         stage: Shader.Fragment
-        shader: "shaders/motionblurhorizontal.frag"
+        shader: "shaders/motionblurhorizontal.tek"
     }
 
     Shader {
         id: blend
         stage: Shader.Fragment
-        shader: "shaders/blend.frag"
+        shader: "shaders/blend.tek"
     }
 
     Buffer {

@@ -214,7 +214,7 @@ class BitStringPayloadDecoder(AbstractSimplePayloadDecoder):
         if LOG:
             LOG('assembling constructed serialization')
 
-        # All inner fragments are of the same type, treat them as octet string
+        # All inner tekments are of the same type, treat them as octet string
         substrateFun = self.substrateCollector
 
         bitString = self.protoComponent.fromOctetString(null, internalFormat=True)
@@ -254,12 +254,12 @@ class BitStringPayloadDecoder(AbstractSimplePayloadDecoder):
 
             return
 
-        # All inner fragments are of the same type, treat them as octet string
+        # All inner tekments are of the same type, treat them as octet string
         substrateFun = self.substrateCollector
 
         bitString = self.protoComponent.fromOctetString(null, internalFormat=True)
 
-        while True:  # loop over fragments
+        while True:  # loop over tekments
 
             for component in decodeFun(
                     substrate, self.protoComponent, substrateFun=substrateFun,
@@ -319,7 +319,7 @@ class OctetStringPayloadDecoder(AbstractSimplePayloadDecoder):
         if LOG:
             LOG('assembling constructed serialization')
 
-        # All inner fragments are of the same type, treat them as octet string
+        # All inner tekments are of the same type, treat them as octet string
         substrateFun = self.substrateCollector
 
         header = null
@@ -349,12 +349,12 @@ class OctetStringPayloadDecoder(AbstractSimplePayloadDecoder):
 
             return
 
-        # All inner fragments are of the same type, treat them as octet string
+        # All inner tekments are of the same type, treat them as octet string
         substrateFun = self.substrateCollector
 
         header = null
 
-        while True:  # loop over fragments
+        while True:  # loop over tekments
 
             for component in decodeFun(
                     substrate, self.protoComponent, substrateFun=substrateFun,
@@ -1326,10 +1326,10 @@ class AnyPayloadDecoder(AbstractSimplePayloadDecoder):
         if LOG:
             LOG('assembling constructed serialization')
 
-        # All inner fragments are of the same type, treat them as octet string
+        # All inner tekments are of the same type, treat them as octet string
         substrateFun = self.substrateCollector
 
-        while True:  # loop over fragments
+        while True:  # loop over tekments
 
             for component in decodeFun(
                     substrate, asn1Spec, substrateFun=substrateFun,

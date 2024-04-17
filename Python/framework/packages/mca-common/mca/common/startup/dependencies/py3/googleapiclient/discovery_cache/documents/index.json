@@ -1858,7 +1858,7 @@
       "name": "dlp",
       "version": "v2",
       "title": "Cloud Data Loss Prevention (DLP) API",
-      "description": "Provides methods for detection, risk analysis, and de-identification of privacy-sensitive fragments in text, images, and Google Cloud Platform storage repositories.",
+      "description": "Provides methods for detection, risk analysis, and de-identification of privacy-sensitive tekments in text, images, and Google Cloud Platform storage repositories.",
       "discoveryRestUrl": "https://dlp.googleapis.com/$discovery/rest?version=v2",
       "icons": {
         "x16": "https://www.gstatic.com/images/branding/product/1x/googleg_16dp.png",

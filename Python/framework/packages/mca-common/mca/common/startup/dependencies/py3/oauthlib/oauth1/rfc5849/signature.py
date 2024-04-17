@@ -140,7 +140,7 @@ def base_string_uri(uri: str, host: str = None) -> str:
 
     # The scheme, authority, and path of the request resource URI `RFC3986`
     # are included by constructing an "http" or "https" URI representing
-    # the request resource (without the query or fragment) as follows:
+    # the request resource (without the query or tekment) as follows:
     #
     # .. _`RFC3986`: https://tools.ietf.org/html/rfc3986
 

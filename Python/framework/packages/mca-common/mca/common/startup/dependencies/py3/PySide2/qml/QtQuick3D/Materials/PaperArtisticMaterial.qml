@@ -91,7 +91,7 @@ CustomMaterial {
     Shader {
         id: paperArtisticFragShader
         stage: Shader.Fragment
-        shader: "shaders/paperArtistic.frag"
+        shader: "shaders/paperArtistic.tek"
     }
 
     passes: [ Pass {

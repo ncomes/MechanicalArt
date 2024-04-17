@@ -39,7 +39,7 @@ Effect {
     Shader {
         id: vignette
         stage: Shader.Fragment
-        shader: "shaders/vignette.frag"
+        shader: "shaders/vignette.tek"
     }
 
     passes: [

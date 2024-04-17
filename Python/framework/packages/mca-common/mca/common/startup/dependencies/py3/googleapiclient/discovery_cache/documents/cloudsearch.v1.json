@@ -7305,7 +7305,7 @@
           "type": "string"
         },
         "urlFragment": {
-          "description": "Url string fragment that generally indicates the specific location in the linked file. Example: #header=h.123abc456. If the fragment is not present this will not be present and therefore default to an empty string. The \"#\" will not be included.",
+          "description": "Url string tekment that generally indicates the specific location in the linked file. Example: #header=h.123abc456. If the tekment is not present this will not be present and therefore default to an empty string. The \"#\" will not be included.",
           "type": "string"
         },
         "wrappedResourceKey": {

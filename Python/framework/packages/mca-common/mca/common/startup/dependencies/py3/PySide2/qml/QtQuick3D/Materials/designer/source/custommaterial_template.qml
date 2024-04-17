@@ -43,7 +43,7 @@ CustomMaterial {
 
     Pass {
         id: renderPass
-        shaders: [vertShader, fragShader]
+        shaders: [vertShader, tekShader]
     }
 
     Shader {
@@ -53,8 +53,8 @@ CustomMaterial {
     }
 
     Shader {
-        id: fragShader
+        id: tekShader
         stage: Shader.Fragment
-        shader: "/* Set to a fragment shader file */"
+        shader: "/* Set to a tekment shader file */"
     }
 }

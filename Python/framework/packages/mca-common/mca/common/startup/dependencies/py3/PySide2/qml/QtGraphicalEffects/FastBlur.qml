@@ -180,7 +180,7 @@ Item {
     property string __internalBlurVertexShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/fastblur_internal.vert"
 
     /*! \internal */
-    property string __internalBlurFragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/fastblur_internal.frag"
+    property string __internalBlurFragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/fastblur_internal.tek"
 
     ShaderEffect {
         id: level0
@@ -210,7 +210,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -232,7 +232,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -254,7 +254,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -276,7 +276,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -298,7 +298,7 @@ Item {
         visible: false
         smooth: true
         vertexShader: __internalBlurVertexShader
-        fragmentShader: __internalBlurFragmentShader
+        tekmentShader: __internalBlurFragmentShader
     }
 
     ShaderEffectSource {
@@ -437,6 +437,6 @@ Item {
 
         onLodChanged: calculateWeights()
 
-        fragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/fastblur.frag"
+        tekmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/fastblur.tek"
     }
 }

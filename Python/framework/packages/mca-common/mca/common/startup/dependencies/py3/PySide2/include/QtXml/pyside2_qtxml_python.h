@@ -75,7 +75,7 @@ enum : int {
     SBK_QDOMCHARACTERDATA_IDX                                = 2,
     SBK_QDOMCOMMENT_IDX                                      = 3,
     SBK_QDOMDOCUMENT_IDX                                     = 4,
-    SBK_QDOMDOCUMENTFRAGMENT_IDX                             = 5,
+    SBK_QDOMDOCUMENTTEKMENT_IDX                             = 5,
     SBK_QDOMDOCUMENTTYPE_IDX                                 = 6,
     SBK_QDOMELEMENT_IDX                                      = 7,
     SBK_QDOMENTITY_IDX                                       = 8,
@@ -135,7 +135,7 @@ template<> inline PyTypeObject *SbkType< ::QDomCDATASection >() { return reinter
 template<> inline PyTypeObject *SbkType< ::QDomCharacterData >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtXmlTypes[SBK_QDOMCHARACTERDATA_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QDomComment >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtXmlTypes[SBK_QDOMCOMMENT_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QDomDocument >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtXmlTypes[SBK_QDOMDOCUMENT_IDX]); }
-template<> inline PyTypeObject *SbkType< ::QDomDocumentFragment >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtXmlTypes[SBK_QDOMDOCUMENTFRAGMENT_IDX]); }
+template<> inline PyTypeObject *SbkType< ::QDomDocumentFragment >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtXmlTypes[SBK_QDOMDOCUMENTTEKMENT_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QDomDocumentType >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtXmlTypes[SBK_QDOMDOCUMENTTYPE_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QDomElement >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtXmlTypes[SBK_QDOMELEMENT_IDX]); }
 template<> inline PyTypeObject *SbkType< ::QDomEntity >() { return reinterpret_cast<PyTypeObject *>(SbkPySide2_QtXmlTypes[SBK_QDOMENTITY_IDX]); }

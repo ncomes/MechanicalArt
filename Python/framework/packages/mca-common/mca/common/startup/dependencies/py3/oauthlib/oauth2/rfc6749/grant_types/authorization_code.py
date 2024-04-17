@@ -266,7 +266,7 @@ class AuthorizationCodeGrant(GrantTypeBase):
             request.redirect_uri = request.redirect_uri or self.error_uri
             redirect_uri = common.add_params_to_uri(
                 request.redirect_uri, e.twotuples,
-                fragment=request.response_mode == "fragment")
+                tekment=request.response_mode == "tekment")
             return {'Location': redirect_uri}, None, 302
 
         grant = self.create_authorization_code(request)

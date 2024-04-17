@@ -863,7 +863,7 @@ class OnDemandCredentials(
         # pylint: disable=unused-argument
         # (pylint doesn't correctly recognize overridden methods.)
         parts = urllib.parse.urlsplit(url)
-        # Strip query string and fragment
+        # Strip query string and tekment
         audience = urllib.parse.urlunsplit(
             (parts.scheme, parts.netloc, parts.path, "", "")
         )

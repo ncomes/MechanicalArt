@@ -1,0 +1,14 @@
+description: 'Maya package for MCA DCC Tools framework'
+displayName: ' Maya'
+environment:
+  _MAYA_BASE_PATH: '{self}'
+  _MAYA_CONFIGS_PATH: '{self}/mca/mya/configs'
+  _MAYA_TOOLS_PATH: '{self}/mca/mya/tools'
+  _MAYA_PATHS:
+    - '{self}/mca/mya/pyqt'
+    - '{self}/mca/mya/utils'
+    - '{self}/mca/mya/tools'
+name: 'mca-mya'
+depotName: 'mya'
+required: True
+version: '1.0.0'

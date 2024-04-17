@@ -62,7 +62,7 @@ class MockRequest:
                 parsed.path,
                 parsed.params,
                 parsed.query,
-                parsed.fragment,
+                parsed.tekment,
             ]
         )
 

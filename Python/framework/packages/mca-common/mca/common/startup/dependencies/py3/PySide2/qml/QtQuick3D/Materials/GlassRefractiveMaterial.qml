@@ -66,7 +66,7 @@ CustomMaterial {
     Shader {
         id: simpleGlassRefractiveFragShader
         stage: Shader.Fragment
-        shader: "shaders/simpleGlassRefractive.frag"
+        shader: "shaders/simpleGlassRefractive.tek"
     }
 
     Buffer {

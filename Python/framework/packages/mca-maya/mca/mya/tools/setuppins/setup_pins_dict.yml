@@ -1,0 +1,1013 @@
+ignore_types:
+- _null
+- contact
+- equip
+- floor
+- utility
+- aim_reference
+- camera
+- root
+- twist
+- weapon
+- deformer
+- hood
+- jaw
+- hair
+- helper
+region_rotations:
+  back_clavicle_c:
+  - rotateZ
+  - 4
+  - Cylinder
+  back_clavicle_l:
+  - rotateZ
+  - 4
+  - Cylinder
+  back_clavicle_r:
+  - rotateZ
+  - 4
+  - Cylinder
+  back_cloth_01_l:
+  - rotateX
+  - 5.0
+  - Cylinder
+  back_cloth_01_r:
+  - rotateX
+  - 5.0
+  - Cylinder
+  back_cloth_02_l:
+  - rotateX
+  - 5.0
+  - Cylinder
+  back_cloth_02_r:
+  - rotateX
+  - 5.0
+  - Cylinder
+  back_cloth_03_l:
+  - rotateX
+  - 5.0
+  - Cylinder
+  back_cloth_03_r:
+  - rotateX
+  - 5.0
+  - Cylinder
+  back_cloth_04_l:
+  - rotateX
+  - 5.0
+  - Cylinder
+  back_cloth_04_r:
+  - rotateX
+  - 5.0
+  - Cylinder
+  back_hand_c:
+  - rotateY
+  - 2
+  - Cylinder
+  back_hand_l:
+  - rotateY
+  - 2
+  - Cylinder
+  back_hand_r:
+  - rotateY
+  - 2
+  - Cylinder
+  back_lowerarm_c:
+  - rotateZ
+  - 2
+  - Cylinder
+  back_lowerarm_l:
+  - rotateZ
+  - 2
+  - Cylinder
+  back_lowerarm_r:
+  - rotateZ
+  - 2
+  - Cylinder
+  back_upperarm_c:
+  - rotateY
+  - 3
+  - Cylinder
+  back_upperarm_l:
+  - rotateY
+  - 3
+  - Cylinder
+  back_upperarm_r:
+  - rotateY
+  - 3
+  - Cylinder
+  ball_inner_l:
+  - rotateY
+  - 10
+  - Cylinder
+  ball_inner_r:
+  - rotateY
+  - 10
+  - Cylinder
+  ball_l:
+  - rotateX
+  - 12.0
+  - Cylinder
+  ball_r:
+  - rotateX
+  - 12.0
+  - Cylinder
+  belly_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  belly_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  big_toe_01_inner_l:
+  - rotateZ
+  - 3
+  - Cylinder
+  big_toe_01_inner_r:
+  - rotateZ
+  - 3
+  - Cylinder
+  big_toe_01_l:
+  - rotateZ
+  - 3
+  - Cylinder
+  big_toe_01_r:
+  - rotateZ
+  - 3
+  - Cylinder
+  big_toe_02_inner_l:
+  - rotateY
+  - 2
+  - Cylinder
+  big_toe_02_inner_r:
+  - rotateY
+  - 2
+  - Cylinder
+  big_toe_02_l:
+  - rotateY
+  - 2
+  - Cylinder
+  big_toe_02_r:
+  - rotateY
+  - 2
+  - Cylinder
+  big_toe_metatarsal_inner_l:
+  - rotateY
+  - 4
+  - Cylinder
+  big_toe_metatarsal_inner_r:
+  - rotateY
+  - 4
+  - Cylinder
+  big_toe_metatarsal_l:
+  - rotateY
+  - 4
+  - Cylinder
+  big_toe_metatarsal_r:
+  - rotateY
+  - 4
+  - Cylinder
+  breast_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  breast_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  calf_inner_l:
+  - rotateY
+  - 12
+  - Cylinder
+  calf_inner_r:
+  - rotateY
+  - 12
+  - Cylinder
+  calf_l:
+  - rotateX
+  - 13.0
+  - Cylinder
+  calf_r:
+  - rotateX
+  - 13.0
+  - Cylinder
+  clavicle_deformer_01_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  clavicle_deformer_01_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  clavicle_l:
+  - rotateY
+  - 16.0
+  - Cylinder
+  clavicle_r:
+  - rotateY
+  - 16.0
+  - Cylinder
+  clavicle_spike_l:
+  - rotateZ
+  - 15
+  - Cylinder
+  clavicle_spike_r:
+  - rotateZ
+  - 15
+  - Cylinder
+  coat_01_back:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  coat_01_inner_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  coat_01_inner_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  coat_01_l:
+  - rotateY
+  - 5.0
+  - Cylinder
+  coat_01_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  coat_02_back:
+  - rotateX
+  - 2.0
+  - Cylinder
+  coat_02_inner_l:
+  - rotateX
+  - 2.0
+  - Cylinder
+  coat_02_inner_r:
+  - rotateX
+  - 2.0
+  - Cylinder
+  coat_02_l:
+  - rotateX
+  - 5.0
+  - Cylinder
+  coat_02_r:
+  - rotateX
+  - 2.0
+  - Cylinder
+  coat_03_back:
+  - rotateX
+  - 2.0
+  - Cylinder
+  coat_03_inner_l:
+  - rotateX
+  - 2.0
+  - Cylinder
+  coat_03_inner_r:
+  - rotateX
+  - 2.0
+  - Cylinder
+  coat_03_l:
+  - rotateX
+  - 5.0
+  - Cylinder
+  coat_03_r:
+  - rotateX
+  - 2.0
+  - Cylinder
+  coat_04_l:
+  - rotateX
+  - 2.0
+  - Cylinder
+  coat_04_r:
+  - rotateX
+  - 2.0
+  - Cylinder
+  coat_upper_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  coat_upper_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  eptadactyl_01_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  eptadactyl_01_r:
+  - rotateZ
+  - 2
+  - Cylinder
+  eptadactyl_02_l:
+  - rotateY
+  - 1.5
+  - Cylinder
+  eptadactyl_02_r:
+  - rotateY
+  - 1.5
+  - Cylinder
+  eptadactyl_03_l:
+  - rotateY
+  - 1.5
+  - Cylinder
+  eptadactyl_03_r:
+  - rotateY
+  - 1.5
+  - Cylinder
+  eptadactyl_metacarpal_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  eptadactyl_metacarpal_r:
+  - rotateZ
+  - 2
+  - Cylinder
+  foot_inner_l:
+  - rotateY
+  - 10
+  - Cylinder
+  foot_inner_r:
+  - rotateY
+  - 10
+  - Cylinder
+  foot_l:
+  - rotateX
+  - 16.0
+  - Cylinder
+  foot_r:
+  - rotateX
+  - 16.0
+  - Cylinder
+  hair_01_c:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_02_c:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_03_c:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_04_c:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_05_c:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_back_01_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_back_01_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_back_02_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_back_02_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_back_03_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_back_03_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_back_04_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_back_04_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_back_05_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_back_05_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_back_06_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_back_06_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_front_01_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_front_01_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_front_02_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_front_02_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_front_03_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_front_03_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_front_04_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_front_04_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_front_05_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_front_05_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_front_06_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hair_front_06_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hand_l:
+  - rotateX
+  - 2.967278782858631
+  - Sphere
+  hand_r:
+  - rotateX
+  - 2.967278782858631
+  - Sphere
+  hand_spike_l:
+  - rotateY
+  - 7
+  - Cylinder
+  head:
+  - rotateX
+  - 13.166523793894138
+  - Cylinder
+  heel_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  heel_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hexadactyl_01_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hexadactyl_01_r:
+  - rotateZ
+  - 2
+  - Cylinder
+  hexadactyl_02_l:
+  - rotateY
+  - 1.5
+  - Cylinder
+  hexadactyl_02_r:
+  - rotateY
+  - 1.5
+  - Cylinder
+  hexadactyl_03_l:
+  - rotateY
+  - 1.5
+  - Cylinder
+  hexadactyl_03_r:
+  - rotateY
+  - 1.5
+  - Cylinder
+  hexadactyl_metacarpal_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  hexadactyl_metacarpal_r:
+  - rotateZ
+  - 2
+  - Cylinder
+  index_01_l:
+  - rotateY
+  - 2.0
+  - Cylinder
+  index_01_r:
+  - rotateY
+  - 2.0
+  - Cylinder
+  index_02_l:
+  - rotateX
+  - 1.5
+  - Cylinder
+  index_02_r:
+  - rotateX
+  - 1.5
+  - Cylinder
+  index_03_l:
+  - rotateX
+  - 1.5
+  - Cylinder
+  index_03_r:
+  - rotateX
+  - 1.5
+  - Cylinder
+  index_metacarpal_l:
+  - rotateY
+  - 2.0
+  - Cylinder
+  index_metacarpal_r:
+  - rotateY
+  - 2.0
+  - Cylinder
+  jaw:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  loincloth:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  lowerarm_l:
+  - rotateX
+  - 10.0
+  - Cylinder
+  lowerarm_l_prop_01:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  lowerarm_l_prop_02:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  lowerarm_l_prop_03:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  lowerarm_l_prop_04:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  lowerarm_l_prop_05:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  lowerarm_mecharm_cyl_r:
+  - rotateX
+  - 3
+  - Cylinder
+  lowerarm_mecharm_elbow_door_01_r:
+  - rotateZ
+  - 3
+  - Cylinder
+  lowerarm_mecharm_elbow_door_02_r:
+  - rotateZ
+  - 3
+  - Cylinder
+  lowerarm_mecharm_top_door_01_r:
+  - rotateZ
+  - 4
+  - Cylinder
+  lowerarm_mecharm_top_door_02_r:
+  - rotateZ
+  - 3
+  - Cylinder
+  lowerarm_mecharm_under_door_01_r:
+  - rotateZ
+  - 3
+  - Cylinder
+  lowerarm_mecharm_under_door_02_r:
+  - rotateZ
+  - 3
+  - Cylinder
+  lowerarm_r:
+  - rotateX
+  - 10.0
+  - Cylinder
+  lowerarm_spike_l:
+  - rotateY
+  - 10
+  - Cylinder
+  lowerarm_spike_r:
+  - rotateY
+  - 10
+  - Cylinder
+  middle_01_l:
+  - rotateY
+  - 2.0
+  - Cylinder
+  middle_01_r:
+  - rotateY
+  - 2.0
+  - Cylinder
+  middle_02_l:
+  - rotateX
+  - 1.5
+  - Cylinder
+  middle_02_r:
+  - rotateX
+  - 1.5
+  - Cylinder
+  middle_03_l:
+  - rotateX
+  - 1.5
+  - Cylinder
+  middle_03_r:
+  - rotateX
+  - 1.5
+  - Cylinder
+  middle_metacarpal_l:
+  - rotateY
+  - 2.0
+  - Cylinder
+  middle_metacarpal_r:
+  - rotateY
+  - 2.0
+  - Cylinder
+  middle_toes_inner_l:
+  - rotateZ
+  - 2
+  - Cylinder
+  middle_toes_inner_r:
+  - rotateY
+  - 1.5
+  - Cylinder
+  middle_toes_l:
+  - rotateY
+  - 1.5
+  - Cylinder
+  middle_toes_r:
+  - rotateZ
+  - 2
+  - Cylinder
+  mouth_inner_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  mouth_inner_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  mouth_l:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  mouth_r:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  neck_01:
+  - rotateX
+  - 10.0
+  - Cylinder
+  neck_02:
+  - rotateX
+  - 10.0
+  - Cylinder
+  neck_03:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  neck_collar_l:
+  - rotateX
+  - 5.0
+  - Cylinder
+  neck_collar_r:
+  - rotateX
+  - 5.0
+  - Cylinder
+  necklace_01:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  necklace_02:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  necklace_03_01:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  necklace_03_02:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  pelvis:
+  - rotateX
+  - 20.0
+  - Cylinder
+  pinky_01_l:
+  - rotateY
+  - 2.0
+  - Cylinder
+  pinky_01_r:
+  - rotateY
+  - 2.0
+  - Cylinder
+  pinky_02_l:
+  - rotateX
+  - 1.5
+  - Cylinder
+  pinky_02_r:
+  - rotateX
+  - 1.5
+  - Cylinder
+  pinky_03_l:
+  - rotateX
+  - 1.5
+  - Cylinder
+  pinky_03_r:
+  - rotateX
+  - 1.5
+  - Cylinder
+  pinky_metacarpal_l:
+  - rotateY
+  - 2.0
+  - Cylinder
+  pinky_metacarpal_r:
+  - rotateY
+  - 2.0
+  - Cylinder
+  pinky_toe_01_l:
+  - rotateZ
+  - 2
+  - Cylinder
+  pinky_toe_01_r:
+  - rotateZ
+  - 2
+  - Cylinder
+  pinky_toe_02_l:
+  - rotateY
+  - 1.5
+  - Cylinder
+  pinky_toe_02_r:
+  - rotateY
+  - 1.5
+  - Cylinder
+  pinky_toe_inner_01_l:
+  - rotateZ
+  - 2
+  - Cylinder
+  pinky_toe_inner_01_r:
+  - rotateZ
+  - 2
+  - Cylinder
+  pinky_toe_inner_02_l:
+  - rotateY
+  - 1.5
+  - Cylinder
+  pinky_toe_inner_02_r:
+  - rotateY
+  - 1.5
+  - Cylinder
+  ring_01_l:
+  - rotateY
+  - 2.0
+  - Cylinder
+  ring_01_r:
+  - rotateY
+  - 2.0
+  - Cylinder
+  ring_02_l:
+  - rotateX
+  - 1.5
+  - Cylinder
+  ring_02_r:
+  - rotateX
+  - 1.5
+  - Cylinder
+  ring_03_l:
+  - rotateX
+  - 1.5
+  - Cylinder
+  ring_03_r:
+  - rotateX
+  - 1.5
+  - Cylinder
+  ring_metacarpal_l:
+  - rotateY
+  - 2.0
+  - Cylinder
+  ring_metacarpal_r:
+  - rotateY
+  - 2.0
+  - Cylinder
+  second_toe_01_l:
+  - rotateZ
+  - 2
+  - Cylinder
+  second_toe_01_r:
+  - rotateZ
+  - 2
+  - Cylinder
+  second_toe_02_l:
+  - rotateY
+  - 1.5
+  - Cylinder
+  second_toe_02_r:
+  - rotateY
+  - 1.5
+  - Cylinder
+  second_toe_inner_01_l:
+  - rotateZ
+  - 2
+  - Cylinder
+  second_toe_inner_01_r:
+  - rotateZ
+  - 2
+  - Cylinder
+  second_toe_inner_02_l:
+  - rotateY
+  - 1.5
+  - Cylinder
+  second_toe_inner_02_r:
+  - rotateY
+  - 1.5
+  - Cylinder
+  spike_l:
+  - rotateY
+  - 7
+  - Cylinder
+  spike_r:
+  - rotateY
+  - 7
+  - Cylinder
+  spine_01:
+  - rotateX
+  - 20.0
+  - Cylinder
+  spine_02:
+  - rotateX
+  - 20.0
+  - Cylinder
+  spine_03:
+  - rotateX
+  - 20.0
+  - Cylinder
+  spine_04:
+  - rotateX
+  - 20.0
+  - Cylinder
+  thigh_inner_l:
+  - rotateY
+  - 15
+  - Cylinder
+  thigh_inner_r:
+  - rotateY
+  - 15
+  - Cylinder
+  thigh_l:
+  - rotateX
+  - 7.065019870233895
+  - Sphere
+  thigh_r:
+  - rotateX
+  - 7.065019870233895
+  - Sphere
+  thumb_01_l:
+  - rotateY
+  - 3.5
+  - Cylinder
+  thumb_01_r:
+  - rotateY
+  - 3.5
+  - Cylinder
+  thumb_02_l:
+  - rotateX
+  - 2.0
+  - Cylinder
+  thumb_02_r:
+  - rotateY
+  - 2.0
+  - Cylinder
+  thumb_03_l:
+  - rotateX
+  - 2.0
+  - Cylinder
+  thumb_03_r:
+  - rotateY
+  - 2.0
+  - Cylinder
+  tumor_a:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  tumor_b:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  tumor_c:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  tumor_e:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  tumor_h:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  tumor_i:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  tumor_k:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  tumor_m:
+  - rotateZ
+  - 2.0
+  - Cylinder
+  upperarm_l:
+  - rotateY
+  - 6.435232995800655
+  - Sphere
+  upperarm_mecharm_cyl_r:
+  - rotateX
+  - 3
+  - Cylinder
+  upperarm_mecharm_tri_door_01_r:
+  - rotateZ
+  - 3
+  - Cylinder
+  upperarm_mecharm_tri_door_02_r:
+  - rotateZ
+  - 3
+  - Cylinder
+  upperarm_mecharm_tri_door_03_r:
+  - rotateZ
+  - 3
+  - Cylinder
+  upperarm_mecharm_tri_door_04_r:
+  - rotateZ
+  - 3
+  - Cylinder
+  upperarm_r:
+  - rotateY
+  - 6.435232995800655
+  - Sphere
+  upperarm_spike_l:
+  - rotateZ
+  - 15
+  - Cylinder
+  upperarm_spike_r:
+  - rotateZ
+  - 15
+  - Cylinder
+  wing_clavicle_l:
+  - rotateY
+  - 14.0
+  - Cylinder
+  wing_clavicle_r:
+  - rotateY
+  - 14.0
+  - Cylinder
+  wing_hand_l:
+  - rotateX
+  - 9.0
+  - Cylinder
+  wing_hand_r:
+  - rotateX
+  - 9.0
+  - Cylinder
+  wing_lowerarm_l:
+  - rotateX
+  - 9.0
+  - Cylinder
+  wing_lowerarm_r:
+  - rotateX
+  - 9.0
+  - Cylinder
+  wing_upperarm_l:
+  - rotateX
+  - 9.0
+  - Cylinder
+  wing_upperarm_r:
+  - rotateX
+  - 9.0
+  - Cylinder

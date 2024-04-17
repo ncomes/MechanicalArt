@@ -72,8 +72,8 @@ class upload(PyPIRCCommand):
 
     def upload_file(self, command, pyversion, filename):  # noqa: C901
         # Makes sure the repository URL is compliant
-        schema, netloc, url, params, query, fragments = urlparse(self.repository)
-        if params or query or fragments:
+        schema, netloc, url, params, query, tekments = urlparse(self.repository)
+        if params or query or tekments:
             raise AssertionError("Incompatible url %s" % self.repository)
 
         if schema not in ('http', 'https'):

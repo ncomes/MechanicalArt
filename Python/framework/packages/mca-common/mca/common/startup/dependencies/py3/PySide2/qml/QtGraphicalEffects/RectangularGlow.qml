@@ -264,6 +264,6 @@ Item {
         property real spread: rootItem.spread / 2.0
         property real cornerRadius: clampedCornerRadius()
 
-        fragmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/rectangularglow.frag"
+        tekmentShader: "qrc:/qt-project.org/imports/QtGraphicalEffects/shaders/rectangularglow.tek"
     }
 }

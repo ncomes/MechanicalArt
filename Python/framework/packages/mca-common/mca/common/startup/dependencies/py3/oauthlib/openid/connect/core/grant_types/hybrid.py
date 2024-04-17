@@ -22,8 +22,8 @@ class HybridGrant(GrantTypeBase):
 
         self.proxy_target = OAuth2AuthorizationCodeGrant(
             request_validator=request_validator, **kwargs)
-        # All hybrid response types should be fragment-encoded.
-        self.proxy_target.default_response_mode = "fragment"
+        # All hybrid response types should be tekment-encoded.
+        self.proxy_target.default_response_mode = "tekment"
         self.register_response_type('code id_token')
         self.register_response_type('code token')
         self.register_response_type('code id_token token')

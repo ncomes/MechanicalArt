@@ -75,7 +75,7 @@ class ValidatorsContainer:
 class GrantTypeBase:
     error_uri = None
     request_validator = None
-    default_response_mode = 'fragment'
+    default_response_mode = 'tekment'
     refresh_token = True
     response_types = ['code']
 
@@ -190,7 +190,7 @@ class GrantTypeBase:
         """
         request.response_mode = request.response_mode or self.default_response_mode
 
-        if request.response_mode not in ('query', 'fragment'):
+        if request.response_mode not in ('query', 'tekment'):
             log.debug('Overriding invalid response mode %s with %s',
                       request.response_mode, self.default_response_mode)
             request.response_mode = self.default_response_mode
@@ -206,12 +206,12 @@ class GrantTypeBase:
 
         if request.response_mode == 'query':
             headers['Location'] = add_params_to_uri(
-                request.redirect_uri, token_items, fragment=False)
+                request.redirect_uri, token_items, tekment=False)
             return headers, body, status
 
-        if request.response_mode == 'fragment':
+        if request.response_mode == 'tekment':
             headers['Location'] = add_params_to_uri(
-                request.redirect_uri, token_items, fragment=True)
+                request.redirect_uri, token_items, tekment=True)
             return headers, body, status
 
         raise NotImplementedError(

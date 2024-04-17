@@ -217,8 +217,8 @@ class URIVariable:
                 join_str = ","
 
             value = t.cast(t.Sequence[ScalarVariableValue], value)
-            fragments = [quote(v, safe) for v in value if v is not None]
-            return join_str.join(fragments) if fragments else None
+            tekments = [quote(v, safe) for v in value if v is not None]
+            return join_str.join(tekments) if tekments else None
 
         if dict_test(value) or tuples:
             value = t.cast(t.Mapping[str, ScalarVariableValue], value)

@@ -49,7 +49,7 @@ Effect {
     Shader {
         id: downsampleFrag
         stage: Shader.Fragment
-        shader: "shaders/downsampletiltshift.frag"
+        shader: "shaders/downsampletiltshift.tek"
     }
 
     Shader {
@@ -60,7 +60,7 @@ Effect {
     Shader {
         id: blurFrag
         stage: Shader.Fragment
-        shader: "shaders/poissonblurtiltshift.frag"
+        shader: "shaders/poissonblurtiltshift.tek"
     }
 
     Buffer {

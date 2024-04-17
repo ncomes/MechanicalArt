@@ -311,10 +311,10 @@ Item {
         property string mode: rootItem.mode
         anchors.fill: parent
 
-        fragmentShader: fragmentShaderBegin + blendModeNormal + fragmentShaderEnd
+        tekmentShader: tekmentShaderBegin + blendModeNormal + tekmentShaderEnd
 
         function buildFragmentShader() {
-            var shader = fragmentShaderBegin
+            var shader = tekmentShaderBegin
 
             switch (mode.toLowerCase()) {
                 case "addition" : shader += blendModeAddition; break;
@@ -342,8 +342,8 @@ Item {
                 default: shader += "gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);"; break;
             }
 
-            shader += fragmentShaderEnd
-            fragmentShader = shader
+            shader += tekmentShaderEnd
+            tekmentShader = shader
 
             // Workaraound for a bug just to make sure display gets updated when the mode changes.
             backgroundSourceChanged()
@@ -380,14 +380,14 @@ Item {
         property string blendModeSubtract: "result.rgb = max(rgb1 - rgb2, vec3(0.0));"
         property string blendModeSoftLight: "result.rgb = rgb1 * ((1.0 - rgb1) * rgb2 + (1.0 - (1.0 - rgb1) * (1.0 - rgb2)));"
 
-        property string fragmentCoreShaderWorkaround: (GraphicsInfo.profile === GraphicsInfo.OpenGLCoreProfile ? "#version 150 core
+        property string tekmentCoreShaderWorkaround: (GraphicsInfo.profile === GraphicsInfo.OpenGLCoreProfile ? "#version 150 core
             #define varying in
             #define texture2D texture
-            out vec4 fragColor;
-            #define gl_FragColor fragColor
+            out vec4 tekColor;
+            #define gl_FragColor tekColor
         " : "")
 
-        property string fragmentShaderBegin: fragmentCoreShaderWorkaround + "
+        property string tekmentShaderBegin: tekmentCoreShaderWorkaround + "
             varying mediump vec2 qt_TexCoord0;
             uniform highp float qt_Opacity;
             uniform lowp sampler2D backgroundSource;
@@ -475,7 +475,7 @@ Item {
                 highp float a = max(color1.a, color1.a * color2.a);
         "
 
-        property string fragmentShaderEnd: "
+        property string tekmentShaderEnd: "
                 gl_FragColor.rgb = mix(rgb1, result.rgb, color2.a);
                 gl_FragColor.rbg *= a;
                 gl_FragColor.a = a;

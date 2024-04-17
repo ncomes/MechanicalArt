@@ -45,7 +45,7 @@ Effect {
     Shader {
         id: distortionFrag
         stage: Shader.Fragment
-        shader: "shaders/distortionspiral.frag"
+        shader: "shaders/distortionspiral.tek"
     }
 
     passes: [

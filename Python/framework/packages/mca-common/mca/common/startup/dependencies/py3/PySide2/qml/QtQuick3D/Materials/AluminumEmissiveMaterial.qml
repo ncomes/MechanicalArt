@@ -126,7 +126,7 @@ CustomMaterial {
     Shader {
         id: aluminumEmissiveShader
         stage: Shader.Fragment
-        shader: "shaders/aluminumEmissive.frag"
+        shader: "shaders/aluminumEmissive.tek"
     }
 
     passes: [

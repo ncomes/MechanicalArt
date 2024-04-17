@@ -3121,7 +3121,7 @@
           "type": "integer"
         },
         "normalizedUrl": {
-          "description": "The normalized URL with query parameters and fragment removed.",
+          "description": "The normalized URL with query parameters and tekment removed.",
           "type": "string"
         }
       },

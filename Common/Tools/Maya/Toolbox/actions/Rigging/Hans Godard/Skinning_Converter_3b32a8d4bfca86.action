@@ -1,0 +1,22 @@
+command: 'from mca.maya.plugins import loader
+
+  from mca.maya.plugins.skinningConverter.python import skinningConverter
+
+
+  loader.load_skinning_converter_plugin()
+
+  skinningConverter.showUI()'
+icon: null
+id: 3b32a8d4bfca86
+info: The algorithm is creating Bones, Bones Animations and Skinning Maps from a Sequence of mesh.
+name: Skinning Converter
+syntax: python
+tags: hans,godard,skinning,converter
+ui_command: 'from mca.maya.plugins import loader
+
+  from mca.maya.plugins.skinningConverter.python import skinningConverter
+
+
+  loader.load_skinning_converter_plugin()
+
+  tool_ui = skinningConverter.showUI()'

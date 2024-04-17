@@ -1,0 +1,8 @@
+command: "from mca.core import log, utils\nfrom mca.common.python import osplatform\n\nlogger = log.mcaLogger\n\nproject = utils.get_project()\nif project:\n    project_folder = osplatform.open_folder(project.get_dropbox_folder())\n\
+  else:\n    logger.error('No mca project defined')\n"
+icon: dropbox_folder.png
+id: 3acffa0505deae
+info: Opens currrent mca project Dropbox root folder
+name: Open Dropbox Project Folder
+syntax: python
+tags: open,dropbox,folder

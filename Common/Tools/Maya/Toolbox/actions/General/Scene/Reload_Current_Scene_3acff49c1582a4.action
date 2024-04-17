@@ -1,0 +1,12 @@
+command: 'import maya.cmds as cmds
+
+
+  opened_file = cmds.file(q=True, sceneName=True)
+
+  cmds.file(opened_file, open=True, force=True)'
+icon: refresh.png
+id: 3acff49c1582a4
+info: Reload the scene from last saved point (without save warning)
+name: Reload Current Scene
+syntax: python
+tags: ',reload,scene'

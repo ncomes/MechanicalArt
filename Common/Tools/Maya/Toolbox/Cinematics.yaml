@@ -1,0 +1,856 @@
+actions:
+  zbtm-ehlpk-c2nu2-qn0z:
+  - 5dg7-nf3kn-bslx0-upjl:
+      color: null
+      command: 'from cpg.maya.cinematics.tools.open_cine_shot import open_cine_shot_ui; win = open_cine_shot_ui.CineOpenShotWindow(); '
+      display_name: ' Open Cine File     '
+      font: null
+      icon: null
+      info: null
+      parent: zbtm-ehlpk-c2nu2-qn0z
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QWidget
+  6zu7-68j6q-cnj0n-9gzo:
+  - k0i1-ap7xj-j8tmp-y1pp:
+      color: null
+      command: 'from cpg.maya.cinematics.SaveButton import saveButtonPress; saveButtonPress()'
+      display_name: ' Save Version          '
+      font: null
+      icon: 'save'
+      info: null
+      parent: 6zu7-68j6q-cnj0n-9gzo
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  mhzr-lofq4-dmqqr-7f5f:
+  - w8oz-sogt9-u6r8o-wkim:
+      color: null
+      command: 'from cpg.maya.cinematics.PlayblastSingleClick import playblastSingle; playblastSingle()'
+      display_name: ' Playblast '
+      font: null
+      icon: 'playblast'
+      info: null
+      parent: mhzr-lofq4-dmqqr-7f5f
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: 'Saves 2.35 Playblast with HUD to Video directory in Sequence directory'
+      type: QPushButton
+  dm6a-agtvt-xlu1m-yuty:
+  - z3y7-khdfb-6auq9-37pc:
+      color: null
+      command: 'from cpg.maya.cinematics.AddLocator import addLocators; addLocators()'
+      display_name: ' Add Locators   '
+      font: null
+      icon: 'loc'
+      info: null
+      parent: dm6a-agtvt-xlu1m-yuty
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  5ocd-dd2wm-a4mtq-iydr:
+  - y2w7-a2p8u-pgsxy-l3hj:
+      color: null
+      command: 'from cpg.maya.cinematics.BakeLocator import bakeLocToSelection; bakeLocToSelection()'
+      display_name: ' Bake Locator  '
+      font: null
+      icon: 'bakeLoc'
+      info: null
+      parent: 5ocd-dd2wm-a4mtq-iydr
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  cinz-x7bh6-607zw-qo74:
+  - bn92-0noa6-j86dv-q4t2:
+      color: null
+      command: 'from cpg.maya.cinematics.MatchObjs import matchObjs; matchObjs()'
+      display_name: ' Match Objects '
+      font: null
+      icon: 'match'
+      info: null
+      parent: cinz-x7bh6-607zw-qo74
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  h8el-m6r6n-h6rgg-y8yh:
+  - pk13-adoi9-ocjhj-sxf4:
+      color: null
+      command: 'from cpg.maya.cinematics.GrandParent import parentMultiple; parentMultiple()'
+      display_name: ' Uber Parent '
+      font: null
+      icon: 'gp'
+      info: null
+      parent: h8el-m6r6n-h6rgg-y8yh
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: 'Parent multiple objects to the first object in selection'
+      type: QPushButton
+  0tqh-0yr5c-fu6ur-v105:
+  - u6hw-5eofe-zk3ii-0ekz:
+      color: null
+      command: 'from cpg.maya.cinematics.SceneMover import makeSceneMoverButtonClick; makeSceneMoverButtonClick()'
+      display_name: ' Scene Mover '
+      font: null
+      icon: 'sceneLoc'
+      info: null
+      parent: 0tqh-0yr5c-fu6ur-v105
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  pdr5-1jwim-x634u-gk1o:
+  - fejl-gjnum-hfwo2-bv74:
+      color: null
+      command: 'from cpg.maya.cinematics.RigObject import rigObject; rigObject()'
+      display_name: ' Rig Object '
+      font: null
+      icon: 'rigProp'
+      info: null
+      parent: pdr5-1jwim-x634u-gk1o
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: 'Click once to set up Bone Hierarchy, click again to create Controllers.'
+      type: QPushButton
+  a1nu-h63or-bt9ab-o9qy:
+  - 1cau-vowdw-ia02x-yg8p:
+      color: null
+      command: 'from cpg.maya.cinematics.CreateShot import makeNewShot; makeNewShot()'
+      display_name: ' New Shot '
+      font: null
+      icon: 'newShot'
+      info: null
+      parent: a1nu-h63or-bt9ab-o9qy
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  y0bk-dam2b-xswji-kgjg:
+  - j5k9-zct5v-vvd7t-0olh:
+      color: null
+      command: 'from cpg.maya.cinematics.RenameShot import renameShot; renameShot()'
+      display_name: ' Rename Shot '
+      font: null
+      icon: 'renameShot'
+      info: null
+      parent: y0bk-dam2b-xswji-kgjg
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  49eb-xzh2y-2zwjb-5v4t:
+  - 1q9m-3vff5-5ehki-ldz0:
+      color: null
+      command: 'from cpg.maya.cinematics.CopyCamera import copyCamera; copyCamera()'
+      display_name: ' Copy Camera '
+      font: null
+      icon: 'copyCam'
+      info: null
+      parent: 49eb-xzh2y-2zwjb-5v4t
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  hhf3-b3g2j-4xz4x-vztq:
+  - ugm0-25e2h-29h1w-qm0n:
+      color: null
+      command: 'from cpg.maya.cinematics.CameraController import addCameraController; addCameraController()'
+      display_name: ' Rig Camera '
+      font: null
+      icon: 'camCtrl'
+      info: null
+      parent: hhf3-b3g2j-4xz4x-vztq
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  xdu6-2x42k-7zp5t-iyoc:
+  - v34h-pdsel-h2p4v-tzrl:
+      color: null
+      command: 'from cpg.maya.cinematics.CineSequenceNodes import seqNodeButtonPress; seqNodeButtonPress()'
+      display_name: ' Edit Sequence Node '
+      font: null
+      icon: 'editSeqNode'
+      info: null
+      parent: xdu6-2x42k-7zp5t-iyoc
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  q8ln-rq2nq-4duyw-x5gq:
+  - 9051-3m1lo-j958t-mezc:
+      color: null
+      command: 'from cpg.maya.cinematics.BreakoutSelectedShot import breakOutSelectedShot; breakOutSelectedShot()'
+      display_name: ' Break Out Selected Shot '
+      font: null
+      icon: 'layout'
+      info: null
+      parent: q8ln-rq2nq-4duyw-x5gq
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  mbdk-m5s11-fbzve-3423:
+  - a6ge-acncv-blt73-cl9t:
+      color: null
+      command: 'from cpg.maya.cinematics.ExecuteBatchBreakout import promptBreakoutWindow; promptBreakoutWindow()'
+      display_name: ' Break Out Sequence'
+      font: null
+      icon: 'previsBreakout'
+      info: null
+      parent: mbdk-m5s11-fbzve-3423
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  eiu8-hkd03-vj0to-bk12:
+  - iz1l-j4cdo-c5e48-127w:
+      color: null
+      command: 'from cpg.maya.cinematics.SendLayoutToAnim import layoutToAnim; layoutToAnim()'
+      display_name: ' Send Layout to Animation '
+      font: null
+      icon: 'layout'
+      info: null
+      parent: eiu8-hkd03-vj0to-bk12
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  8qrp-vae6m-mfgcf-s3eq:
+  - kbdw-f1466-kudao-9orf:
+      color: null
+      command: 'print("Export UI To Go Here")'
+      display_name: ' Export UI Here '
+      font: null
+      icon: 'exportSel'
+      info: null
+      parent: 8qrp-vae6m-mfgcf-s3eq
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  2vjk-vs37v-kzy89-9jng:
+  - u1g9-f7wut-830t6-5kv5:
+      color: null
+      command: 'print("None");'
+      display_name: ' Delete this Button Please! '
+      font: null
+      icon: 'renameShot'
+      info: null
+      parent: 2vjk-vs37v-kzy89-9jng
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  mcu3-e4jus-v1zph-oz3k:
+  - 3223-2b9y0-w4jv2-iouw:
+      color: null
+      command: 'print("None");'
+      display_name: ' Delete this Button Please! '
+      font: null
+      icon: 'rigProp'
+      info: null
+      parent: mcu3-e4jus-v1zph-oz3k
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  4dng-1bq5f-82xg0-q3xj:
+  - b8k5-uok5k-bwoge-q7ib:
+      color: null
+      command: 'print("None");'
+      display_name: ' Delete this Button Please! '
+      font: null
+      icon: 'exportThis'
+      info: null
+      parent: 4dng-1bq5f-82xg0-q3xj
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  bni9-34ok7-vcxh7-8g0t:
+  - xk1e-k3ka3-07shw-4rvn:
+      color: null
+      command: 'print("None");'
+      display_name: ' Delete this Button Please! '
+      font: null
+      icon: 'sceneLoc'
+      info: null
+      parent: bni9-34ok7-vcxh7-8g0t
+      parent_cat: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      syntax: python
+      tooltip: ''
+      type: QPushButton
+  hqn5-jqz55-j6517-663h:
+  - g2ed-rvxxn-no0jr-9awg:
+      color: null
+      command: 'from cpg.maya.tools.reanimator import reanimator_small; win = reanimator_small.ReanimatorSmall(); '
+      display_name: Re-Animator
+      font: null
+      icon: null
+      info: ''
+      parent: hqn5-jqz55-j6517-663h
+      parent_cat: 7nqr-5w52h-4tphe-m7oc
+      position: 0
+      syntax: python
+      tooltip: 'Tools dedicated to Re-Animator'
+      type: QWidget
+  lhzj-by6d5-grpq9-1vo8:
+  - riy9-g7uhc-dn1zq-ze1f:
+      color: null
+      command: 'from cpg.maya.rigging import rig_utils; rig_utils.attach_rigs_cmd(); '
+      display_name: Attach Selected Rigs
+      font: null
+      icon: null
+      info: null
+      parent: lhzj-by6d5-grpq9-1vo8
+      parent_cat: rl1e-vjpzc-cwe3s-0uo5
+      position: 0
+      syntax: python
+      tooltip: 'Attach two rigs together'
+      type: QPushButton
+  bngf-8b47n-c8r5d-vqr0:
+  - kofn-g8nni-k5mlp-afns:
+      color: null
+      command: 'from cpg.maya.rigging import rig_utils; rig_utils.detach_rig_cmd(); '
+      display_name: Detach
+      font: null
+      icon: null
+      info: null
+      parent: bngf-8b47n-c8r5d-vqr0
+      parent_cat: rl1e-vjpzc-cwe3s-0uo5
+      position: 0
+      syntax: python
+      tooltip: 'Detach two rigs that are connected'
+      type: QPushButton
+  - sdjy-ncvff-ugvfk-l9h4:
+      color: null
+      command: 'from cpg.maya.rigging import rig_utils; import pymel.core as pm; rig_utils.detach_rig_cmd(True, pm.playbackOptions(q=True, min=True), pm.playbackOptions(q=True, max=True));'
+      display_name: Bake and Detach
+      font: null
+      icon: null
+      info: null
+      parent: bngf-8b47n-c8r5d-vqr0
+      parent_cat: rl1e-vjpzc-cwe3s-0uo5
+      position: 1
+      syntax: python
+      tooltip: 'Detach two connected rigs and bake using the current timeline'
+      type: QPushButton
+  4nl4-flzx4-sk547-sk2k:
+  - 5wfm-7jag4-zdhwn-dsvh:
+      color: null
+      command: 'from cpg.maya.tools.reanimator import overdrivers_small; win = overdrivers_small.OverDriverSmall(); '
+      display_name: Over Drivers
+      font: null
+      icon: null
+      info: ' Description: Adds an over driver or a "Constraint to two rig objects."'
+      parent: hqn5-jqz55-j6517-663h
+      parent_cat: 7nqr-5w52h-4tphe-m7oc
+      position: 0
+      syntax: python
+      tooltip: 'Adds an over driver or a "Constraint to two rig objects.'
+      type: QWidget
+  61qb-qqh4p-xdshc-0by3:
+  - mah7-scoio-15cez-o51c:
+      color: null
+      command: 'from cpg.maya.rigging.flags import flag_utils; flag_utils.zero_flags_cmd();'
+      display_name: Zero Flags
+      font: null
+      icon: null
+      info: null
+      parent: 61qb-qqh4p-xdshc-0by3
+      parent_cat: j94f-ko7cq-tcnf5-aqzl
+      position: 0
+      syntax: python
+      tooltip: 'Resets the flag postions'
+      type: QPushButton
+  - kvse-4oxqu-iphcz-0i91:
+      color: null
+      command: 'from cpg.maya.rigging.flags import flag_utils; flag_utils.select_all_flags_cmd();'
+      display_name: Select All Flags
+      font: null
+      icon: null
+      info: null
+      parent: 61qb-qqh4p-xdshc-0by3
+      parent_cat: j94f-ko7cq-tcnf5-aqzl
+      position: 1
+      syntax: python
+      tooltip: 'Selects all flags'
+      type: QPushButton
+  b74w-es7yf-k8rb8-i7yr:
+  - vuw7-ypjuk-0qzi3-ohhl:
+      color: null
+      command: 'from cpg.maya.rigging import rig_utils; rig_utils.switch_ikfk_components_cmd(); '
+      display_name: IK/FK Switch
+      font: null
+      icon: null
+      info: null
+      parent: b74w-es7yf-k8rb8-i7yr
+      parent_cat: j94f-ko7cq-tcnf5-aqzl
+      position: 0
+      syntax: python
+      tooltip: IK/FK Switch and Bake
+      type: QPushButton
+  - mhu5-ow9xn-cje3x-wgbt:
+      color: null
+      command: from cpg.maya.tools.multiconstraintswitch import multiconstraint_switch; win = multiconstraint_switch.MulticonstraintSwitch(); 
+      display_name: Multi Constraint Switch
+      font: null
+      icon: null
+      info: null
+      parent: b74w-es7yf-k8rb8-i7yr
+      parent_cat: j94f-ko7cq-tcnf5-aqzl
+      position: 1
+      syntax: python
+      tooltip: 'Multi-Constraint or "Space Switch" tool.  This keeps the flag in place while switching'
+      type: QPushButton
+  fxmr-4og83-opnyd-4ejc:
+  - 9h9z-80h8z-ngat2-4vtu:
+      color: null
+      command: 'from cpg.maya.rigging import rig_utils; rig_utils.purge_rig_cmd(); '
+      display_name: Purge Rig
+      font: null
+      icon: null
+      info: null
+      parent: fxmr-4og83-opnyd-4ejc
+      parent_cat: j94f-ko7cq-tcnf5-aqzl
+      position: 0
+      syntax: python
+      tooltip: 'Completely and safely removes a rig from a scene.'
+      type: QPushButton
+  jx9p-nuaxp-h1cl2-hqpb:
+  - ozrf-8t3nj-3qa59-68w2:
+      color: null
+      command: 'from cpg.maya.tools.animationexporter import animationexporter_utils as ae_utils; ae_utils.quick_export_frag_sequences_cmd(); '
+      display_name: Export Selected Animation
+      font: null
+      icon: null
+      info: null
+      parent: jx9p-nuaxp-h1cl2-hqpb
+      parent_cat: j94f-ko7cq-tcnf5-aqzl
+      position: 0
+      syntax: python
+      tooltip: 'Exports animation on the currently selected rig or rigs'
+      type: QPushButton
+  ewrn-nk2d3-ud0rt-xxy7:
+  - sz90-l77f9-a14ke-pbnm:
+      color: null
+      command: 'from cpg.maya.tools.animationexporter import animationexporter_ui as ae_ui; ae_ui.AnimationExporter(); '
+      display_name: Export Animation UI
+      font: null
+      icon: null
+      info: null
+      parent: ewrn-nk2d3-ud0rt-xxy7
+      parent_cat: j94f-ko7cq-tcnf5-aqzl
+      position: 0
+      syntax: python
+      tooltip: 'Opens the Animation Exporter'
+      type: QPushButton
+  p7a0-mu0i9-l6km0-28lk:
+  - uxun-k6m24-5fmnm-w2a9:
+      color: null
+      command: 'from cpg.maya.tools.timewarp import timewarp; timewarp.Timewarp(); '
+      display_name: Timewarp Selection UI
+      font: null
+      icon: null
+      info: null
+      parent: p7a0-mu0i9-l6km0-28lk
+      parent_cat: j94f-ko7cq-tcnf5-aqzl
+      position: 0
+      syntax: python
+      tooltip: 'Opens the Timewarp tool'
+      type: QPushButton
+  5p1n-u7ecb-63b21-kk1f:
+  - eo3x-lzmho-o3bpr-0yni:
+      color: null
+      command: 'from cpg.maya.tools.summoner import summoner; win = summoner.Summoner(); '
+      display_name: Summoner
+      font: null
+      icon: null
+      info: ''
+      parent: 5p1n-u7ecb-63b21-kk1f
+      parent_cat: 2xe3-nkkxd-llcz6-1sx8
+      position: 0
+      syntax: python
+      tooltip: 'Summoner - Import Rig Tool'
+      type: QPushButton
+  qx1p-7po4o-yf66n-83gn:
+  - df9f-u22sj-ktunm-vhbg:
+      color: null
+      command: 'import pymel.core as pm;from cpg.common.utils import fileio;sn = pm.sceneName();fileio.touch_and_checkout(sn);'
+      display_name: Check Out Scene
+      font: null
+      icon: null
+      info: null
+      parent: qx1p-7po4o-yf66n-83gn
+      parent_cat: 6w1p-sgfki-n473u-ane5
+      position: 0
+      syntax: python
+      tooltip: 'Checks out the current scene in plastic'
+      type: QPushButton
+  85nx-1yjbg-rd3aw-elc1:
+  - vnjv-ww6wg-oju4a-6cgo:
+      color: null
+      command: 'import studiolibrary;studiolibrary.main();'
+      display_name: Studio Library
+      font: null
+      icon: null
+      info: null
+      parent: vnjv-ww6wg-oju4a-6cgo
+      parent_cat: 85nx-1yjbg-rd3aw-elc1
+      position: 0
+      syntax: python
+      tooltip: '3rd Party Animation Library'
+      type: QPushButton
+categories:
+  Cinematics:
+  - 4ukv-7bj3z-lqhmk-064s:
+      DisplayName: Cinematics
+      icon: add
+      info: null
+      parent: null
+      position: 0
+      tooltip: null
+  - hihn-d9wya-hczui-vgou:
+      DisplayName: Animation
+      icon: add
+      info: null
+      parent: null
+      position: 0
+      tooltip: null
+  hihn-d9wya-hczui-vgou:
+  - j94f-ko7cq-tcnf5-aqzl:
+      DisplayName: Animation and Rig Tools
+      icon: null
+      info: null
+      parent: hihn-d9wya-hczui-vgou
+      position: 0
+      tooltip: null
+  - 2xe3-nkkxd-llcz6-1sx8:
+      DisplayName: Summoner
+      icon: null
+      info: null
+      parent: null
+      position: 1
+      tooltip: null
+  - 7nqr-5w52h-4tphe-m7oc:
+      DisplayName: Re-Animator
+      icon: add
+      info: null
+      parent: hihn-d9wya-hczui-vgou
+      position: 2
+      tooltip: null
+  - rl1e-vjpzc-cwe3s-0uo5:
+      DisplayName: Rig Attachments
+      icon: null
+      info: null
+      parent: null
+      position: 3
+      tooltip: null
+  - 6w1p-sgfki-n473u-ane5:
+      DisplayName: Plastic
+      icon: null
+      info: null
+      parent: null
+      position: 4
+      tooltip: null
+  - yetb-9wr5i-2jhye-wo4x:
+      DisplayName: Third Party
+      icon: null
+      info: null
+      parent: null
+      position: 5
+      tooltip: null
+layouts:
+  4ukv-7bj3z-lqhmk-064s:
+  - zbtm-ehlpk-c2nu2-qn0z:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 0
+      tooltip: null
+  - 6zu7-68j6q-cnj0n-9gzo:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 1
+      tooltip: null
+  - mhzr-lofq4-dmqqr-7f5f:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 2
+      tooltip: null
+  - dm6a-agtvt-xlu1m-yuty:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 3
+      tooltip: null
+  - 5ocd-dd2wm-a4mtq-iydr:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 4
+      tooltip: null
+  - cinz-x7bh6-607zw-qo74:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 5
+      tooltip: null
+  - h8el-m6r6n-h6rgg-y8yh:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 6
+      tooltip: null
+  - 0tqh-0yr5c-fu6ur-v105:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 7
+      tooltip: null
+  - pdr5-1jwim-x634u-gk1o:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 8
+      tooltip: null
+  - a1nu-h63or-bt9ab-o9qy:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 9
+      tooltip: null
+  - y0bk-dam2b-xswji-kgjg:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 10
+      tooltip: null
+  - 49eb-xzh2y-2zwjb-5v4t:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 11
+      tooltip: null
+  - hhf3-b3g2j-4xz4x-vztq:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 12
+      tooltip: null
+  - xdu6-2x42k-7zp5t-iyoc:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 13
+      tooltip: null
+  - q8ln-rq2nq-4duyw-x5gq:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 14
+      tooltip: null
+  - mbdk-m5s11-fbzve-3423:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 15
+      tooltip: null
+  - eiu8-hkd03-vj0to-bk12:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 16
+      tooltip: null
+  - 8qrp-vae6m-mfgcf-s3eq:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 17
+      tooltip: null
+  - 2vjk-vs37v-kzy89-9jng:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 18
+      tooltip: null
+  - mcu3-e4jus-v1zph-oz3k:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 19
+      tooltip: null
+  - 4dng-1bq5f-82xg0-q3xj:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 20
+      tooltip: null
+  - bni9-34ok7-vcxh7-8g0t:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 4ukv-7bj3z-lqhmk-064s
+      position: 21
+      tooltip: null
+  7nqr-5w52h-4tphe-m7oc:
+  - hqn5-jqz55-j6517-663h:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: hihn-d9wya-hczui-vgou
+      position: 0
+      tooltip: null
+  - z08u-roj3j-wgh74-54pm:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: hihn-d9wya-hczui-vgou
+      position: 1
+      tooltip: null
+  - 4fbt-q28ac-26xms-1ivg:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: hihn-d9wya-hczui-vgou
+      position: 2
+      tooltip: null
+  rl1e-vjpzc-cwe3s-0uo5:
+  - lhzj-by6d5-grpq9-1vo8:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: rl1e-vjpzc-cwe3s-0uo5
+      position: 0
+      tooltip: null
+  - bngf-8b47n-c8r5d-vqr0:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: rl1e-vjpzc-cwe3s-0uo5
+      position: 1
+      tooltip: null
+  - 4nl4-flzx4-sk547-sk2k:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: rl1e-vjpzc-cwe3s-0uo5
+      position: 2
+      tooltip: null
+  j94f-ko7cq-tcnf5-aqzl:
+  - jx9p-nuaxp-h1cl2-hqpb:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: j94f-ko7cq-tcnf5-aqzl
+      position: 0
+      tooltip: null
+  - ewrn-nk2d3-ud0rt-xxy7:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: j94f-ko7cq-tcnf5-aqzl
+      position: 1
+      tooltip: null
+  - 61qb-qqh4p-xdshc-0by3:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: j94f-ko7cq-tcnf5-aqzl
+      position: 2
+      tooltip: null
+  - b74w-es7yf-k8rb8-i7yr:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: j94f-ko7cq-tcnf5-aqzl
+      position: 3
+      tooltip: null
+  - fxmr-4og83-opnyd-4ejc:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: j94f-ko7cq-tcnf5-aqzl
+      position: 4
+      tooltip: null
+  - p7a0-mu0i9-l6km0-28lk:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: j94f-ko7cq-tcnf5-aqzl
+      position: 5
+      tooltip: null
+  2xe3-nkkxd-llcz6-1sx8:
+  - 5p1n-u7ecb-63b21-kk1f:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 2xe3-nkkxd-llcz6-1sx8
+      position: 0
+      tooltip: null
+  6w1p-sgfki-n473u-ane5:
+  - qx1p-7po4o-yf66n-83gn:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: 6w1p-sgfki-n473u-ane5
+      position: 0
+      tooltip: null
+  yetb-9wr5i-2jhye-wo4x:
+  - 85nx-1yjbg-rd3aw-elc1:
+      DisplayName: null
+      icon: null
+      info: null
+      parent: yetb-9wr5i-2jhye-wo4x
+      position: 0
+      tooltip: null

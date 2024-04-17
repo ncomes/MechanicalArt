@@ -1,0 +1,16 @@
+command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-tools-common-summoner'')'
+icon: null
+id: 3acf532ad0c9f2
+info: Tool that allows to load rigs into DCC scene in an easy way.
+name: Summoner
+syntax: python
+tags: rig,summoner,load,import,reference
+ui_command: 'from mca.common.tools.summoner.core import tool
+
+
+  tool_ui = tool.SummonerTool()
+
+  tool_ui.initialize()'

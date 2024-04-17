@@ -1,0 +1,10 @@
+command: 'from mca.core.managers import tools
+
+  tools.ToolsManager().launch_tool_by_id(''mca-tools-rig-assetregister'')'
+icon: null
+id: 3b8df90507e5c6
+info: A tool to easily work with Dark Winter asset data.
+name: Asset Manager
+syntax: python
+tags: asset,data,manager
+ui_command: ''

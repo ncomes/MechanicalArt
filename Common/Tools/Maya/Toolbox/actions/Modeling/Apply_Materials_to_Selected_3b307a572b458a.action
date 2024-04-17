@@ -1,0 +1,9 @@
+command: 'from mca.maya.tools.helios import helios_utils
+
+  helios_utils.apply_materials_to_selected_cmd()'
+icon: null
+id: 3b307a572b458a
+info: Find texture files and apply them as Maya Materials.
+name: Apply Materials to Selected
+syntax: python
+tags: tools,modeling

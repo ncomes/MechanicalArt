@@ -1,0 +1,15 @@
+command: 'import pymel.core as pm
+
+  from mca.rigging.maya.utils import flag_utils
+
+
+  selection = pm.selected()
+
+
+  flag_utils.select_all_flags(selection)'
+icon: null
+id: 3b0abcedf58562
+info: Selects all the flags in the given rigs.
+name: Select All Flags
+syntax: python
+tags: ''

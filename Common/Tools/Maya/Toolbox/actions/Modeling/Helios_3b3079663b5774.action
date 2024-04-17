@@ -1,0 +1,12 @@
+command: 'from mca.maya.tools.helios import helios_ui
+
+  ui = helios_ui.Helios()
+
+  ui.ui.show()'
+icon: null
+id: 3b3079663b5774
+info: Open Helios' main UI for importing and exporting game models.
+name: Helios
+syntax: python
+tags: modeling,tools
+ui_command: ''

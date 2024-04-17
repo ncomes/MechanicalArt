@@ -1,0 +1,8 @@
+command: "import pymel.core as pm\n\nfrom mca.core import log\n\nlogger = log.mcaLogger\n\n\nselection = pm.ls(sl=True)\n\nif len(selection) >= 3:\n    master = selection[-1]\n    master_list = selection\n\
+  \    master_list.remove(master)\n    pm.delete(pm.pointConstraint())\nelse:\n    logger.error('You need at least 3 objects selected')\n"
+icon: null
+id: 3acff559996a3c
+info: Align the last selected object to a group of objects (references + objects to align)
+name: Align in Middle
+syntax: python
+tags: align

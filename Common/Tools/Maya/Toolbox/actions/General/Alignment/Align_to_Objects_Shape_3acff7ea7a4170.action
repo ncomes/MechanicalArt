@@ -1,0 +1,9 @@
+command: "import pymel.core as pm\nimport maya.cmds as cmds\n\nfrom mca.core import log\n\nlogger = log.mcaLogger\n\nselection = pm.ls(sl=True)\n\nif not len(selection) >= 2:\n    logger.error('You need\
+  \ to select at lest 2 objects')\nelse:\n    locator = pm.spaceLocator()\n    pm.select(locator, selection[-1])\n    try:\n        cmds.align(x='mid', y='mid', z='mid', alignToLead=True)\n    except Exception:\n\
+  \        pass\n\n    for item in selection[:-1]:\n        pm.delete(pm.parentConstraint(locator, item, mo=False))\n    pm.delete(locator)\n    pm.select(selection)\n"
+icon: null
+id: 3acff7ea7a4170
+info: Align to last selected object Shape
+name: Align to Objects Shape
+syntax: python
+tags: align

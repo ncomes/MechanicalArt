@@ -1,0 +1,103 @@
+actions:
+  bhib-tkwz7-p27ju-37fu:
+    action_type: QPushButton
+    color: null
+    command: from cpg.mobu.tools.stayonfloor import tool;tool.StayOnFloorTool();
+    display_name: Stay On Floor
+    icon: null
+    tooltip: Keeps the characters feet on the floor
+  df9f-u22sj-ktunm-vhbg:
+    action_type: QPushButton
+    color: null
+    command: from cpg.mobu.utils import mo_plastic;mo_plastic.checkout_scene();
+    display_name: Check Out Scene
+    icon: null
+    tooltip: Checks out the current scene in plastic
+  f8te-s2qm7-5tx4n-kc7u:
+    action_type: QPushButton
+    color: null
+    command: from cpg.mobu.mobucore.MobuCoreTools.StoryFunctions import StoryFunctions;StoryFunctions.CenterSelectedClips();
+    display_name: Center Selected Story Clips
+    icon: null
+    tooltip: Takes any selected clips in the Story Editor and centers them in the scene
+  mmj4-80tmy-8xvec-0r77:
+    action_type: QPushButton
+    color: null
+    command: from cpg.mobu.mobucore.MobuCoreTools.StoryFunctions import StoryFunctions;StoryFunctions.CopySelectedStoryClipsToTakes(False);
+    display_name: Copy to Takes
+    icon: null
+    tooltip: Takes any selected clips in the Story Editor
+  ok5b-9bcw9-jrgdk-cc8p:
+    action_type: QPushButton
+    color: null
+    command: from cpg.mobu.mobucore.MobuCoreTools.StoryFunctions import StoryFunctions;StoryFunctions.CopySelectedStoryClipsToTracks();
+    display_name: Copy to Tracks
+    icon: null
+    tooltip: Takes any selected clips in the Story Editor and copies them to individual tracks
+  vigo-rt631-9gql0-1m62:
+    action_type: QPushButton
+    color: null
+    command: from cpg.mobu.mobucore.MobuCoreTools.StoryFunctions import StoryFunctions;StoryFunctions.CopySelectedStoryClipsToTakes();
+    display_name: Copy to Center
+    icon: null
+    tooltip: Basically does all 3 of the above scripts in order
+  ygxb-qjf8h-j7ca4-g7s6:
+    action_type: QPushButton
+    color: null
+    command: from cpg.mobu.mobucore.MobuCoreTools.AdjustmentBlend import AdjustmentBlend;AdjustmentBlend.AdjustmentBlendCharacter();
+    display_name: Adjustment Blend
+    icon: null
+    tooltip: Additive layer interpolation between keyframes
+categories:
+  6w1p-sgfki-n473u-ane5:
+    children:
+    - qx1p-7po4o-yf66n-83gn
+    display_name: Plastic
+    icon: null
+    tooltip: ''
+  Main:
+    children:
+    - b06o-377rn-hwlo2-jg5d
+    display_name: ''
+    icon: null
+    tooltip: ''
+  b06o-377rn-hwlo2-jg5d:
+    children:
+    - iq66-srpky-xm7zj-7yzv
+    - xehh-gn6s5-huusr-3is3
+    - ootp-n7jkm-jx0x3-7axv
+    - 6w1p-sgfki-n473u-ane5
+    display_name: Animation
+    icon: add
+    tooltip: ''
+  ootp-n7jkm-jx0x3-7axv:
+    children:
+    - kpa5-03wvq-f3ix6-1snf
+    - wva4-hr51t-lftpd-9oeg
+    - x5k5-7x39e-y0tha-xc3y
+    display_name: Mobu Core
+    icon: null
+    tooltip: ''
+  xehh-gn6s5-huusr-3is3:
+    children: []
+    display_name: Utility
+    icon: null
+    tooltip: ''
+layouts:
+  iq66-srpky-xm7zj-7yzv:
+    children:
+    - bhib-tkwz7-p27ju-37fu
+  kpa5-03wvq-f3ix6-1snf:
+    children:
+    - ygxb-qjf8h-j7ca4-g7s6
+  qx1p-7po4o-yf66n-83gn:
+    children:
+    - df9f-u22sj-ktunm-vhbg
+  wva4-hr51t-lftpd-9oeg:
+    children:
+    - f8te-s2qm7-5tx4n-kc7u
+  x5k5-7x39e-y0tha-xc3y:
+    children:
+    - mmj4-80tmy-8xvec-0r77
+    - vigo-rt631-9gql0-1m62
+    - ok5b-9bcw9-jrgdk-cc8p

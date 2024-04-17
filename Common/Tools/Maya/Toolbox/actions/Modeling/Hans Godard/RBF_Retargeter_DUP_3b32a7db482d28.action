@@ -1,0 +1,22 @@
+command: 'from mca.maya.plugins import loader
+
+  from mca.maya.plugins.rbfRetargeter.python import rbfRetargeter
+
+
+  loader.load_rbf_retargeter_plugin()
+
+  rbfRetargeter.showUI()'
+icon: null
+id: 3b32a7db482d28
+info: Reconstruct a mesh from a Source to a Target.
+name: RBF Retargeter DUP
+syntax: python
+tags: ',hans,godard,rbf,retargeter'
+ui_command: 'from mca.maya.plugins import loader
+
+  from mca.maya.plugins.rbfRetargeter.python import rbfRetargeter
+
+
+  loader.load_rbf_retargeter_plugin()
+
+  tool_ui = rbfRetargeter.showUI()'

@@ -1,0 +1,15 @@
+command: 'import pymel.core as pm
+
+
+  from mca.maya.plugins import loader
+
+
+  loader.load_yaw_pitch_roll_plugin()
+
+  pm.createNode(''yawPitchRoll'')'
+icon: yawPitchRoll.png
+id: 3b32a8955b9a7e
+info: Extract Yaw, Pitch and Roll angles from a Matrix. You can for example use the Roll to drive the famous 'Twist' joints in Rigging.
+name: YawPitchRoll
+syntax: python
+tags: hans,godard,twist

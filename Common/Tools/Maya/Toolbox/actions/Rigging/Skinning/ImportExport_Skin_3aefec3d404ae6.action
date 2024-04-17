@@ -1,0 +1,16 @@
+command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-tools-rig-saveskinning'')'
+icon: skin_weights_icon.png
+id: 3aefec3d404ae6
+info: Imports and exports skin weights as .sknr file in appropriate Skin Data folder based on asset ID.
+name: Import/Export Skin
+syntax: python
+tags: skinning,rigging,skinweights,skin
+ui_command: 'from mca.rigging.maya.tools.saveskinning import tool
+
+
+  tool_ui = tool.SaveSkinning()
+
+  tool_ui.initialize()'

@@ -1,0 +1,9 @@
+command: 'from mca.rigging.maya.utils import helpers as rig_utils
+
+  rig_utils.bake_overdriver_cmd()'
+icon: null
+id: 3b270f41008e84
+info: Bake the animation offset of the overdriver back to the original flag.
+name: Bake Overdriver
+syntax: python
+tags: tools,animation

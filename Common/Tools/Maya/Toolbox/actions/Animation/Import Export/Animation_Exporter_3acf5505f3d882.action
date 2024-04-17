@@ -1,0 +1,10 @@
+command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-tools-anim-exporter'')'
+icon: export.png
+id: 3acf5505f3d882
+info: Tool that allows to export animation sequences from FRAG rigs
+name: Animation Exporter
+syntax: python
+tags: animation,exporter,sequence,frag

@@ -1,0 +1,17 @@
+command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-tools-rig-skeletonmarkup'')'
+icon: null
+id: 3b307d86b5526c
+info: A tool for marking up skeletons with FRAG markup.
+name: 'WIP: Skeleton Markup'
+syntax: python
+tags: ''
+ui_command: 'from mca.rigging.maya.tools.skeleton_markup import skeleton_markup
+
+
+  tool_ui = skeleton_markup.SkeletonMarkup()
+
+  tool_ui.initialize()'
+

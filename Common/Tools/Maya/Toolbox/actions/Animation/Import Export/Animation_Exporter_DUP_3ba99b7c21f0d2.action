@@ -1,0 +1,10 @@
+command: 'from mca.maya.tools.animationexporter import animationexporter_utils as ae_utils
+
+  ae_utils.quick_export_frag_sequences_cmd()'
+icon: null
+id: 3ba99b7c21f0d2
+info: Export all animations associated with the selected rig.
+name: Export Selected Rig Animation
+syntax: python
+tags: animation,exporter,sequence,frag
+ui_command: ''

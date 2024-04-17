@@ -1,0 +1,9 @@
+command: 'from mca.rigging.maya.utils import helpers as rig_utils
+
+  rig_utils.switch_ikfk_components_cmd()'
+icon: null
+id: 3b09ebfcd24050
+info: From selection switch between IK and Fk modes for a component.
+name: IK/FK Switch
+syntax: python
+tags: animation,tools

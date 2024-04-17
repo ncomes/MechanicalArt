@@ -1,0 +1,10 @@
+command: 'from mca.dccs.maya.utils.pm import utils
+
+
+  utils.fix_reference_paths()'
+icon: plastic.png
+id: 3acf5167388374
+info: Fixes all current references to point to Plastic project folder.
+name: Fix References Paths to Plastic
+syntax: python
+tags: fix,plastic,reference,dropbox,path

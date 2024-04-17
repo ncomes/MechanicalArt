@@ -1,0 +1,9 @@
+command: "import pymel.core as pm\n\nselection = pm.ls(sl=True)\ngroup_list = list()\n\nfor node in selection:\n    pm.select(node)\n    object_pivot = node.getRotatePivot(ws=True)\n    parent = node.getParent()\n\
+  \    group = pm.group(em=True, n=(node.name() + \"_align_transform\"))\n    group.translate.set(node.translate.get())\n    group.rotate.set(node.rotate.get())\n    group.scale.set(node.scale.get())\n\
+  \    pm.parent(node, group)\n    pm.parent(group, parent)\n    group_list.append(group)\n\npm.select(selection)\n"
+icon: null
+id: 3acff8ba62b45a
+info: Group the current item under an empty transform group
+name: Create Align Transform Group
+syntax: python
+tags: group,name,frag

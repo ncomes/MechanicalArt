@@ -1,0 +1,12 @@
+command: 'from mca.maya.tools.animationexporter import animationexporter_ui as ae_ui
+
+  ui = ae_ui.AnimationExporter()
+
+  ui.ui.show()'
+icon: null
+id: 3ba99b9ba533aa
+info: Tool that allows to export animation sequences from FRAG rigs
+name: Animation Exporter 2.0
+syntax: python
+tags: animation,exporter,sequence,frag
+ui_command: ''

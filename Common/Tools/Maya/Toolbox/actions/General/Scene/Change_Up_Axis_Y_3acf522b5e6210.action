@@ -1,0 +1,10 @@
+command: 'from mca.maya.utils import gui
+
+
+  gui.setup_axis("y")'
+icon: up_axis_y.png
+id: 3acf522b5e6210
+info: Changes Maya viewport coordinate up axis to Y and resets the viewport camera.
+name: Change Up Axis Y
+syntax: python
+tags: up,axis,y,y

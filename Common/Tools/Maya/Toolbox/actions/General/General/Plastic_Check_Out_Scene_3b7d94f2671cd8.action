@@ -1,0 +1,8 @@
+command: "import pymel.core as pm \nfrom mca.common.python import file_utils\n\nsn = pm.sceneName()\nfile_utils.touch_and_checkout(sn)"
+icon: null
+id: 3b7d94f2671cd8
+info: Checks out the current scene in Plastic
+name: Plastic Check Out Scene
+syntax: python
+tags: plastic,checkout
+ui_command: "import pymel.core as pm \nfrom mca.common.python import file_utils\n\nsn = pm.sceneName()\nfile_utils.touch_and_checkout(sn)"

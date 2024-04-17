@@ -1,0 +1,12 @@
+command: 'from mca.rigging.maya.skinner import core as skinner
+
+
+  skinner.exportTempSkin()
+
+  '
+icon: export.png
+id: 3acf53b561cd5c
+info: Exports all skinning related data of selected meshes to a temporal file. Use Import Temporal Skins to import that data back again.
+name: Export Temporal Skins
+syntax: python
+tags: export,skin,temporal

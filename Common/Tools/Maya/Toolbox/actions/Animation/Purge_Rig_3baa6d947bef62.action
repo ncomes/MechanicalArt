@@ -1,0 +1,10 @@
+command: 'from mca.rigging.maya.utils import helpers as rig_utils
+
+  rig_utils.purge_rig_cmd()'
+icon: null
+id: 3baa6d947bef62
+info: Remove the selected rig from the scene.
+name: Purge Rig
+syntax: python
+tags: tools,animation
+ui_command: ''

@@ -1,0 +1,16 @@
+command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-maya-tools-attrmanager'')'
+icon: null
+id: 3acf8fc440c676
+info: Tool that allows to edit display attributes on nodes interactively.
+name: Attributes Manager
+syntax: python
+tags: attribute,edit,live,node
+ui_command: 'from mca.maya.tools.attrmanager.core import tool
+
+
+  tool_ui = tool.AttributesManagerTool()
+
+  tool_ui.initialize()'

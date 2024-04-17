@@ -1,0 +1,16 @@
+command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-tools-rig-multiconstraint_switch'')'
+icon: null
+id: 3b09eba82018b4
+info: Ui for switching rig multiconstraints.
+name: Multiconstraint Switch
+syntax: python
+tags: animation,tools
+ui_command: 'from mca.rigging.maya.tools.multiconstraint_switch import multiconstraint_switch
+
+
+  tool_ui = multiconstraint_switch.MulticonstraintSwitch()
+
+  tool_ui.initialize()'

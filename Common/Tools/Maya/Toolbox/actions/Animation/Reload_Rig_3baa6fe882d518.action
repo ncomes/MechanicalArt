@@ -1,0 +1,10 @@
+command: 'from mca.rigging.maya.utils import helpers as rig_utils
+
+  rig_utils.reload_rig_cmd()'
+icon: null
+id: 3baa6fe882d518
+info: Reload the selected rig.
+name: Reload Rig
+syntax: python
+tags: tools,animation
+ui_command: ''

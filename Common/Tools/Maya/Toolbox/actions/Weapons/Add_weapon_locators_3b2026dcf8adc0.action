@@ -1,0 +1,9 @@
+command: 'from mca.maya.tools import misc_tools
+
+  misc_tools.set_weapon_locators_cmd()'
+icon: null
+id: 3b2026dcf8adc0
+info: Add preset locators to the selected objects.
+name: Add Weapon Locators
+syntax: python
+tags: weapons,tools

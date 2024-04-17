@@ -1,0 +1,700 @@
+actions:
+  0f0i-ldiw8-4q1i1-d4dz:
+    action_type: QPushButton
+    color: null
+    command: import pymel.core as pm;from mca.mya.plugins import loader;from mca.mya.plugins.skinningConverter.python import skinningConverter;loader.load_skinning_converter_plugin();skinningConverter.showUI();
+    display_name: Skinning Converter / Hans Godard
+    icon: null
+    tooltip: The algorithm is creating Bones, Bones Animations and Skinning Maps from a Sequence of mesh
+  0igc-urjjx-4a22w-792s:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.plugins import loader;from mca.mya.plugins.rbfRetargeter.python import rbfRetargeter;loader.load_rbf_retargeter_plugin();rbfRetargeter.showUI();
+    display_name: RBF Retargeter / Hans Godard
+    icon: null
+    tooltip: Reconstruct a mesh from a Source to a Target
+  1xpd-garym-ya2di-6ybq:
+    action_type: QPushButton
+    color: null
+    command: "import pymel.core as pm\nfrom mca.mya.deformations import skin_utils\n\nvertices = pm.selected()\nfor vertex in vertices:\n    skin_utils.smooth_vertex_weight(vertex)"
+    display_name: Smooth Skinning
+    icon: null
+    tooltip: Smooths out selected vertices
+  4ts5-u0syt-f8rcz-q5r9:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.cinematics import shot_utils
+
+      shot_utils.bake_locators_to_selection_cmd()
+
+      '
+    display_name: Add Baked Locators
+    icon: null
+    tooltip: Add baked locators at position of selected object(s).
+  6ryk-pvew9-gbt5f-4zlu:
+    action_type: QWidget
+    color: null
+    command: 'from mca.mya.tools.reanimator import overdrivers_small
+
+      win = overdrivers_small.OverDriverSmall()'
+    display_name: Over Drivers
+    icon: null
+    tooltip: Adds an over driver or a "Constraint to two rig objects.
+  7982-8g38w-k6bgh-dzm2:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.utils import camera_utils
+
+      camera_utils.copy_camera_cmd()'
+    display_name: Copy Camera
+    icon: null
+    tooltip: Copies camera position and settings from first selected to second.
+  910m-3i6eh-wx4kt-kh8b:
+    action_type: QWidget
+    color: null
+    command: 'from mca.mya.tools.reanimator import reanimator_small
+
+      win = reanimator_small.ReanimatorSmall()'
+    display_name: Re-Animator
+    icon: null
+    tooltip: Tools dedicated to Re-Animator
+  9h9z-80h8z-ngat2-4vtu:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.rigging import rig_utils; rig_utils.purge_rig_cmd(); '
+    display_name: Purge Rig
+    icon: null
+    tooltip: Completely and safely removes a rig from a scene.
+  9rgj-5q5tz-ar19i-bgt7:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.utils import camera_utils
+
+      camera_utils.select_camera_from_flag_cmd()'
+    display_name: Select Camera from Rig
+    icon: null
+    tooltip: Selects the camera from selected camera rig.
+  a5cp-vf45b-49ygs-odoe:
+    action_type: QPushButton
+    color: null
+    command: import maya.cmds as cmds;opened_file = cmds.file(q=True, sceneName=True);cmds.file(opened_file, open=True, force=True);
+    display_name: '  Reload Scene'
+    icon: izzy_icon
+    tooltip: Reloads the scene without saving
+  c23g-ed3ua-zejsn-3u9a:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.thirdpartytools import dwpicker
+
+      win = dwpicker.DwPicker()
+
+      win.show(dockable=True)'
+    display_name: DW Picker
+    icon: null
+    tooltip: 'Opens the DW Picker '
+  df9f-u22sj-ktunm-vhbg:
+    action_type: QPushButton
+    color: null
+    command: import pymel.core as pm;from mca.common.utils import fileio;sn = pm.sceneName();fileio.touch_and_checkout(sn);
+    display_name: Check Out Scene
+    icon: null
+    tooltip: Checks out the current scene in plastic
+  eo3x-lzmho-o3bpr-0yni:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.tools.summoner import summoner; win = summoner.Summoner(); '
+    display_name: Summoner
+    icon: null
+    tooltip: Summoner - Import Rig Tool
+  g0d1-fqnky-1yh85-n3zn:
+    action_type: QWidget
+    color: null
+    command: 'from mca.mya.tools.applyskinning import apply_skinning_ui
+
+      win = apply_skinning_ui.ApplySkinningUi()'
+    display_name: Apply Skinning
+    icon: null
+    tooltip: Save and apply skins locally
+  h462-9ytqd-2azi8-pmeu:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.tools.buildarig import buildarig_ui
+
+      ui = buildarig_ui.BuildARig()'
+    display_name: Build A Rig
+    icon: null
+    tooltip: Comprehensive rig build and flag editing system for FRAG.
+  hq4b-637ym-uzid3-z765:
+    action_type: QPushButton
+    color: null
+    command: import pymel.core as pm;from mca.mya.plugins import loader;loader.load_rbf_solver_plugin();pm.createNode('rbfSolver');
+    display_name: RBF Solver / Hans Godard
+    icon: null
+    tooltip: Keys can be anything, and Values can be anything.
+  i4bc-j07c9-93k0u-acta:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.utils import camera_utils
+
+      camera_utils.create_mca_ubercam_cmd()'
+    display_name: Create Ubercam
+    icon: null
+    tooltip: Creates an ubercam
+  i7yr-j95rx-8pvs4-x7a1:
+    action_type: QWidget
+    color: null
+    command: 'from mca.mya.cinematics.tools.open_cine_shot import open_cine_shot_ui
+
+      win = open_cine_shot_ui.CineOpenShotWindow()'
+    display_name: Open Cine Shot
+    icon: null
+    tooltip: ''
+  jb06-wfu8u-5kcno-uih0:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.tools.scenemanager import scene_manager_tool
+
+      scene_manager_tool.mcaSceneManagerStartup()
+
+      '
+    display_name: Scene Manager
+    icon: null
+    tooltip: Launches the mca Scene Manager.
+  jym7-g9tod-ohwo9-2l7q:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.tools.face_staging import face_staging_ui;face_staging_ui.FaceStagingUI();
+    display_name: Face Staging UI
+    icon: null
+    tooltip: Opens Face Staging Tool
+  k8n3-h0hqb-1okio-n2m6:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.tools.cineshoteditor import cine_shot_editor_tool
+
+      cine_shot_editor_tool.CineShotEditor() '
+    display_name: CineShotEditor
+    icon: null
+    tooltip: Launch the mca CineShotEditor
+  kofn-g8nni-k5mlp-afns:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.rigging import rig_utils; rig_utils.detach_rig_cmd(); '
+    display_name: Detach
+    icon: null
+    tooltip: Detach two rigs that are connected
+  kvse-4oxqu-iphcz-0i91:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.rigging.flags import flag_utils; flag_utils.select_all_flags_cmd();
+    display_name: Select All Flags
+    icon: null
+    tooltip: Selects all flags
+  l42y-bt97n-u69vw-puv0:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.utils import camera_utils
+
+
+      camera_utils.remove_ubercam_cmd()'
+    display_name: Remove Ubercam
+    icon: null
+    tooltip: Removes ubercam from scene
+  ldy0-zyvd6-5r1fg-5w5a:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.tools.helios import helios_ui;helios_ui.Helios();
+    display_name: Helios UI
+    icon: null
+    tooltip: Opens the Helios UI
+  mah7-scoio-15cez-o51c:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.rigging.flags import flag_utils; flag_utils.zero_flags_cmd();
+    display_name: Zero Flags
+    icon: null
+    tooltip: Resets the flag postions
+  mhu5-ow9xn-cje3x-wgbt:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.tools.multiconstraintswitch import multiconstraint_switch; win = multiconstraint_switch.MulticonstraintSwitch();
+    display_name: Multi Constraint Switch
+    icon: null
+    tooltip: Multi-Constraint or "Space Switch" tool.  This keeps the flag in place while switching
+  nxwa-thb0e-ys7mz-qhjp:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.plugins import loader;from mca.maya.plugins.rbfRetargeter.python import rbfRetargeter;loader.load_rbf_retargeter_plugin();rbfRetargeter.showUI();
+    display_name: RBF Retargeter / Hans Godard
+    icon: null
+    tooltip: Reconstruct a mesh from a Source to a Target
+  o64c-xd9ik-0lixq-a0l6:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.tools.setuppins import setup_pins;setup_pins.SkeletonPins();
+    display_name: Reference Pins
+    icon: null
+    tooltip: Opens the Reference Pins tool
+  ogbs-1y2u1-e1hxt-dmbh:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.tools.assetregister import ma_asset_register
+
+      win = ma_asset_register.MayaAssetRegister()'
+    display_name: Asset Register
+    icon: null
+    tooltip: Register new rigs to the project asset list.
+  ogmb-wsee1-0a0yq-2emq:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.tools.skeletonbuilder import skeletonbuilder_ui
+
+      win = skeletonbuilder_ui.SkeletonBuilder()'
+    display_name: Skeleton Builder
+    icon: null
+    tooltip: Save and markup skeletons.
+  onec-uu0c1-bj79b-8c3x:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.utils import camera_utils
+
+      camera_utils.rig_cinematic_camera_cmd()'
+    display_name: Rig Camera
+    icon: null
+    tooltip: Adds a camera rig to selected camera.
+  ozrf-8t3nj-3qa59-68w2:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.tools.animationexporter import animationexporter_utils as ae_utils; ae_utils.quick_export_frag_sequences_cmd(); '
+    display_name: Export Selected Animation
+    icon: null
+    tooltip: Exports animation on the currently selected rig or rigs
+  p359-rp3ei-hdtgm-hqz8:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.tools.helios import helios_ui;helios_ui.summon_the_wizard();
+    display_name: Ask the Wizard
+    icon: null
+    tooltip: Summons a Wizard!  You're a wizard Harry!
+  qrax-iyfef-2jchn-etiu:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.tools.facialmocapprocessor import facial_mocap_processor_tool
+
+
+      facial_mocap_processor_tool.FacialMocapProcessor()'
+    display_name: Facial Mocap Processor
+    icon: null
+    tooltip: 'Launch the Facial Mocap Processor tool '
+  riy9-g7uhc-dn1zq-ze1f:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.rigging import rig_utils; rig_utils.attach_rigs_cmd(); '
+    display_name: Attach Selected Rigs
+    icon: null
+    tooltip: Attach two rigs together
+  sdjy-ncvff-ugvfk-l9h4:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.rigging import rig_utils; import pymel.core as pm; rig_utils.detach_rig_cmd(True, pm.playbackOptions(q=True, min=True), pm.playbackOptions(q=True, max=True));
+    display_name: Bake and Detach
+    icon: null
+    tooltip: Detach two connected rigs and bake using the current timeline
+  sz90-l77f9-a14ke-pbnm:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.tools.animationexporter import animationexporter_ui as ae_ui; ae_ui.AnimationExporter(); '
+    display_name: Export Animation UI
+    icon: null
+    tooltip: Opens the Animation Exporter
+  to6f-z0ped-46rxv-4sjq:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.tools.helios import helios_utils
+
+      helios_utils.duplicate_material_cmd()'
+    display_name: Duplicate and Rename Material
+    icon: null
+    tooltip: Duplicate a Helios material to use as a new material slot in engine.
+  u00j-oh3yc-wo3ky-fol4:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.tools.helios import helios_utils;helios_utils.helios_rbf_cmd();
+    display_name: Helios RBF
+    icon: null
+    tooltip: Opens the Helios RBF Retargeter
+  uxun-k6m24-5fmnm-w2a9:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.tools.timewarp import timewarp; timewarp.Timewarp(); '
+    display_name: Timewarp Selection UI
+    icon: null
+    tooltip: Opens the Timewarp tool
+  vnjv-ww6wg-oju4a-6cgo:
+    action_type: QPushButton
+    color: null
+    command: import studiolibrary;studiolibrary.main();
+    display_name: Studio Library
+    icon: null
+    tooltip: 3rd Party Animation Library
+  vuw7-ypjuk-0qzi3-ohhl:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.rigging import rig_utils; rig_utils.switch_ikfk_components_cmd(); '
+    display_name: IK/FK Switch
+    icon: null
+    tooltip: IK/FK Switch and Bake
+  vwvr-0vcj0-y87vt-z440:
+    action_type: QPushButton
+    color: null
+    command: 'from mca.mya.rigging import rig_utils
+
+      import pymel.core as pm
+
+      end_frame = pm.currentTime()
+
+      start_frame = end_frame - 1
+
+      rig_utils.switch_ikfk_components_cmd(start_frame=start_frame, end_frame=end_frame)'
+    display_name: Single Frame IKFK Switch
+    icon: null
+    tooltip: Switches between IKFK controls on single frame
+  wj1p-iqnx3-uhuaw-hptl:
+    action_type: QPushButton
+    color: null
+    command: "from mca.mya.cinematics import shot_utils \nshot_utils.make_cine_locators_at_sel_cmd()"
+    display_name: Add Locators
+    icon: null
+    tooltip: Adds locators at positon of selected object(s).
+  xzeh-6jz3t-7ebn1-zizz:
+    action_type: QPushButton
+    color: null
+    command: 'from epic_pose_wrangler import main
+
+      pose_wrangler_instance = main.PoseWrangler()'
+    display_name: Epic Pose Wrangler
+    icon: null
+    tooltip: This is the Pose Drivers for Unreal
+  yuks-db88u-6lqkq-c44b:
+    action_type: QPushButton
+    color: null
+    command: "from mca.mya.modeling import geometry\nimport pymel.core as pm\n\nfor x in pm.selected():\n\tif isinstance(x, pm.nt.Transform):\n\t\tgeometry.apply_cube_trick(x)"
+    display_name: Apply Cube Trick to Selected
+    icon: null
+    tooltip: For each selected shaped object, combine with a cube and delete the new faces.
+  z0gn-6zem6-pv77g-9g66:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.tools.saveskinning import save_skinning;save_skinning.SaveSkinning();
+    display_name: Import-Export Skinning
+    icon: null
+    tooltip: Imports and exports skin weights as .sknr file in appropriate Skin Data folder based on asset ID.
+  zp8k-vbjfi-n6ab6-r2i8:
+    action_type: QPushButton
+    color: null
+    command: from mca.mya.tools.helios import helios_utils;helios_utils.apply_materials_to_selected_cmd();
+    display_name: Apply Materials to Selected
+    icon: null
+    tooltip: Find texture files and apply them as Maya Materials
+categories:
+  2xe3-nkkxd-llcz6-1sx8:
+    children:
+    - 5p1n-u7ecb-63b21-kk1f
+    display_name: Summoner
+    icon: null
+    tooltip: ''
+  498e-mtndb-6ulq2-rp9f:
+    children:
+    - xg4p-79few-u95a4-ux2b
+    - x2k8-iedqf-aryce-2eug
+    - qngk-z92im-5dwcl-wayx
+    display_name: Cinematics
+    icon: null
+    tooltip: ''
+  6w1p-sgfki-n473u-ane5:
+    children:
+    - qx1p-7po4o-yf66n-83gn
+    display_name: Plastic
+    icon: null
+    tooltip: ''
+  7nqr-5w52h-4tphe-m7oc:
+    children:
+    - jd3b-664pq-1gjrd-fans
+    display_name: Re-Animator
+    icon: add
+    tooltip: ''
+  Main:
+    children:
+    - hihn-d9wya-hczui-vgou
+    - o1w2-ng7gt-gdftr-50bf
+    - jg4o-za7m7-24l23-g28x
+    - 498e-mtndb-6ulq2-rp9f
+    display_name: ''
+    icon: null
+    tooltip: ''
+  g5wn-p6foi-gb08l-2ixd:
+    children:
+    - qgjn-4ool1-z4hho-wpku
+    - hmyi-r237p-dsbjx-kpl2
+    - qpvu-02exq-yksdp-s8dz
+    display_name: Skinning Tools
+    icon: null
+    tooltip: ''
+  g6h9-7ks8f-rju0m-8q3p:
+    children:
+    - c7oy-2gey1-m73nj-qvj8
+    - 3d4h-5b0g4-gebsh-5l8h
+    - jqzk-gxvsj-k4b9w-4m42
+    - auuh-ol9xy-erjht-2vzz
+    display_name: Plugins
+    icon: null
+    tooltip: ''
+  hihn-d9wya-hczui-vgou:
+    children:
+    - j94f-ko7cq-tcnf5-aqzl
+    - 2xe3-nkkxd-llcz6-1sx8
+    - 7nqr-5w52h-4tphe-m7oc
+    - rl1e-vjpzc-cwe3s-0uo5
+    - 6w1p-sgfki-n473u-ane5
+    - yetb-9wr5i-2jhye-wo4x
+    display_name: Animation
+    icon: add
+    tooltip: ''
+  j94f-ko7cq-tcnf5-aqzl:
+    children:
+    - jx9p-nuaxp-h1cl2-hqpb
+    - ewrn-nk2d3-ud0rt-xxy7
+    - 61qb-qqh4p-xdshc-0by3
+    - 4xps-x6zwc-cah2m-s6k2
+    - b74w-es7yf-k8rb8-i7yr
+    - fxmr-4og83-opnyd-4ejc
+    - p7a0-mu0i9-l6km0-28lk
+    - wsq1-bu7cp-fwl7a-w2ic
+    display_name: Animation and Rig Tools
+    icon: null
+    tooltip: ''
+  jg4o-za7m7-24l23-g28x:
+    children:
+    - knov-4lfjs-g468r-wj0g
+    - g5wn-p6foi-gb08l-2ixd
+    - g6h9-7ks8f-rju0m-8q3p
+    - y4dk-r6meh-z127u-bh54
+    display_name: Rigging
+    icon: add
+    tooltip: ''
+  knov-4lfjs-g468r-wj0g:
+    children:
+    - ajo5-8g9en-zu8ju-w05p
+    - hy6u-3jjex-p3r15-s3dh
+    - vrgk-pw00w-5rtyq-e66q
+    - on8y-vlide-h8c7m-fgh9
+    display_name: Rigging Tools
+    icon: null
+    tooltip: ''
+  m1w1-0yu8x-cp0ka-rlqw:
+    children:
+    - mej6-f5wlc-0lbyc-nizd
+    - ufxf-uoz31-fr5pu-u20s
+    display_name: Textures
+    icon: null
+    tooltip: ''
+  nm8t-l8ntk-rnctf-5rcz:
+    children:
+    - eqae-gt6ml-n50t3-y9gi
+    display_name: Plugins
+    icon: null
+    tooltip: ''
+  o1w2-ng7gt-gdftr-50bf:
+    children:
+    - ww6a-negv2-i7oti-em3s
+    - m1w1-0yu8x-cp0ka-rlqw
+    - nm8t-l8ntk-rnctf-5rcz
+    display_name: Modeling
+    icon: add
+    tooltip: ''
+  qngk-z92im-5dwcl-wayx:
+    children:
+    - m4i9-9i9rv-g1cn8-v6gl
+    - uksr-2t6jn-5jq7k-y58r
+    - 7fr6-xj1hi-creme-hffm
+    display_name: Camera Tools
+    icon: null
+    tooltip: ''
+  rl1e-vjpzc-cwe3s-0uo5:
+    children:
+    - lhzj-by6d5-grpq9-1vo8
+    - bngf-8b47n-c8r5d-vqr0
+    - pjw4-h88g3-au98m-v6bs
+    display_name: Rig Attachments
+    icon: null
+    tooltip: ''
+  ww6a-negv2-i7oti-em3s:
+    children:
+    - vkow-qsdvm-uy5pb-loz9
+    - j5ed-gcpsb-2zi1x-akgu
+    - a2nk-tpbot-l4uih-frvu
+    - kafd-d5mjz-ecfxs-m2f5
+    display_name: Modeling Tools
+    icon: add
+    tooltip: ''
+  x2k8-iedqf-aryce-2eug:
+    children:
+    - t715-s1rlh-174yk-obi0
+    - mqsl-b1nda-wab6v-paar
+    - 6qtl-255dm-idy8n-hhxn
+    display_name: Cinematic Tools
+    icon: null
+    tooltip: ''
+  xg4p-79few-u95a4-ux2b:
+    children:
+    - 5baw-nyj4g-nqbj6-kias
+    display_name: Open Cine Shot
+    icon: null
+    tooltip: ''
+  y4dk-r6meh-z127u-bh54:
+    children:
+    - rbvj-q2b74-e0g0i-x8h1
+    display_name: Miscellaneous
+    icon: null
+    tooltip: ''
+  yetb-9wr5i-2jhye-wo4x:
+    children:
+    - 85nx-1yjbg-rd3aw-elc1
+    - uefw-o6vjh-q2nf1-im22
+    display_name: Third Party
+    icon: null
+    tooltip: ''
+layouts:
+  3d4h-5b0g4-gebsh-5l8h:
+    children:
+    - hq4b-637ym-uzid3-z765
+  4xps-x6zwc-cah2m-s6k2:
+    children:
+    - vwvr-0vcj0-y87vt-z440
+  5baw-nyj4g-nqbj6-kias:
+    children:
+    - i7yr-j95rx-8pvs4-x7a1
+  5p1n-u7ecb-63b21-kk1f:
+    children:
+    - eo3x-lzmho-o3bpr-0yni
+  61qb-qqh4p-xdshc-0by3:
+    children:
+    - mah7-scoio-15cez-o51c
+    - kvse-4oxqu-iphcz-0i91
+  6qtl-255dm-idy8n-hhxn:
+    children:
+    - jb06-wfu8u-5kcno-uih0
+  7fr6-xj1hi-creme-hffm:
+    children:
+    - i4bc-j07c9-93k0u-acta
+    - l42y-bt97n-u69vw-puv0
+  85nx-1yjbg-rd3aw-elc1:
+    children:
+    - vnjv-ww6wg-oju4a-6cgo
+  a2nk-tpbot-l4uih-frvu:
+    children:
+    - u00j-oh3yc-wo3ky-fol4
+  ajo5-8g9en-zu8ju-w05p:
+    children:
+    - jym7-g9tod-ohwo9-2l7q
+  auuh-ol9xy-erjht-2vzz:
+    children:
+    - xzeh-6jz3t-7ebn1-zizz
+  b74w-es7yf-k8rb8-i7yr:
+    children:
+    - vuw7-ypjuk-0qzi3-ohhl
+    - mhu5-ow9xn-cje3x-wgbt
+  bngf-8b47n-c8r5d-vqr0:
+    children:
+    - kofn-g8nni-k5mlp-afns
+    - sdjy-ncvff-ugvfk-l9h4
+  c7oy-2gey1-m73nj-qvj8:
+    children:
+    - 0igc-urjjx-4a22w-792s
+  eqae-gt6ml-n50t3-y9gi:
+    children:
+    - nxwa-thb0e-ys7mz-qhjp
+  ewrn-nk2d3-ud0rt-xxy7:
+    children:
+    - sz90-l77f9-a14ke-pbnm
+  fxmr-4og83-opnyd-4ejc:
+    children:
+    - 9h9z-80h8z-ngat2-4vtu
+  hmyi-r237p-dsbjx-kpl2:
+    children:
+    - g0d1-fqnky-1yh85-n3zn
+  hy6u-3jjex-p3r15-s3dh:
+    children:
+    - h462-9ytqd-2azi8-pmeu
+  j5ed-gcpsb-2zi1x-akgu:
+    children:
+    - p359-rp3ei-hdtgm-hqz8
+  jd3b-664pq-1gjrd-fans:
+    children:
+    - 910m-3i6eh-wx4kt-kh8b
+  jqzk-gxvsj-k4b9w-4m42:
+    children:
+    - 0f0i-ldiw8-4q1i1-d4dz
+  jx9p-nuaxp-h1cl2-hqpb:
+    children:
+    - ozrf-8t3nj-3qa59-68w2
+  kafd-d5mjz-ecfxs-m2f5:
+    children:
+    - yuks-db88u-6lqkq-c44b
+  lhzj-by6d5-grpq9-1vo8:
+    children:
+    - riy9-g7uhc-dn1zq-ze1f
+  m4i9-9i9rv-g1cn8-v6gl:
+    children:
+    - 7982-8g38w-k6bgh-dzm2
+    - onec-uu0c1-bj79b-8c3x
+  mej6-f5wlc-0lbyc-nizd:
+    children:
+    - o64c-xd9ik-0lixq-a0l6
+    - zp8k-vbjfi-n6ab6-r2i8
+  mqsl-b1nda-wab6v-paar:
+    children:
+    - k8n3-h0hqb-1okio-n2m6
+  on8y-vlide-h8c7m-fgh9:
+    children:
+    - ogmb-wsee1-0a0yq-2emq
+  p7a0-mu0i9-l6km0-28lk:
+    children:
+    - uxun-k6m24-5fmnm-w2a9
+  pjw4-h88g3-au98m-v6bs:
+    children:
+    - 6ryk-pvew9-gbt5f-4zlu
+  qgjn-4ool1-z4hho-wpku:
+    children:
+    - z0gn-6zem6-pv77g-9g66
+  qpvu-02exq-yksdp-s8dz:
+    children:
+    - 1xpd-garym-ya2di-6ybq
+  qx1p-7po4o-yf66n-83gn:
+    children:
+    - df9f-u22sj-ktunm-vhbg
+  rbvj-q2b74-e0g0i-x8h1:
+    children:
+    - a5cp-vf45b-49ygs-odoe
+  t715-s1rlh-174yk-obi0:
+    children:
+    - qrax-iyfef-2jchn-etiu
+  uefw-o6vjh-q2nf1-im22:
+    children:
+    - c23g-ed3ua-zejsn-3u9a
+  ufxf-uoz31-fr5pu-u20s:
+    children:
+    - to6f-z0ped-46rxv-4sjq
+  uksr-2t6jn-5jq7k-y58r:
+    children:
+    - 9rgj-5q5tz-ar19i-bgt7
+  vkow-qsdvm-uy5pb-loz9:
+    children:
+    - ldy0-zyvd6-5r1fg-5w5a
+  vrgk-pw00w-5rtyq-e66q:
+    children:
+    - ogbs-1y2u1-e1hxt-dmbh
+  wsq1-bu7cp-fwl7a-w2ic:
+    children:
+    - 4ts5-u0syt-f8rcz-q5r9
+    - wj1p-iqnx3-uhuaw-hptl

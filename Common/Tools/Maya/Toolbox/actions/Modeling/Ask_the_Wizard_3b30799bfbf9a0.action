@@ -1,0 +1,10 @@
+command: 'from mca.maya.tools.helios import helios_ui
+
+
+  helios_ui.summon_the_wizard()'
+icon: null
+id: 3b30799bfbf9a0
+info: Ask the wizard to organize your scene and create new model assets.
+name: Ask the Wizard
+syntax: python
+tags: modeling,tools

@@ -1,0 +1,14 @@
+command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-maya-tools-skeletonpins'')'
+icon: null
+id: 3b7e36efacb714
+info: 'Add pins for visual reference of joints and their pivots '
+name: Reference Pins
+syntax: python
+tags: modelling,skeleton,reference,pin
+ui_command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-maya-tools-skeletonpins'')'

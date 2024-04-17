@@ -1,0 +1,26 @@
+command: "import pymel.all as pm\nfrom mca.common.python import decorators\n\nselection = pm.selected()\n\n@decorators.track_fnc\ndef create_game_camera(name, with_aim=True, ratio=None):\n    \"\"\"\n \
+  \   Create a preview camera with game FOV settings.\n\n    :param str name: The name of the new camera.\n    :param bool with_aim: If the camera should be an aim camera.\n    :param list[float, float]\
+  \ ratio: The horizontal to vertical ratios of the camera.\n    :return: The newly created transform of the camera node.\n    :rtype: Camera\n    \"\"\"\n    preview_camera, preview_camera_shape = pm.camera(ff='overscan')\
+  \  # New camera\n    if with_aim:\n        pm.mel.eval(f'objectMoveCommand; cameraMakeNode 2 \"{preview_camera.name()}\";')  # Set camera to look at cam.\n        preview_camera_aim = pm.PyNode(pm.pickWalk(preview_camera,\
+  \ direction='left')[0])\n        preview_camera_aim.rename(f'{name}_aim')\n        preview_camera.getParent().rename(f'{name}_group')\n    preview_camera.rename(f'{name}')\n\n    ratio = ratio or [1.6,\
+  \ .9]\n\n    preview_camera_shape.displayFilmGate.set(0)  # Turn off display film gate\n    preview_camera_shape.displayResolution.set(1)  # Turn on display resolution\n    preview_camera_shape.filmFit.set(3)\
+  \  # Set camera to overscan on both horizontal/vertical\n    preview_camera_shape.overscan.set(1.1)  # Set overscan border to 1.1\n    preview_camera_shape.displayGateMaskColor.set(0, 0, 0)  # Set gatemask\
+  \ to black\n    preview_camera_shape.displayGateMaskOpacity.set(1)  # Set gatemask opactiy to solid\n    preview_camera_shape.journalCommand.set(1)  # Turn on camera undo\n    preview_camera_shape.fStop.set(1)\n\
+  \    preview_camera_shape.horizontalFilmAperture.set(ratio[0])\n    preview_camera_shape.verticalFilmAperture.set(ratio[1])\n\n    preview_camera.addAttr('fov', at='float', k=True, dv=60, minValue=30)\n\
+  \    preview_camera.addAttr('fov_tan', at='float')\n    preview_camera.addAttr('fov_type', at='enum', en='horizontal:vertical', k=False)\n    preview_camera.fov_type.showInChannelBox(True)\n    # part\
+  \ of the calculation to determine focal length. We're converting the FOV to radians and halving it.\n    # so if the view angle is 90 def we're calculating on 45 deg.\n    # .00872665 converts degs to\
+  \ rads\n    # 0.03937 converts mm to inches which for some reason Maya's internal camera is set to.\n    # using an expression here because there isn't a great math node alternative.\n    pm.expression(s='fov_tan\
+  \ = tan(.00872665*fov*.5)*0.03937', o=preview_camera, uc='all', ae=False)\n\n    # instead of hardcoding horizontal vs vertical FOV stuff all the time I'm just going to add a switch here.\n    choice_node\
+  \ = pm.createNode(pm.nt.Choice, n='preview_cam_fov')\n    preview_camera.fov_type >> choice_node.selector\n    preview_camera_shape.horizontalFilmAperture >> choice_node.input[0]\n    preview_camera_shape.verticalFilmAperture\
+  \ >> choice_node.input[1]\n\n    # So take our aspect ratio and halve it since we're doing the same to calculate FOV.\n    multi_node = pm.createNode(pm.nt.MultiplyDivide, n='preview_cam_half_fov')\n\
+  \    choice_node.output >> multi_node.input1X\n    multi_node.input2X.set(.5)\n\n    # now divide our half resolution by our tan expression.\n    tan_node = pm.createNode(pm.nt.MultiplyDivide, n='preview_cam_tan')\n\
+  \    tan_node.operation.set(2)\n    multi_node.outputX >> tan_node.input1X\n    preview_camera.fov_tan >> tan_node.input2X\n\n    # reapply the end result to our focalLength\n    tan_node.outputX >> preview_camera.focalLength\n\
+  \    return preview_camera\n\nif selection and len(selection) == 2:\n    preview_camera = create_game_camera('previewCam', with_aim=True, ratio=[21, 9])\n    pm.pointConstraint(selection[0], preview_camera)\n\
+  \    preview_camera_aim = pm.PyNode(pm.pickWalk(preview_camera, direction='left')[0])\n    pm.parentConstraint(selection[1], preview_camera_aim)"
+icon: null
+id: 3b2b15ac5d80e8
+info: Add a camera to the selected objects, first is the camera position, second is the look at.
+name: 'TEMP: Add Camera'
+syntax: python
+tags: tools,animation
+ui_command: ''

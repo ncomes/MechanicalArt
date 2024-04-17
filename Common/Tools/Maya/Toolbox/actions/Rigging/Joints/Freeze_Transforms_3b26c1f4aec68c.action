@@ -1,0 +1,9 @@
+command: 'import pymel.core as pm
+
+  pm.makeIdentity(apply=True, t=True, r=True, s=True, n=False, pn=True)'
+icon: snowflake.png
+id: 3b26c1f4aec68c
+info: Freezes the transforms of the selected joints
+name: Freeze Transforms
+syntax: python
+tags: freeze,transform,joint

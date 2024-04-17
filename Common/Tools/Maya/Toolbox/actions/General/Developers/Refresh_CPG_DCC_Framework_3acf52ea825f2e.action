@@ -1,0 +1,14 @@
+command: "import os\nimport sys\n\n# register environment variables\nos.environ['mca_ENV_DEV'] = 'True'\nos.environ['mca_TOOLS_ROOT'] = r'D:\\tools\\dev\\mca-dcc-dev\\packages\\mca-dcc-bootstrap'\nos.environ['mca_DEPS_ROOT']\
+  \ = r'D:\\tools\\dev\\mca-dcc-dev\\packages\\mca-dcc-dependencies'\nos.environ['mca_DCC_SENTRY'] = 'False'\nos.environ['mca_SHELF'] = 'False'\n\n# make sure to update sys.path so mca DCC Tools package\
+  \ manager an dependencies are available\nroot_path = os.environ['mca_TOOLS_ROOT']\nif os.path.isdir(root_path) and root_path not in sys.path:\n    sys.path.append(root_path)\n\ndef reload_modules():\n\
+  \    \"\"\"\n    Function that forces the reloading of all mca related modules\n    \"\"\"\n\n    modules_to_reload = ('mca', 'studioqt', 'studiolibrary', 'studiovendor')\n    for k in sys.modules.copy().keys():\n\
+  \        found = False\n        for mod in modules_to_reload:\n            if mod == k:\n                del sys.modules[mod]\n                found = True\n                break\n        if found:\n\
+  \            continue\n        if k.startswith(modules_to_reload):\n            del sys.modules[k]\n\n# from mca import dcc\n# dcc.new_scene(force=True)\n\n# cleanup framework\nimport mca.bootstrap\n\
+  try:\n    mca.bootstrap.shutdown()\nexcept Exception: \n    pass\nreload_modules()\n\n# register environment variables after shutdown\nos.environ['mca_PROJECT'] = 'darkwinter'   # project you want to\
+  \ work with ('godfall', 'darkwinter', 'thronemaster', ...)\nos.environ['mca_DEV'] = 'False'\n\n# load framework\nimport mca.bootstrap\nmca.bootstrap.init()"
+icon: refresh.png
+id: 3acf52ea825f2e
+info: Refresh mca DCC Framework. Only should be used by DEVELOPERS.
+name: Refresh mca DCC Framework
+syntax: python
+tags: mca,dcc,framework,refresh

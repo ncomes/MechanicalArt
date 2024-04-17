@@ -1,0 +1,7 @@
+command: "from mca.maya.plugins import livelink; \n\nlivelink.open_livelink_ui()"
+icon: unreal.png
+id: 3acf5567df3de4
+info: Third Party tool that allows to send animation data in realtime between Maya and Unreal Engine
+name: Unreal Live Link
+syntax: python
+tags: uneral,live,link

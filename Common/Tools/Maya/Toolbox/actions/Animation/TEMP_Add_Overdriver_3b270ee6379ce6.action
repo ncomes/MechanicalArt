@@ -1,0 +1,9 @@
+command: 'from mca.rigging.maya.utils import helpers as rig_utils
+
+  rig_utils.create_overdriver_cmd()'
+icon: null
+id: 3b270ee6379ce6
+info: Add a parent constriant back to a flag from a selected object. Select the control object first and the flag second.
+name: Add Overdriver
+syntax: python
+tags: tools,animation

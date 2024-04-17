@@ -1,0 +1,18 @@
+command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-tools-rig-timewarp'')
+
+  '
+icon: null
+id: 3b3166d94490da
+info: Add and remove objects from a timewarp system allowing you to retime the curves.
+name: Timewarp Selection
+syntax: python
+tags: tools,animation
+ui_command: 'from mca.rigging.maya.tools.timewarp import timewarp
+
+
+  tool_ui = timewarp.Timewarp()
+
+  tool_ui.initialize()'

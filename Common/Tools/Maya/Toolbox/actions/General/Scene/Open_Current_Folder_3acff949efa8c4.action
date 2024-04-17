@@ -1,0 +1,10 @@
+command: "import os\nimport sys\nimport subprocess\n\nimport pymel.core as pm\n\nfrom mca.core import log\n\nlogger = log.mcaLogger\n\ncurrent_file = pm.sceneName()\ndirectory = os.path.split(current_file)[0]\
+  \ + os.sep\n\nif sys.platform == 'darwin':\n    subprocess.check_call(['open', '--', directory])\nelif sys.platform == 'linux2':\n    subprocess.Popen([\"xdg-open\", directory])\nelif sys.platform is\
+  \ 'windows' or 'win32' or 'win64':\n    directory = current_file.replace(\"/\",\"\\\\\")\n    try:\n        subprocess.Popen(r'explorer /select,\"{}\"'.format(directory))\n    except Exception:\n    \
+  \    logger.error('Cannot open folder: {}'.format(directory))\n"
+icon: folder.png
+id: 3acff949efa8c4
+info: "Open folder from the current opened file\r"
+name: Open Current Folder
+syntax: python
+tags: open,current,location

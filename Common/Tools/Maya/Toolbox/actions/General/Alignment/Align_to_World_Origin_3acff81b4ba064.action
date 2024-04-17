@@ -1,0 +1,9 @@
+command: "import pymel.core as pm\nimport maya.cmds as cmds\n\nselection = pm.ls(sl=True)\n\nfor node in selection:\n    locator = pm.spaceLocator()\n    pm.select(locator, node)\n    cmds.align(x='mid',\
+  \ y='min', z='mid', alignToLead=True)\n    position = locator.getRotatePivot(ws=True)\n    pm.xform(node, rotatePivot=position, sp=position, ws=True)\n    locator.translate.set(0,0,0)\n    pm.select(node,\
+  \ locator)\n    cmds.align(x='mid', y=\"min\", z=\"mid\",alignToLead=True)\n    pm.delete(locator)\n"
+icon: null
+id: 3acff81b4ba064
+info: Align objects world origin
+name: Align to World Origin
+syntax: python
+tags: align

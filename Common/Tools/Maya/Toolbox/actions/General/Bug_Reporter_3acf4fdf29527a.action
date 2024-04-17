@@ -1,0 +1,9 @@
+command: 'from mca.core.managers import tools
+
+  tools.ToolsManager().launch_tool_by_id(''mca-tools-common-bugreporter'')'
+icon: bug.png
+id: 3acf4fdf29527a
+info: Tool to report mca tools related bugs
+name: Bug Reporter
+syntax: python
+tags: bug,report,tools

@@ -1,0 +1,9 @@
+command: 'from mca.core.managers import tools
+
+  tools.ToolsManager().launch_tool_by_id(''mca-tools-rig-facestagingui'')'
+icon: null
+id: 3b1cd9fe7b88d6
+info: The staging tool to rig, model, and fix facial rigs.
+name: Face Staging Tool
+syntax: python
+tags: ''

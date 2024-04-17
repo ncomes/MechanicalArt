@@ -1,0 +1,10 @@
+command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-tools-anim-studiolibrary'')'
+icon: studiolibrary.png
+id: 3acf54c808f782
+info: Third Party Tool to load and save animation poses
+name: Studio Library
+syntax: python
+tags: studio,library,animation,pose

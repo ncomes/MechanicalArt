@@ -1,0 +1,8 @@
+command: "from mca.core import log, utils\nfrom mca.common.python import osplatform\n\nlogger = log.mcaLogger\n\nproject = utils.get_project()\nif project:\n    project_folder = osplatform.open_folder(project.get_plastic_folder())\n\
+  else:\n    logger.error('No mca project defined')\n"
+icon: plastic_folder.png
+id: 3acff9c813801e
+info: Opens current mca project Plastic workspace root folder
+name: Open Plastic Project Folder
+syntax: python
+tags: plastic,root,folder

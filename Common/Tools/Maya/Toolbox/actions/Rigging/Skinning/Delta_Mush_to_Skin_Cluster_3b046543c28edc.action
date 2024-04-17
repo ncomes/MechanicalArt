@@ -1,0 +1,9 @@
+command: 'from mca.rigging.maya.plugins.dm2sc import convert
+
+  convert.main()'
+icon: null
+id: 3b046543c28edc
+info: Transfers Delta Mush deformation to Skin Cluster
+name: Delta Mush to Skin Cluster
+syntax: python
+tags: rig,skin,delta,mush,deformation

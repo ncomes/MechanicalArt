@@ -1,0 +1,7 @@
+command: "from mca.core import log, utils\n\nlogger = log.mcaLogger\n\nproject = utils.get_project()\nif project:\n    project.open_confluence_url()\nelse:\n    logger.error('No mca project defined')\n"
+icon: confluence.png
+id: 3acffa72454836
+info: Opens current mca project Confluence web page
+name: Open Confluence
+syntax: python
+tags: mca,project,confluence

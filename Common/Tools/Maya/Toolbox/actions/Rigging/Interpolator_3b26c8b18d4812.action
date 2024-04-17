@@ -1,0 +1,11 @@
+command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-tools-rig-interpolator'')'
+icon: null
+id: 3b26c8b18d4812
+info: Tool that allows to easily animation channels without the need of creating keyframes
+name: Interpolator
+syntax: python
+tags: interpolator,keyframe
+ui_command: ''

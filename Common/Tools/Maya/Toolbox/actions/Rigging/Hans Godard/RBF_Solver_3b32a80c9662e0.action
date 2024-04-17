@@ -1,0 +1,16 @@
+command: 'import pymel.core as pm
+
+
+  from mca.maya.plugins import loader
+
+
+  loader.load_rbf_solver_plugin()
+
+  pm.createNode(''rbfSolver'')'
+icon: rbfSolver.png
+id: 3b32a80c9662e0
+info: The Radial Basis Function Solver is a way to interpolate an input in a system defined by Poses. Each pose describes a N-dimensional Key and a M-dimensional Value. It simply means, Keys can be anything,
+  and Values can be anything.
+name: RBF Solver
+syntax: python
+tags: hans,godard,rbf,solver,pose

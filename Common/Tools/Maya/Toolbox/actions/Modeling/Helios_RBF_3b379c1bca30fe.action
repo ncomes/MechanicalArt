@@ -1,0 +1,9 @@
+command: 'import mca.maya.tools.helios.helios_utils as helios_utils
+
+  helios_utils.helios_rbf_cmd()'
+icon: null
+id: 3b379c1bca30fe
+info: Retarget selected models between their RBF targets.
+name: Helios RBF
+syntax: python
+tags: tools,modeling

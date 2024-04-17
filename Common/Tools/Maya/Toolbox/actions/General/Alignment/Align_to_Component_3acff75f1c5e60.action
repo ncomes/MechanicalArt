@@ -1,0 +1,18 @@
+command: "import pymel.core as pm\nimport maya.mel as mel\n\nselection = pm.ls(sl=True, flatten=True)\n\nreference = selection[-1]\nselection.remove(reference)\npositions = list()\nmode = 'transform'\n\n\
+  for node in selection:\n    if '.vtx' in node.name():\n        position = pm.pointPosition(node, world=True)\n        mode = 'vertex'\n    elif '.e[' in node:\n        pm.select(node)\n        mel.eval('PolySelectConvert\
+  \ 3;')\n        vertex_selection = pm.ls(sl=True, flatten=True)\n        pos_01 = pm.pointPosition(vertex_selection[0], world=True)\n        pos_02 = pm.pointPosition(vertex_selection[1], world=True)\n\
+  \        x = (pos_01[0] + pos_02[0]) / 2\n        y = (pos_01[1] + pos_02[1]) / 2\n        z = (pos_01[2] + pos_02[2]) / 2\n        position = [x, y, z]\n        mode = 'edge'\n    elif '.f[' in node:\n\
+  \        pm.select(node)\n        mel.eval('PolySelectConvert 3;')\n        vertex_selection = pm.ls(sl=True, flatten=True)\n        x = 0\n        y = 0\n        z = 0\n        pos_len = len(vertex_selection)\n\
+  \        for vertex in vertex_selection:\n            position = pm.pointPosition(vertex, world=True)\n            x += position[0]\n            y += position[1]\n            z += position[2]\n      \
+  \  position = [(x / pos_len), (y / pos_len), (z / pos_len)]\n        mode = 'face'\n    else:\n        position = pm.xform(node, q=True, rp=True, ws=True)\n    positions.append(position)\n\nif mode !=\
+  \ \"transform\":\n    x_combined = 0\n    y_combined = 0\n    z_combined = 0\n    for position in positions:\n        x_combined += position[0]\n        y_combined += position[1]\n        z_combined +=\
+  \ position[2]\n\n    pos_len = len(positions)\n    temp_locator = pm.spaceLocator()\n    pm.xform(temp_locator, t=((x_combined / pos_len), (y_combined / pos_len), (z_combined / pos_len)))\n    pm.select(temp_locator,\
+  \ reference)\n    constraint = pm.parentConstraint()\n    pm.delete(constraint, temp_locator)\nelse:\n    temp_locator = pm.spaceLocator()\n    pm.xform(reference, t=positions[0], ws=True)\n    pm.select(temp_locator,\
+  \ reference)\n    constraint = pm.parentConstraint()\n    pm.delete(constraint, temp_locator)\n\ntry:\n    pm.select(selection[0], reference)\n    normal_constraint = pm.normalConstraint()\n    pm.delete(normal_constraint)\n\
+  except Exception:\n    pass\n\npm.select(reference)\n"
+icon: null
+id: 3acff75f1c5e60
+info: Align the last selected object [Vertex/Edges/Faces + Object]
+name: Align to Component
+syntax: python
+tags: align

@@ -1,0 +1,52 @@
+actions:
+  oabe-gtpad-24la0-k3zg:
+    action_type: QWidget
+    color: null
+    command: 'from cpg.ue.tools.assetimporter import asset_importer
+
+      win = asset_importer.CPGUnrealAssetImporter()'
+    display_name: Asset Importer
+    icon: null
+    tooltip: Import Assets into Unreal
+  r2ap-8yjts-5yohk-4ees:
+    action_type: QWidget
+    color: null
+    command: 'from cpg.ue.tools.assetlist_ui import asset_list_ui
+
+      win = asset_list_ui.CPGUnrealAssetListUI()'
+    display_name: new embedded ui
+    icon: null
+    tooltip: ''
+categories:
+  Main:
+    children:
+    - ydmi-e3zzj-3jrmo-fqz4
+    - ndzh-gsa6w-r84yi-8ylx
+    display_name: General
+    icon: null
+    tooltip: ''
+  ndzh-gsa6w-r84yi-8ylx:
+    children:
+    - oa2z-dre6k-j1u7b-mlkg
+    display_name: Modeling
+    icon: null
+    tooltip: ''
+  oa2z-dre6k-j1u7b-mlkg:
+    children:
+    - qqm3-v0y0r-g1v4j-anpc
+    display_name: Import
+    icon: null
+    tooltip: ''
+  ydmi-e3zzj-3jrmo-fqz4:
+    children:
+    - 7159-ma0js-ulipe-19wr
+    display_name: General
+    icon: null
+    tooltip: ''
+layouts:
+  7159-ma0js-ulipe-19wr:
+    children:
+    - r2ap-8yjts-5yohk-4ees
+  qqm3-v0y0r-g1v4j-anpc:
+    children:
+    - oabe-gtpad-24la0-k3zg

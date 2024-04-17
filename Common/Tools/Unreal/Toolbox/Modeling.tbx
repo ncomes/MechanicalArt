@@ -1,0 +1,23 @@
+actions: {}
+categories:
+  Main:
+    children:
+    - rqmx-3mj8e-cg392-1xvz
+    display_name: ''
+    icon: null
+    tooltip: ''
+  rqmx-3mj8e-cg392-1xvz:
+    children:
+    - yxon-807vh-hdg7n-6pll
+    - hoc0-awndr-k6pbz-i1ru
+    display_name: Import
+    icon: null
+    tooltip: ''
+layouts: {}
+references:
+  hoc0-awndr-k6pbz-i1ru:
+    reference_id: oabe-gtpad-24la0-k3zg
+    reference_toolbox: All Tools
+  yxon-807vh-hdg7n-6pll:
+    reference_id: r2ap-8yjts-5yohk-4ees
+    reference_toolbox: All Tools

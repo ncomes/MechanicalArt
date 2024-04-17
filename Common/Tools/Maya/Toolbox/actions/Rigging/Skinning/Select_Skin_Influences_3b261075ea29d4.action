@@ -1,0 +1,9 @@
+command: 'from mca.maya.utils.rigging import skin
+
+  skin.select_influences()'
+icon: null
+id: 3b261075ea29d4
+info: Select all the influences of the selected skinned mesh
+name: Select Skin Influences
+syntax: python
+tags: skin,select,influence

@@ -1,0 +1,12 @@
+command: 'from mca.rigging.maya.utils import flag_utils
+
+
+  selected_nodes = pm.selected()
+
+  flag_utils.zero_flags(selected_nodes)'
+icon: null
+id: 3afe4a8302eb0a
+info: Sets all the flag attributes that are keyable back to their default values.
+name: Zero Flags
+syntax: python
+tags: animation,tools

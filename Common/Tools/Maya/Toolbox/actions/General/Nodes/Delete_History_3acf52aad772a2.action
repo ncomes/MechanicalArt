@@ -1,0 +1,10 @@
+command: 'from mca.common.tools.toolbox.maya import general
+
+
+  general.delete_history()'
+icon: delete_history.png
+id: 3acf52aad772a2
+info: Deletes the history of the selected nodes.
+name: Delete History
+syntax: python
+tags: delete,history,node

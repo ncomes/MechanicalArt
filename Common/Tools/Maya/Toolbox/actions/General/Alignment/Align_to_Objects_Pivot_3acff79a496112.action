@@ -1,0 +1,8 @@
+command: "import pymel.core as pm\n\nselection = pm.ls(sl=True)\nmaster = selection[-1]\nmaster_list = selection\nmaster_list.remove(master)\n\nfor item in master_list:\n    pm.select(master, item)\n  \
+  \  constraint = pm.delete(pm.parentConstraint())\n\npm.select(master_list)\n"
+icon: null
+id: 3acff79a496112
+info: Align to last selected object pivot
+name: Align to Objects Pivot
+syntax: python
+tags: align

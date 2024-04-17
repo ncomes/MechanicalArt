@@ -1,0 +1,10 @@
+command: 'import pymel.core as pm
+
+
+  pm.runtime.JointTool()'
+icon: joint.png
+id: 3acf5383a37352
+info: Opens Maya Joint Tool.
+name: Joint Tool
+syntax: python
+tags: new,joint,create

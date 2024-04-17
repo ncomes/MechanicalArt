@@ -1,0 +1,16 @@
+command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-maya-tools-attrresetter'')'
+icon: null
+id: 3ad06822599314
+info: Tool to quickly reset node attributes to their defaults.
+name: Attributes Resetter
+syntax: python
+tags: attribute,edit,default,reset
+ui_command: 'from mca.maya.tools.attrresetter.core import tool
+
+
+  tool_ui = tool.AttributesResetterTool()
+
+  tool_ui.initialize()'

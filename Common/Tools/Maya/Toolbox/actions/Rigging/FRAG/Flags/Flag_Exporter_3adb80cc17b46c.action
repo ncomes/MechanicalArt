@@ -1,0 +1,16 @@
+command: 'from mca.core.managers import tools
+
+
+  tools.ToolsManager().launch_tool_by_id(''mca-tools-rig-flagsexporter'')'
+icon: export.png
+id: 3adb80cc17b46c
+info: Allow riggers to export flag data from current selected node
+name: Flag Exporter
+syntax: python
+tags: rig,flag,control
+ui_command: 'from mca.rigging.maya.tools.flags_exporter.core import tool
+
+
+  tool_ui = tool.FlagsExporter()
+
+  tool_ui.initialize()'

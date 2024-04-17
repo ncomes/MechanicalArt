@@ -1,0 +1,23 @@
+<RCC>
+  <qresource prefix="Styles">
+    <file>adaptic.css</file>
+    <file>clientor.css</file>
+    <file>mat_theme.css</file>
+    <file>dark_theme.css</file>
+    <file>darkeum.css</file>
+    <file>devsion.css</file>
+    <file>diffnes.css</file>
+    <file>fibers.css</file>
+    <file>genetive.css</file>
+    <file>hookmark.css</file>
+    <file>incrypt.css</file>
+    <file>integrid.css</file>
+    <file>irrorater.css</file>
+    <file>mailsy.css</file>
+    <file>obit.css</file>
+    <file>photoxo.css</file>
+    <file>synet.css</file>
+    <file>takeoz.css</file>
+    <file>visualscript.css</file>
+  </qresource>
+</RCC>

@@ -19,7 +19,7 @@ from mca.mya.modeling import blendshape_model, blendshape_node, face_model
 from mca.mya.face import source_data
 from mca.mya.face.face_utils import face_util
 from mca.mya.rigging import mesh_markup_rig
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.common.assetlist import assetlist
 
 SOURCE_FILE = 'source_head'
@@ -47,7 +47,7 @@ def convert_to_source_mesh(mesh, asset_id):
     source_mesh = face_model.FaceModel(source_mesh)
 
     # Change the category so we can identify it as a source mesh
-    source_mesh.category = tek.FACE_SOURCE_CATEGORY
+    source_mesh.category = frag.FACE_SOURCE_CATEGORY
 
     # check to make sure all the blendshapes are in the scene.
     source_mesh.import_blendshapes(asset_id=asset_id, exist_check=True)
@@ -78,7 +78,7 @@ def convert_all_to_source_mesh(mesh_list, asset_id, mesh_component):
     mesh_dict = {}
     for mesh_inst in source_list:
         mesh_dict[mesh_inst.type_name] = mesh_inst.mesh
-    attr_utils.set_compound_attribute_groups(mesh_component, tek.FACE_SOURCE_CATEGORY, mesh_dict)
+    attr_utils.set_compound_attribute_groups(mesh_component, frag.FACE_SOURCE_CATEGORY, mesh_dict)
     return source_list
 
 
@@ -253,7 +253,7 @@ def connect_source_meshes_to_rig(source_mesh_name, parameter_node, offset=-25.0)
         # connect the blend node to the rig
         blendnode.reconnect_to_rig(parameters=parameters_list, parameter_node=parameter_node)
 
-    face_mesh_component = tek.get_face_mesh_component(parameter_node)
+    face_mesh_component = frag.get_face_mesh_component(parameter_node)
 
     mesh_dict = {}
     for mesh in source_list:

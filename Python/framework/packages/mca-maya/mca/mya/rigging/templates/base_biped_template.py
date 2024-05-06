@@ -11,7 +11,7 @@ import pymel.core as pm
 # mca python imports
 from mca.common.utils import lists
 
-from mca.mya.rigging import chain_markup, tek
+from mca.mya.rigging import chain_markup, frag
 from mca.mya.utils import attr_utils
 
 from mca.mya.rigging.templates import rig_templates
@@ -30,17 +30,17 @@ class BipedBaseRig(rig_templates.RigTemplates):
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, 'combatant', self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, 'combatant', self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        flags_all = tek_rig.flagsAll.get()
+        flags_all = frag_rig.flagsAll.get()
 
         # Core Components
         # world
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                      root_joint,
                                                      'center',
                                                      'world')
@@ -49,7 +49,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
         offset_flag = world_component.offset_flag
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='root',
                                     source_object=root_flag,
@@ -58,7 +58,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
 
         # Cog
         pelvis_start, pelvis_end = skel_hierarchy.get_chain('pelvis', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                  pelvis_start,
                                                  pelvis_start,
                                                  'center',
@@ -71,7 +71,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
         # Center Components
         ###
         # Pelvis
-        pelvis_component = tek.PelvisComponent.create(tek_rig,
+        pelvis_component = frag.PelvisComponent.create(frag_rig,
                                                        pelvis_start,
                                                        pelvis_end,
                                                        'center',
@@ -82,7 +82,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
 
         # Spine
         spine_start, spine_end = skel_hierarchy.get_chain('spine', 'center')
-        spine_component = tek.RFKComponent.create(tek_rig,
+        spine_component = frag.RFKComponent.create(frag_rig,
                                                    spine_start,
                                                    spine_end,
                                                    'center',
@@ -90,7 +90,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
         spine_component.attach_component(cog_component, pm.PyNode(cog_flag))
         spine_sub_flags = spine_component.sub_flags
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='spine_top',
                                     source_object=spine_sub_flags[1],
@@ -100,7 +100,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
                                     translate=False,
                                     default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='spine_mid_top',
                                     source_object=spine_component.mid_flags[1],
@@ -110,7 +110,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
                                     translate=False,
                                     default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='spine_mid_bottom',
                                     source_object=spine_component.mid_flags[0],
@@ -122,7 +122,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
 
         # Neck
         neck_start, neck_end = skel_hierarchy.get_chain('neck', 'center')
-        neck_component = tek.RFKComponent.create(tek_rig,
+        neck_component = frag.RFKComponent.create(frag_rig,
                                                   neck_start,
                                                   neck_end,
                                                   'center',
@@ -135,7 +135,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
         mid_neck_flag = neck_component.mid_flags[0]
         mid_neck_flag.set_as_detail()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='head',
                                     source_object=head_flag,
@@ -147,7 +147,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
 
         # Center
         floor_joint = skel_hierarchy.get_start('floor', 'center')
-        floor_component = tek.FKComponent.create(tek_rig,
+        floor_component = frag.FKComponent.create(frag_rig,
                                                   floor_joint,
                                                   floor_joint,
                                                   side='center',
@@ -157,7 +157,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
         floor_flag = floor_component.get_end_flag()
         floor_flag.set_as_contact()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='floor_contact',
                                     source_object=floor_flag,
@@ -175,7 +175,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
             # Clav
             clav_start, clav_end = skel_hierarchy.get_chain('clav', side)
             if clav_start:
-                clav_component = tek.FKComponent.create(tek_rig,
+                clav_component = frag.FKComponent.create(frag_rig,
                                                          clav_start,
                                                          clav_end,
                                                          side=side,
@@ -187,7 +187,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
 
                 # IKFK arm
                 arm_start, arm_end = skel_hierarchy.get_chain('arm', side)
-                arm_component = tek.IKFKComponent.create(tek_rig,
+                arm_component = frag.IKFKComponent.create(frag_rig,
                                                           arm_start,
                                                           arm_end,
                                                           side=side,
@@ -196,7 +196,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
                 arm_component.attach_component(clav_component, clav_start)
                 component_dict['arm'] = arm_component
 
-                tek.MultiConstraint.create(tek_rig,
+                frag.MultiConstraint.create(frag_rig,
                                             side=side,
                                             region='arm_pv',
                                             source_object=arm_component.pv_flag,
@@ -205,7 +205,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
                 for finger in ['thumb', 'index_finger', 'middle_finger', 'ring_finger', 'pinky_finger']:
                     # Finger
                     finger_start, finger_end = skel_hierarchy.get_chain(finger, side)
-                    finger_component = tek.FKComponent.create(tek_rig,
+                    finger_component = frag.FKComponent.create(frag_rig,
                                                                finger_start,
                                                                finger_end,
                                                                side=side,
@@ -219,7 +219,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
 
                 # Hand contact
                 hand_contact = skel_hierarchy.get_start('hand_contact', side)
-                prop_component = tek.FKComponent.create(tek_rig,
+                prop_component = frag.FKComponent.create(frag_rig,
                                                          hand_contact,
                                                          hand_contact,
                                                          side=side,
@@ -233,7 +233,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
 
                 # Hand weapon
                 weapon_start = skel_hierarchy.get_start('hand_prop', side)
-                weapon_component = tek.FKComponent.create(tek_rig,
+                weapon_component = frag.FKComponent.create(frag_rig,
                                                            weapon_start,
                                                            weapon_start,
                                                            side=side,
@@ -253,14 +253,14 @@ class BipedBaseRig(rig_templates.RigTemplates):
             if leg_start:
                 if len(mid_joints) == 2:
                     # Standard 4 joint chain
-                    leg_component = tek.ReverseFootComponent.create(tek_rig,
+                    leg_component = frag.ReverseFootComponent.create(frag_rig,
                                                                      leg_start,
                                                                      leg_end,
                                                                      side=side,
                                                                      region='leg',
                                                                      ik_flag_pv_orient=[-90, 0, 0])
                 else:
-                    leg_component = tek.ZLegComponent.create(tek_rig,
+                    leg_component = frag.ZLegComponent.create(frag_rig,
                                                               leg_start,
                                                               leg_end,
                                                               side=side,
@@ -271,14 +271,14 @@ class BipedBaseRig(rig_templates.RigTemplates):
                 leg_ik_flag = leg_component.ik_flag
                 leg_switch_flag = leg_component.switch_flag
 
-                tek.MultiConstraint.create(tek_rig,
+                frag.MultiConstraint.create(frag_rig,
                                             side=side,
                                             region='ik_leg',
                                             source_object=leg_ik_flag,
                                             target_list=[offset_flag, pelvis_flag, cog_flag],
                                             switch_obj=leg_switch_flag)
 
-                tek.MultiConstraint.create(tek_rig,
+                frag.MultiConstraint.create(frag_rig,
                                             side='left',
                                             region='leg_pv',
                                             source_object=leg_component.pv_flag,
@@ -286,7 +286,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
 
                 # Contact
                 foot_contact = skel_hierarchy.get_start('foot_contact', side)
-                foot_contact_component = tek.FKComponent.create(tek_rig,
+                foot_contact_component = frag.FKComponent.create(frag_rig,
                                                                  foot_contact,
                                                                  foot_contact,
                                                                  side=side,
@@ -297,7 +297,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
                 foot_contact_flag.set_as_contact()
 
                 # Contact Multiconstraint
-                tek.MultiConstraint.create(tek_rig,
+                frag.MultiConstraint.create(frag_rig,
                                             side=side,
                                             region='foot_contact',
                                             source_object=foot_contact_flag,
@@ -310,7 +310,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
 
         # util
         util_joint = skel_hierarchy.get_start('utility', 'center')
-        util_component = tek.FKComponent.create(tek_rig,
+        util_component = frag.FKComponent.create(frag_rig,
                                                  util_joint,
                                                  util_joint,
                                                  side='center',
@@ -322,7 +322,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
 
         # util warp
         util_warp_joint = skel_hierarchy.get_start('utility_warp', 'center')
-        util_warp_component = tek.FKComponent.create(tek_rig,
+        util_warp_component = frag.FKComponent.create(frag_rig,
                                                       util_warp_joint,
                                                       util_warp_joint,
                                                       side='center',
@@ -334,7 +334,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
 
         # Pelvis
         contact_joint = skel_hierarchy.get_start('pelvis_contact', 'center')
-        pelvis_contact_component = tek.FKComponent.create(tek_rig,
+        pelvis_contact_component = frag.FKComponent.create(frag_rig,
                                                            contact_joint,
                                                            contact_joint,
                                                            side='center',
@@ -344,7 +344,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
         pelvis_contact_flag = pelvis_contact_component.get_end_flag()
         pelvis_contact_flag.set_as_contact()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='pelvis_contact',
                                     source_object=pelvis_contact_flag,
@@ -415,14 +415,14 @@ class BipedBaseRig(rig_templates.RigTemplates):
                 prop_target_list.append(cog_flag)
                 weapon_target_list.append(cog_flag)
 
-                tek.MultiConstraint.create(tek_rig,
+                frag.MultiConstraint.create(frag_rig,
                                             side=side,
                                             region='ik_arm',
                                             source_object=arm_ik_flag,
                                             target_list=ik_arm_target_list,
                                             switch_obj=arm_switch_flag, )
 
-                tek.MultiConstraint.create(tek_rig,
+                frag.MultiConstraint.create(frag_rig,
                                             side=side,
                                             region='fk_arm',
                                             source_object=arm_fk_flag,
@@ -440,7 +440,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
                 prop_target_list.append(arm_component.bindJoints.get()[-1])
 
                 if prop_flag:
-                    tek.MultiConstraint.create(tek_rig,
+                    frag.MultiConstraint.create(frag_rig,
                                                 side=side,
                                                 region='hand_prop',
                                                 source_object=prop_flag,
@@ -448,7 +448,7 @@ class BipedBaseRig(rig_templates.RigTemplates):
                                                 default_name=f'{side[0]}_hand')
 
                 if weapon_flag:
-                    tek.MultiConstraint.create(tek_rig,
+                    frag.MultiConstraint.create(frag_rig,
                                                 side=side,
                                                 region='weapon',
                                                 source_object=weapon_flag,
@@ -456,10 +456,10 @@ class BipedBaseRig(rig_templates.RigTemplates):
                                                 default_name=f'{side[0]}_weapon')
 
         if finalize:
-            tek_rig.rigTemplate.set(BipedBaseRig.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(BipedBaseRig.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class TheWarriorTemplate(BipedBaseRig):
@@ -473,15 +473,15 @@ class TheWarriorTemplate(BipedBaseRig):
 
         pm.namespace(set=':')
 
-        tek_rig = super(TheWarriorTemplate, self).build()
-        root_component = tek_rig.get_tek_parent()
-        spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='spine')[0]
+        frag_rig = super(TheWarriorTemplate, self).build()
+        root_component = frag_rig.get_frag_parent()
+        spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='spine')[0]
 
         root = root_component.root_joint
         chain = chain_markup.ChainMarkup(root)
 
         back_cloak_l = chain.get_chain('cloak', 'left')
-        back_cloak_l_component = tek.FKComponent.create(tek_rig,
+        back_cloak_l_component = frag.FKComponent.create(frag_rig,
                                                          back_cloak_l[0],
                                                          back_cloak_l[-1],
                                                          side='left',
@@ -492,7 +492,7 @@ class TheWarriorTemplate(BipedBaseRig):
         back_cloak_l_component.attach_component(spine_component, [pm.PyNode('spine_04')])
 
         back_cloak_r = chain.get_chain('cloak', 'right')
-        back_cloak_r_component = tek.FKComponent.create(tek_rig,
+        back_cloak_r_component = frag.FKComponent.create(frag_rig,
                                                          back_cloak_r[0],
                                                          back_cloak_r[-1],
                                                          side='right',
@@ -503,7 +503,7 @@ class TheWarriorTemplate(BipedBaseRig):
         back_cloak_r_component.attach_component(spine_component, [pm.PyNode('spine_04')])
 
         back_cloak_c = chain.get_chain('cloak', 'center')
-        back_cloak_c_component = tek.FKComponent.create(tek_rig,
+        back_cloak_c_component = frag.FKComponent.create(frag_rig,
                                                          back_cloak_c[0],
                                                          back_cloak_c[-1],
                                                          side='right',
@@ -514,7 +514,7 @@ class TheWarriorTemplate(BipedBaseRig):
         back_cloak_c_component.attach_component(spine_component, [pm.PyNode('spine_04')])
 
         if finalize:
-            tek_rig.rigTemplate.set(TheWarriorTemplate.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(TheWarriorTemplate.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig

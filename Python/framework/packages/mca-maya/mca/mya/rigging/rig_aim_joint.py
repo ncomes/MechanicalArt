@@ -10,7 +10,7 @@ Purpose: Tracks Joint data for face meshes.
 import pymel.core as pm
 #  python imports
 from mca.mya.rigging import rig_utils
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 
 
 def rig_aim_joint(bind_joint,
@@ -45,7 +45,7 @@ def rig_aim_joint(bind_joint,
 	rotate_loc_align_grp = rig_utils.create_align_transform(rotate_loc)
 	object_to_match = rig_utils.create_locator_at_object(bind_joint)
 	pm.move(object_to_match, direction, os=True, r=True)
-	aim_flag = tek_flag.Flag.create(object_to_match, label=(bind_joint.name() + '_aim'))
+	aim_flag = frag_flag.Flag.create(object_to_match, label=(bind_joint.name() + '_aim'))
 
 	pm.delete(object_to_match)
 	pm.aimConstraint(aim_flag,

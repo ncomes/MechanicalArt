@@ -19,7 +19,7 @@ from mca.mya.modeling import blendshape_model, face_model, rivets
 from mca.mya.utils import namespace, display_layers, fbx_utils, naming, groups, attr_utils
 from mca.mya.rigging import mesh_markup_rig, chain_markup
 from mca.mya.rigging.flags import flag_utils
-from mca.mya.rigging import tek, rig_utils, skel_utils
+from mca.mya.rigging import frag, rig_utils, skel_utils
 from mca.mya.face.face_utils import face_skinning
 from mca.mya.deformations import skin_utils
 
@@ -154,7 +154,7 @@ def get_all_scene_blendshapes(asset_id, region_name):
     :rtype: list(pm.nt.Transform)
     """
 
-    # Returns an instance of tekParameterData based on the region
+    # Returns an instance of fragParameterData based on the region
     parameters = get_parameters_region_instance(asset_id, region_name)
     pose_list = parameters.get_pose_list()
 
@@ -275,17 +275,17 @@ def has_skinning_data(mesh_name, asset_id, ext='.json'):
 
 def get_face_rigs_from_scene():
     """
-    Returns all the face TEKRigs from the scene.
+    Returns all the face FRAGRigs from the scene.
 
-    :return: Returns all the face TEKRigs from the scene.
-    :rtype: list(TEKRig)
+    :return: Returns all the face FRAGRigs from the scene.
+    :rtype: list(FRAGRig)
     """
 
-    all_roots = tek.get_all_tek_roots()
+    all_roots = frag.get_all_frag_roots()
     all_face_roots = [x for x in all_roots if x.assetType.get() == 'head']
-    all_tek_rigs = list(map(lambda x: x.get_rig(), all_face_roots))
-    all_tek_rigs = list(set(all_tek_rigs))
-    return all_tek_rigs
+    all_frag_rigs = list(map(lambda x: x.get_rig(), all_face_roots))
+    all_frag_rigs = list(set(all_frag_rigs))
+    return all_frag_rigs
 
 
 def create_pose_grp(shapes=None):
@@ -368,15 +368,15 @@ def clean_and_save_face_rig(asset_id, save_file=True):
     :param bool save_file: if True, the rig file will be saved.
     """
 
-    tek_roots = tek.get_all_tek_roots()
-    if not tek_roots:
+    frag_roots = frag.get_all_frag_roots()
+    if not frag_roots:
         return
-    tek_rig = tek_roots[0].get_rig()
-    face_component = tek.get_face_mesh_component(tek_rig)
+    frag_rig = frag_roots[0].get_rig()
+    face_component = frag.get_face_mesh_component(frag_rig)
     if not face_component:
         return
-    blendshape_meshes = face_component.get_all_category_meshes(tek.FACE_BLENDSHAPE_CATEGORY)
-    skinned_meshes = face_component.get_all_category_meshes(tek.FACE_SKINNED_CATEGORY)
+    blendshape_meshes = face_component.get_all_category_meshes(frag.FACE_BLENDSHAPE_CATEGORY)
+    skinned_meshes = face_component.get_all_category_meshes(frag.FACE_SKINNED_CATEGORY)
     for blendshape in blendshape_meshes:
         blendshape.v.set(0)
         blendshape = face_model.FaceModel(blendshape)
@@ -390,7 +390,7 @@ def clean_and_save_face_rig(asset_id, save_file=True):
                 face_skinning.apply_face_skinning_from_file(asset_id, skin_mesh)
 
     head_mesh = face_component.head_mesh
-    face_scene_setup(head_mesh.mesh, tek_rig)
+    face_scene_setup(head_mesh.mesh, frag_rig)
 
     if save_file:
         file_path = paths.get_asset_maya_rig_file_path(asset_id)

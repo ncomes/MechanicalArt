@@ -24,7 +24,7 @@ from mca.common.utils import fileio
 from mca.common.pyqt import messages
 from mca.mya.utils import optionvars, namespace
 from mca.mya.pyqt import dialogs, mayawindows
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 
 logger = log.MCA_LOGGER
 
@@ -252,8 +252,8 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
         self.rig_namespace = namespace.get_namespace(selection_str[0], False) + ':'
 
         for x in selection:
-            tek_rig = tek.get_tek_rig(x)
-        all_flags_raw = tek_rig.get_flags()
+            frag_rig = frag.get_frag_rig(x)
+        all_flags_raw = frag_rig.get_flags()
         all_flags_ns = [x.node.name() for x in all_flags_raw]
 
         xyz = []

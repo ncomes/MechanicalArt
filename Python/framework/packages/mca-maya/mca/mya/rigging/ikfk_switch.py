@@ -9,7 +9,7 @@ Purpose: Creates an ikfk switch
 # python imports
 import pymel.core as pm
 #  python imports
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 from mca.mya.utils import attr_utils
 
 
@@ -19,7 +19,7 @@ def ikfk_switch(switch_joint,
                 switch_attr_name='ikfk_switch',
                 scale=1.0):
 
-    switch_flag = tek_flag.Flag.create(switch_joint,
+    switch_flag = frag_flag.Flag.create(switch_joint,
                                     label='{0}_{1}_ikfk_switch'.format(side, region),
                                     scale=scale*.5,
                                     add_align_transform=True)

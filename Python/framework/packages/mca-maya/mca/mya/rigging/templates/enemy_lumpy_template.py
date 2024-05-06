@@ -9,7 +9,7 @@ Parameter data for working with the facial rigs.
 # mca python imports
 import pymel.core as pm
 
-from mca.mya.rigging import tek, chain_markup
+from mca.mya.rigging import frag, chain_markup
 from mca.mya.rigging.templates import rig_templates
 
 
@@ -27,15 +27,15 @@ class Lumpy(rig_templates.RigTemplates):
         # import Skeletal Mesh using ASSET_ID into the namespace
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, asset_type, self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, asset_type, self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        flags_all = tek_rig.flagsAll.get()
+        flags_all = frag_rig.flagsAll.get()
 
         # world
         start_joint = pm.PyNode('root')
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                             start_joint,
                                                             'center',
                                                             'world',
@@ -47,7 +47,7 @@ class Lumpy(rig_templates.RigTemplates):
         chain = chain_markup.ChainMarkup(start_joint)
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='root',
                                           source_object=root_flag,
@@ -58,7 +58,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Cog
         start_joint = pm.PyNode('pelvis')
         end_joint = pm.PyNode('pelvis')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                         start_joint,
                                                         end_joint,
                                                         'center',
@@ -70,7 +70,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Pelvis
         start_joint = pm.PyNode('pelvis')
         end_joint = pm.PyNode('spine_01')
-        pelvis_component = tek.PelvisComponent.create(tek_rig,
+        pelvis_component = frag.PelvisComponent.create(frag_rig,
                                                                 start_joint,
                                                                 end_joint,
                                                                 'center',
@@ -81,7 +81,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('loincloth')
         end_joint = pm.PyNode('loincloth')
-        finger_component = tek.FKComponent.create(tek_rig,
+        finger_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='center',
@@ -92,7 +92,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Spine
         start_joint = pm.PyNode('spine_01')
         end_joint = pm.PyNode('spine_04')
-        spine_component = tek.RFKComponent.create(tek_rig,
+        spine_component = frag.RFKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             'center',
@@ -103,7 +103,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('belly_l')
         end_joint = pm.PyNode('belly_l')
-        finger_component = tek.FKComponent.create(tek_rig,
+        finger_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='left',
@@ -113,7 +113,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('belly_r')
         end_joint = pm.PyNode('belly_r')
-        finger_component = tek.FKComponent.create(tek_rig,
+        finger_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='right',
@@ -124,7 +124,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Neck
         start_joint = pm.PyNode('neck_01')
         end_joint = pm.PyNode('head')
-        neck_component = tek.RFKComponent.create(tek_rig,
+        neck_component = frag.RFKComponent.create(frag_rig,
                                                         start_joint,
                                                         end_joint,
                                                         'center',
@@ -140,7 +140,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('jaw')
         end_joint = pm.PyNode('jaw')
-        finger_component = tek.FKComponent.create(tek_rig,
+        finger_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='center',
@@ -150,7 +150,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('hair_01_l')
         end_joint = pm.PyNode('hair_04_l')
-        l_hair = tek.FKComponent.create(tek_rig,
+        l_hair = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='left',
@@ -159,7 +159,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('hair_01_front_r')
         end_joint = pm.PyNode('hair_05_front_r')
-        r_front_hair = tek.FKComponent.create(tek_rig,
+        r_front_hair = frag.FKComponent.create(frag_rig,
                                                start_joint,
                                                end_joint,
                                                side='right',
@@ -168,7 +168,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('hair_01_back_r')
         end_joint = pm.PyNode('hair_06_back_r')
-        r_back_hair = tek.FKComponent.create(tek_rig,
+        r_back_hair = frag.FKComponent.create(frag_rig,
                                                start_joint,
                                                end_joint,
                                                side='right',
@@ -178,7 +178,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Left Clavicle
         start_joint = pm.PyNode('clavicle_l')
         end_joint = pm.PyNode('clavicle_l')
-        l_clav_component = tek.FKComponent.create(tek_rig,
+        l_clav_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -190,7 +190,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Right Clavicle
         start_joint = pm.PyNode('clavicle_r')
         end_joint = pm.PyNode('clavicle_r')
-        r_clav_component = tek.FKComponent.create(tek_rig,
+        r_clav_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -202,7 +202,7 @@ class Lumpy(rig_templates.RigTemplates):
         # IKFK Right arm
         start_joint = pm.PyNode('upperarm_r')
         end_joint = pm.PyNode('hand_r')
-        r_arm_component = tek.IKFKComponent.create(tek_rig,
+        r_arm_component = frag.IKFKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -217,7 +217,7 @@ class Lumpy(rig_templates.RigTemplates):
         # IKFK Left arm
         start_joint = pm.PyNode('upperarm_l')
         end_joint = pm.PyNode('hand_l')
-        l_arm_component = tek.IKFKComponent.create(tek_rig,
+        l_arm_component = frag.IKFKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -231,7 +231,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         # Left Hand weapon
         l_weapon = pm.PyNode('weapon_l')
-        l_weapon_component = tek.FKComponent.create(tek_rig,
+        l_weapon_component = frag.FKComponent.create(frag_rig,
                                                            l_weapon,
                                                            l_weapon,
                                                            side='left',
@@ -244,7 +244,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         # Right Hand weapon
         r_weapon = pm.PyNode('weapon_r')
-        r_weapon_component = tek.FKComponent.create(tek_rig,
+        r_weapon_component = frag.FKComponent.create(frag_rig,
                                                            r_weapon,
                                                            r_weapon,
                                                            side='right',
@@ -258,7 +258,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Left Back Clavicle
         start_joint = pm.PyNode('back_clavicle_l')
         end_joint = pm.PyNode('back_clavicle_l')
-        l_back_clav_component = tek.FKComponent.create(tek_rig,
+        l_back_clav_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -270,7 +270,7 @@ class Lumpy(rig_templates.RigTemplates):
         # IKFK Back Left arm
         start_joint = pm.PyNode('back_upperarm_l')
         end_joint = pm.PyNode('back_hand_l')
-        l_back_arm_component = tek.IKFKComponent.create(tek_rig,
+        l_back_arm_component = frag.IKFKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -288,7 +288,7 @@ class Lumpy(rig_templates.RigTemplates):
             end_joint = pm.PyNode(joint_name)
             region = joint_name.split('_')
             region = f'{region[0]}_{region[2]}'
-            finger_component = tek.FKComponent.create(tek_rig,
+            finger_component = frag.FKComponent.create(frag_rig,
                                                                   start_joint,
                                                                   end_joint,
                                                                   side='left',
@@ -299,7 +299,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Center Back Clavicle
         start_joint = pm.PyNode('back_clavicle_c')
         end_joint = pm.PyNode('back_clavicle_c')
-        c_back_clav_component = tek.FKComponent.create(tek_rig,
+        c_back_clav_component = frag.FKComponent.create(frag_rig,
                                                                 start_joint,
                                                                 end_joint,
                                                                 side='center',
@@ -311,7 +311,7 @@ class Lumpy(rig_templates.RigTemplates):
         # IKFK Center Left arm
         start_joint = pm.PyNode('back_upperarm_c')
         end_joint = pm.PyNode('back_hand_c')
-        c_back_arm_component = tek.IKFKComponent.create(tek_rig,
+        c_back_arm_component = frag.IKFKComponent.create(frag_rig,
                                                                 start_joint,
                                                                 end_joint,
                                                                 side='center',
@@ -329,7 +329,7 @@ class Lumpy(rig_templates.RigTemplates):
             end_joint = pm.PyNode(joint_name)
             region = joint_name.split('_')
             region = f'{region[0]}_{region[2]}'
-            finger_component = tek.FKComponent.create(tek_rig,
+            finger_component = frag.FKComponent.create(frag_rig,
                                                              start_joint,
                                                              end_joint,
                                                              side='center',
@@ -340,7 +340,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Right Back Clavicle
         start_joint = pm.PyNode('back_clavicle_r')
         end_joint = pm.PyNode('back_clavicle_r')
-        r_back_clav_component = tek.FKComponent.create(tek_rig,
+        r_back_clav_component = frag.FKComponent.create(frag_rig,
                                                                 start_joint,
                                                                 end_joint,
                                                                 side='right',
@@ -352,7 +352,7 @@ class Lumpy(rig_templates.RigTemplates):
         # IKFK Right Left arm
         start_joint = pm.PyNode('back_upperarm_r')
         end_joint = pm.PyNode('back_hand_r')
-        r_back_arm_component = tek.IKFKComponent.create(tek_rig,
+        r_back_arm_component = frag.IKFKComponent.create(frag_rig,
                                                                 start_joint,
                                                                 end_joint,
                                                                 side='right',
@@ -370,7 +370,7 @@ class Lumpy(rig_templates.RigTemplates):
             end_joint = pm.PyNode(joint_name)
             region = joint_name.split('_')
             region = f'{region[0]}_{region[2]}'
-            finger_component = tek.FKComponent.create(tek_rig,
+            finger_component = frag.FKComponent.create(frag_rig,
                                                              start_joint,
                                                              end_joint,
                                                              side='right',
@@ -381,7 +381,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Left Hand prop
         start_joint = pm.PyNode('hand_contact_l')
         end_joint = pm.PyNode('hand_contact_l')
-        l_prop_component = tek.FKComponent.create(tek_rig,
+        l_prop_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -395,7 +395,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Right Hand prop
         start_joint = pm.PyNode('hand_contact_r')
         end_joint = pm.PyNode('hand_contact_r')
-        r_prop_component = tek.FKComponent.create(tek_rig,
+        r_prop_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -409,7 +409,7 @@ class Lumpy(rig_templates.RigTemplates):
         # IKFK Left leg
         start_joint = pm.PyNode('thigh_l')
         end_joint = pm.PyNode('ball_l')
-        l_leg_component = tek.ReverseFootComponent.create(tek_rig,
+        l_leg_component = frag.ReverseFootComponent.create(frag_rig,
                                                                     start_joint,
                                                                     end_joint,
                                                                     side='left',
@@ -424,7 +424,7 @@ class Lumpy(rig_templates.RigTemplates):
         # IKFK Right leg
         start_joint = pm.PyNode('thigh_r')
         end_joint = pm.PyNode('ball_r')
-        r_leg_component = tek.ReverseFootComponent.create(tek_rig,
+        r_leg_component = frag.ReverseFootComponent.create(frag_rig,
                                                                     start_joint,
                                                                     end_joint,
                                                                     side='right',
@@ -440,7 +440,7 @@ class Lumpy(rig_templates.RigTemplates):
         # left Index Finger
         start_joint = pm.PyNode('index_metacarpal_l')
         end_joint = pm.PyNode('index_03_l')
-        l_index_component = tek.FKComponent.create(tek_rig,
+        l_index_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -451,7 +451,7 @@ class Lumpy(rig_templates.RigTemplates):
         # left middle Finger
         start_joint = pm.PyNode('middle_metacarpal_l')
         end_joint = pm.PyNode('middle_03_l')
-        l_middle_component = tek.FKComponent.create(tek_rig,
+        l_middle_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -462,7 +462,7 @@ class Lumpy(rig_templates.RigTemplates):
         # left ring Finger
         start_joint = pm.PyNode('ring_metacarpal_l')
         end_joint = pm.PyNode('ring_03_l')
-        l_ring_component = tek.FKComponent.create(tek_rig,
+        l_ring_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -473,7 +473,7 @@ class Lumpy(rig_templates.RigTemplates):
         # left Pinky Finger
         start_joint = pm.PyNode('pinky_metacarpal_l')
         end_joint = pm.PyNode('pinky_03_l')
-        l_pinky_component = tek.FKComponent.create(tek_rig,
+        l_pinky_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -484,7 +484,7 @@ class Lumpy(rig_templates.RigTemplates):
         # left Thumb Finger
         start_joint = pm.PyNode('thumb_01_l')
         end_joint = pm.PyNode('thumb_03_l')
-        l_thumb_component = tek.FKComponent.create(tek_rig,
+        l_thumb_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -495,7 +495,7 @@ class Lumpy(rig_templates.RigTemplates):
         # left Extra Finger 01
         start_joint = pm.PyNode('hexadactyl_metacarpal_l')
         end_joint = pm.PyNode('hexadactyl_03_l')
-        l_ext_component = tek.FKComponent.create(tek_rig,
+        l_ext_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -506,7 +506,7 @@ class Lumpy(rig_templates.RigTemplates):
         # left Extra Finger 02
         start_joint = pm.PyNode('eptadactyl_metacarpal_l')
         end_joint = pm.PyNode('eptadactyl_03_l')
-        l_ext_component = tek.FKComponent.create(tek_rig,
+        l_ext_component = frag.FKComponent.create(frag_rig,
                                                         start_joint,
                                                         end_joint,
                                                         side='left',
@@ -519,7 +519,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Right Index Finger
         start_joint = pm.PyNode('index_metacarpal_r')
         end_joint = pm.PyNode('index_03_r')
-        r_index_component = tek.FKComponent.create(tek_rig,
+        r_index_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -530,7 +530,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Right ring Finger
         start_joint = pm.PyNode('ring_metacarpal_r')
         end_joint = pm.PyNode('ring_03_r')
-        r_ring_component = tek.FKComponent.create(tek_rig,
+        r_ring_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -541,7 +541,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Right Pinky Finger
         start_joint = pm.PyNode('pinky_metacarpal_r')
         end_joint = pm.PyNode('pinky_03_r')
-        r_pinky_component = tek.FKComponent.create(tek_rig,
+        r_pinky_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -552,7 +552,7 @@ class Lumpy(rig_templates.RigTemplates):
         # Right Thumb Finger
         start_joint = pm.PyNode('thumb_01_r')
         end_joint = pm.PyNode('thumb_03_r')
-        r_thumb_component = tek.FKComponent.create(tek_rig,
+        r_thumb_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -562,7 +562,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         # Center
         floor_joint = chain.get_start('floor', 'center')
-        floor_component = tek.FKComponent.create(tek_rig,
+        floor_component = frag.FKComponent.create(frag_rig,
                                                         floor_joint,
                                                         floor_joint,
                                                         side='center',
@@ -574,7 +574,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         # Left
         l_foot_contact = chain.get_start('foot_contact', 'left')
-        l_foot_contact_component = tek.FKComponent.create(tek_rig,
+        l_foot_contact_component = frag.FKComponent.create(frag_rig,
                                                                  l_foot_contact,
                                                                  l_foot_contact,
                                                                  side='left',
@@ -586,7 +586,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         # Right
         r_foot_contact = chain.get_start('foot_contact', 'right')
-        r_foot_contact_component = tek.FKComponent.create(tek_rig,
+        r_foot_contact_component = frag.FKComponent.create(frag_rig,
                                                                  r_foot_contact,
                                                                  r_foot_contact,
                                                                  side='right',
@@ -598,7 +598,7 @@ class Lumpy(rig_templates.RigTemplates):
 
         ### Multi Constraints ###############
         # Left IK Arm Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='left',
                                             region='arm',
                                             source_object=l_arm_ik_flag,
@@ -610,7 +610,7 @@ class Lumpy(rig_templates.RigTemplates):
                                             switch_obj=l_arm_switch_flag,
                                             switch_attr='follow')
         # Right IK Arm Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='right',
                                             region='arm',
                                             source_object=r_arm_ik_flag,
@@ -622,7 +622,7 @@ class Lumpy(rig_templates.RigTemplates):
                                             switch_obj=r_arm_switch_flag)
 
         # Left FK Arm Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='left',
                                             region='fk_arm',
                                             source_object=l_arm_fk_flag[0],
@@ -633,7 +633,7 @@ class Lumpy(rig_templates.RigTemplates):
                                             t=False,
                                             switch_attr='rotateFollow')
         # Right FK Arm Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='right',
                                             region='fk_arm',
                                             source_object=r_arm_fk_flag[0],
@@ -645,14 +645,14 @@ class Lumpy(rig_templates.RigTemplates):
                                             switch_attr='rotateFollow')
 
         # Center Cog Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='center',
                                             region='cog',
                                             source_object=cog_flag,
                                             target_list=[world_flag, flags_all],
                                             switch_obj=None)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='center',
                                             region='head',
                                             source_object=head_flag,
@@ -665,7 +665,7 @@ class Lumpy(rig_templates.RigTemplates):
                                             translate=False,
                                             switch_attr='rotateFollow')
         # PV Left Arm
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='left',
                                             region='arm_pv',
                                             source_object=l_arm_component.pv_flag,
@@ -676,7 +676,7 @@ class Lumpy(rig_templates.RigTemplates):
                                                             flags_all],
                                             switch_obj=None)
         # PV Right Arm
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='right',
                                             region='arm_pv',
                                             source_object=r_arm_component.pv_flag,
@@ -687,35 +687,35 @@ class Lumpy(rig_templates.RigTemplates):
                                                         flags_all],
                                             switch_obj=None)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='right',
                                             region='foot',
                                             source_object=r_leg_ik_flag,
                                             target_list=[world_flag, pelvis_flag, cog_flag, flags_all],
                                             switch_obj=r_leg_switch_flag)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='left',
                                             region='foot',
                                             source_object=l_leg_ik_flag,
                                             target_list=[world_flag, pelvis_flag, cog_flag, flags_all],
                                             switch_obj=l_leg_switch_flag)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='left',
                                             region='leg_pv',
                                             source_object=l_leg_component.pv_flag,
                                             target_list=[world_flag, l_leg_ik_flag, cog_flag, flags_all],
                                             switch_obj=None)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='right',
                                             region='leg_pv',
                                             source_object=r_leg_component.pv_flag,
                                             target_list=[world_flag, r_leg_ik_flag, cog_flag, flags_all],
                                             switch_obj=None)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='center',
                                             region='spine_top',
                                             source_object=spine_sub_flags[1],
@@ -727,7 +727,7 @@ class Lumpy(rig_templates.RigTemplates):
                                             switch_attr='rotateFollow',
                                             default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='center',
                                             region='spine_mid_top',
                                             source_object=spine_component.mid_flags[1],
@@ -739,7 +739,7 @@ class Lumpy(rig_templates.RigTemplates):
                                             switch_attr='rotateFollow',
                                             default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='center',
                                             region='spine_mid_bottom',
                                             source_object=spine_component.mid_flags[0],
@@ -751,7 +751,7 @@ class Lumpy(rig_templates.RigTemplates):
                                             switch_attr='rotateFollow',
                                             default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='left',
                                             region='hand_prop',
                                             source_object=l_prop_flag,
@@ -759,17 +759,17 @@ class Lumpy(rig_templates.RigTemplates):
                                             switch_obj=None,
                                             default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='right',
                                             region='hand_prop',
                                             source_object=r_prop_flag,
                                             target_list=[pm.PyNode('hand_r'), l_prop_flag, world_flag, flags_all],
                                             switch_obj=None,
                                             default_name='default')
-        tek_rig.rigTemplate.set(Lumpy.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(Lumpy.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class AcidLumpy(rig_templates.RigTemplates):
@@ -786,15 +786,15 @@ class AcidLumpy(rig_templates.RigTemplates):
         # import Skeletal Mesh using ASSET_ID into the namespace
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, asset_type, self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, asset_type, self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        flags_all = tek_rig.flagsAll.get()
+        flags_all = frag_rig.flagsAll.get()
 
         # world
         start_joint = pm.PyNode('root')
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                            start_joint,
                                                            'center',
                                                            'world',
@@ -806,7 +806,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         chain = chain_markup.ChainMarkup(start_joint)
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='root',
                                           source_object=root_flag,
@@ -817,7 +817,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # Cog
         start_joint = pm.PyNode('pelvis')
         end_joint = pm.PyNode('pelvis')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                        start_joint,
                                                        end_joint,
                                                        'center',
@@ -829,7 +829,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # Pelvis
         start_joint = pm.PyNode('pelvis')
         end_joint = pm.PyNode('spine_01')
-        pelvis_component = tek.PelvisComponent.create(tek_rig,
+        pelvis_component = frag.PelvisComponent.create(frag_rig,
                                                              start_joint,
                                                              end_joint,
                                                              'center',
@@ -840,7 +840,7 @@ class AcidLumpy(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('loincloth')
         end_joint = pm.PyNode('loincloth')
-        finger_component = tek.FKComponent.create(tek_rig,
+        finger_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='center',
@@ -851,7 +851,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # Spine
         start_joint = pm.PyNode('spine_01')
         end_joint = pm.PyNode('spine_04')
-        spine_component = tek.RFKComponent.create(tek_rig,
+        spine_component = frag.RFKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          'center',
@@ -862,7 +862,7 @@ class AcidLumpy(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('belly_l')
         end_joint = pm.PyNode('belly_l')
-        finger_component = tek.FKComponent.create(tek_rig,
+        finger_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='left',
@@ -872,7 +872,7 @@ class AcidLumpy(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('belly_r')
         end_joint = pm.PyNode('belly_r')
-        finger_component = tek.FKComponent.create(tek_rig,
+        finger_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='right',
@@ -883,7 +883,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # Neck
         start_joint = pm.PyNode('neck_01')
         end_joint = pm.PyNode('head')
-        neck_component = tek.RFKComponent.create(tek_rig,
+        neck_component = frag.RFKComponent.create(frag_rig,
                                                         start_joint,
                                                         end_joint,
                                                         'center',
@@ -899,7 +899,7 @@ class AcidLumpy(rig_templates.RigTemplates):
 
         for side, tag in [('left', 'l'), ('right', 'r')]:
             jaw_joint = pm.PyNode(f'jaw_{tag}')
-            jaw_component = tek.FKComponent.create(tek_rig,
+            jaw_component = frag.FKComponent.create(frag_rig,
                                                              jaw_joint,
                                                              jaw_joint,
                                                              side=side,
@@ -908,7 +908,7 @@ class AcidLumpy(rig_templates.RigTemplates):
             jaw_component.attach_component(neck_component, pm.PyNode('head'))
             for pos in ['top', 'mid', 'bot']:
                 sub_jaw_joint = pm.PyNode(f'jaw_stretch_{pos}_{tag}')
-                sub_jaw = tek.FKComponent.create(tek_rig,
+                sub_jaw = frag.FKComponent.create(frag_rig,
                                                         sub_jaw_joint,
                                                         sub_jaw_joint,
                                                         side=side,
@@ -919,7 +919,7 @@ class AcidLumpy(rig_templates.RigTemplates):
             for pos in ['', 'inner']:
                 joint_name = f'mouth_{pos}_{tag}' if pos else f'mouth_{tag}'
                 mouth_joint = pm.PyNode(joint_name)
-                mouth_component = tek.FKComponent.create(tek_rig,
+                mouth_component = frag.FKComponent.create(frag_rig,
                                                                 mouth_joint,
                                                                 mouth_joint,
                                                                 side=side,
@@ -930,7 +930,7 @@ class AcidLumpy(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('jaw_c')
         end_joint = pm.PyNode('jaw_c')
-        jaw_component = tek.FKComponent.create(tek_rig,
+        jaw_component = frag.FKComponent.create(frag_rig,
                                                       start_joint,
                                                       end_joint,
                                                       side='center',
@@ -941,7 +941,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # Left Clavicle
         start_joint = pm.PyNode('clavicle_l')
         end_joint = pm.PyNode('clavicle_l')
-        l_clav_component = tek.FKComponent.create(tek_rig,
+        l_clav_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='left',
@@ -953,7 +953,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # Right Clavicle
         start_joint = pm.PyNode('clavicle_r')
         end_joint = pm.PyNode('clavicle_r')
-        r_clav_component = tek.FKComponent.create(tek_rig,
+        r_clav_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='right',
@@ -965,7 +965,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # IKFK Right arm
         start_joint = pm.PyNode('upperarm_r')
         end_joint = pm.PyNode('hand_r')
-        r_arm_component = tek.IKFKComponent.create(tek_rig,
+        r_arm_component = frag.IKFKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='right',
@@ -980,7 +980,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # IKFK Left arm
         start_joint = pm.PyNode('upperarm_l')
         end_joint = pm.PyNode('hand_l')
-        l_arm_component = tek.IKFKComponent.create(tek_rig,
+        l_arm_component = frag.IKFKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='left',
@@ -994,7 +994,7 @@ class AcidLumpy(rig_templates.RigTemplates):
 
         # Left Hand weapon
         l_weapon = pm.PyNode('weapon_l')
-        l_weapon_component = tek.FKComponent.create(tek_rig,
+        l_weapon_component = frag.FKComponent.create(frag_rig,
                                                            l_weapon,
                                                            l_weapon,
                                                            side='left',
@@ -1007,7 +1007,7 @@ class AcidLumpy(rig_templates.RigTemplates):
 
         # Right Hand weapon
         r_weapon = pm.PyNode('weapon_r')
-        r_weapon_component = tek.FKComponent.create(tek_rig,
+        r_weapon_component = frag.FKComponent.create(frag_rig,
                                                            r_weapon,
                                                            r_weapon,
                                                            side='right',
@@ -1021,7 +1021,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # Left Hand prop
         start_joint = pm.PyNode('hand_contact_l')
         end_joint = pm.PyNode('hand_contact_l')
-        l_prop_component = tek.FKComponent.create(tek_rig,
+        l_prop_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='left',
@@ -1035,7 +1035,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # Right Hand prop
         start_joint = pm.PyNode('hand_contact_r')
         end_joint = pm.PyNode('hand_contact_r')
-        r_prop_component = tek.FKComponent.create(tek_rig,
+        r_prop_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='right',
@@ -1049,7 +1049,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # IKFK Left leg
         start_joint = pm.PyNode('thigh_l')
         end_joint = pm.PyNode('ball_l')
-        l_leg_component = tek.ReverseFootComponent.create(tek_rig,
+        l_leg_component = frag.ReverseFootComponent.create(frag_rig,
                                                                  start_joint,
                                                                  end_joint,
                                                                  side='left',
@@ -1064,7 +1064,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # IKFK Right leg
         start_joint = pm.PyNode('thigh_r')
         end_joint = pm.PyNode('ball_r')
-        r_leg_component = tek.ReverseFootComponent.create(tek_rig,
+        r_leg_component = frag.ReverseFootComponent.create(frag_rig,
                                                                  start_joint,
                                                                  end_joint,
                                                                  side='right',
@@ -1080,7 +1080,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # left Index Finger
         start_joint = pm.PyNode('index_metacarpal_l')
         end_joint = pm.PyNode('index_03_l')
-        l_index_component = tek.FKComponent.create(tek_rig,
+        l_index_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='left',
@@ -1091,7 +1091,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # left middle Finger
         start_joint = pm.PyNode('middle_metacarpal_l')
         end_joint = pm.PyNode('middle_03_l')
-        l_middle_component = tek.FKComponent.create(tek_rig,
+        l_middle_component = frag.FKComponent.create(frag_rig,
                                                            start_joint,
                                                            end_joint,
                                                            side='left',
@@ -1102,7 +1102,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # left ring Finger
         start_joint = pm.PyNode('ring_metacarpal_l')
         end_joint = pm.PyNode('ring_03_l')
-        l_ring_component = tek.FKComponent.create(tek_rig,
+        l_ring_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='left',
@@ -1113,7 +1113,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # left Pinky Finger
         start_joint = pm.PyNode('pinky_metacarpal_l')
         end_joint = pm.PyNode('pinky_03_l')
-        l_pinky_component = tek.FKComponent.create(tek_rig,
+        l_pinky_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='left',
@@ -1124,7 +1124,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # left Thumb Finger
         start_joint = pm.PyNode('thumb_01_l')
         end_joint = pm.PyNode('thumb_03_l')
-        l_thumb_component = tek.FKComponent.create(tek_rig,
+        l_thumb_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='left',
@@ -1135,7 +1135,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # left Extra Finger 01
         start_joint = pm.PyNode('hexadactyl_metacarpal_l')
         end_joint = pm.PyNode('hexadactyl_03_l')
-        l_ext_component = tek.FKComponent.create(tek_rig,
+        l_ext_component = frag.FKComponent.create(frag_rig,
                                                         start_joint,
                                                         end_joint,
                                                         side='left',
@@ -1146,7 +1146,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # left Extra Finger 02
         start_joint = pm.PyNode('eptadactyl_metacarpal_l')
         end_joint = pm.PyNode('eptadactyl_03_l')
-        l_ext_component = tek.FKComponent.create(tek_rig,
+        l_ext_component = frag.FKComponent.create(frag_rig,
                                                         start_joint,
                                                         end_joint,
                                                         side='left',
@@ -1158,7 +1158,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # Right Index Finger
         start_joint = pm.PyNode('index_metacarpal_r')
         end_joint = pm.PyNode('index_03_r')
-        r_index_component = tek.FKComponent.create(tek_rig,
+        r_index_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='right',
@@ -1169,7 +1169,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # Right ring Finger
         start_joint = pm.PyNode('ring_metacarpal_r')
         end_joint = pm.PyNode('ring_03_r')
-        r_ring_component = tek.FKComponent.create(tek_rig,
+        r_ring_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='right',
@@ -1180,7 +1180,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # Right Pinky Finger
         start_joint = pm.PyNode('pinky_metacarpal_r')
         end_joint = pm.PyNode('pinky_03_r')
-        r_pinky_component = tek.FKComponent.create(tek_rig,
+        r_pinky_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='right',
@@ -1191,7 +1191,7 @@ class AcidLumpy(rig_templates.RigTemplates):
         # Right Thumb Finger
         start_joint = pm.PyNode('thumb_01_r')
         end_joint = pm.PyNode('thumb_03_r')
-        r_thumb_component = tek.FKComponent.create(tek_rig,
+        r_thumb_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='right',
@@ -1201,7 +1201,7 @@ class AcidLumpy(rig_templates.RigTemplates):
 
         # Center
         floor_joint = chain.get_start('floor', 'center')
-        floor_component = tek.FKComponent.create(tek_rig,
+        floor_component = frag.FKComponent.create(frag_rig,
                                                         floor_joint,
                                                         floor_joint,
                                                         side='center',
@@ -1213,7 +1213,7 @@ class AcidLumpy(rig_templates.RigTemplates):
 
         # Left
         l_foot_contact = chain.get_start('foot_contact', 'left')
-        l_foot_contact_component = tek.FKComponent.create(tek_rig,
+        l_foot_contact_component = frag.FKComponent.create(frag_rig,
                                                                  l_foot_contact,
                                                                  l_foot_contact,
                                                                  side='left',
@@ -1225,7 +1225,7 @@ class AcidLumpy(rig_templates.RigTemplates):
 
         # Right
         r_foot_contact = chain.get_start('foot_contact', 'right')
-        r_foot_contact_component = tek.FKComponent.create(tek_rig,
+        r_foot_contact_component = frag.FKComponent.create(frag_rig,
                                                                  r_foot_contact,
                                                                  r_foot_contact,
                                                                  side='right',
@@ -1237,7 +1237,7 @@ class AcidLumpy(rig_templates.RigTemplates):
 
         ### Multi Constraints ###############
         # Left IK Arm Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='arm',
                                           source_object=l_arm_ik_flag,
@@ -1249,7 +1249,7 @@ class AcidLumpy(rig_templates.RigTemplates):
                                           switch_obj=l_arm_switch_flag,
                                           switch_attr='follow')
         # Right IK Arm Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='arm',
                                           source_object=r_arm_ik_flag,
@@ -1261,7 +1261,7 @@ class AcidLumpy(rig_templates.RigTemplates):
                                           switch_obj=r_arm_switch_flag)
 
         # Left FK Arm Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='fk_arm',
                                           source_object=l_arm_fk_flag[0],
@@ -1272,7 +1272,7 @@ class AcidLumpy(rig_templates.RigTemplates):
                                           t=False,
                                           switch_attr='rotateFollow')
         # Right FK Arm Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='fk_arm',
                                           source_object=r_arm_fk_flag[0],
@@ -1284,14 +1284,14 @@ class AcidLumpy(rig_templates.RigTemplates):
                                           switch_attr='rotateFollow')
 
         # Center Cog Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='cog',
                                           source_object=cog_flag,
                                           target_list=[world_flag, flags_all],
                                           switch_obj=None)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='head',
                                           source_object=head_flag,
@@ -1304,7 +1304,7 @@ class AcidLumpy(rig_templates.RigTemplates):
                                           translate=False,
                                           switch_attr='rotateFollow')
         # PV Left Arm
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='arm_pv',
                                           source_object=l_arm_component.pv_flag,
@@ -1315,7 +1315,7 @@ class AcidLumpy(rig_templates.RigTemplates):
                                                        flags_all],
                                           switch_obj=None)
         # PV Right Arm
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='arm_pv',
                                           source_object=r_arm_component.pv_flag,
@@ -1326,35 +1326,35 @@ class AcidLumpy(rig_templates.RigTemplates):
                                                        flags_all],
                                           switch_obj=None)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='foot',
                                           source_object=r_leg_ik_flag,
                                           target_list=[world_flag, pelvis_flag, cog_flag, flags_all],
                                           switch_obj=r_leg_switch_flag)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='foot',
                                           source_object=l_leg_ik_flag,
                                           target_list=[world_flag, pelvis_flag, cog_flag, flags_all],
                                           switch_obj=l_leg_switch_flag)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='leg_pv',
                                           source_object=l_leg_component.pv_flag,
                                           target_list=[world_flag, l_leg_ik_flag, cog_flag, flags_all],
                                           switch_obj=None)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='leg_pv',
                                           source_object=r_leg_component.pv_flag,
                                           target_list=[world_flag, r_leg_ik_flag, cog_flag, flags_all],
                                           switch_obj=None)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='spine_top',
                                           source_object=spine_sub_flags[1],
@@ -1366,7 +1366,7 @@ class AcidLumpy(rig_templates.RigTemplates):
                                           switch_attr='rotateFollow',
                                           default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='spine_mid_top',
                                           source_object=spine_component.mid_flags[1],
@@ -1378,7 +1378,7 @@ class AcidLumpy(rig_templates.RigTemplates):
                                           switch_attr='rotateFollow',
                                           default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='spine_mid_bottom',
                                           source_object=spine_component.mid_flags[0],
@@ -1390,7 +1390,7 @@ class AcidLumpy(rig_templates.RigTemplates):
                                           switch_attr='rotateFollow',
                                           default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='hand_prop',
                                           source_object=l_prop_flag,
@@ -1398,14 +1398,14 @@ class AcidLumpy(rig_templates.RigTemplates):
                                           switch_obj=None,
                                           default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='hand_prop',
                                           source_object=r_prop_flag,
                                           target_list=[pm.PyNode('hand_r'), l_prop_flag, world_flag, flags_all],
                                           switch_obj=None,
                                           default_name='default')
-        tek_rig.rigTemplate.set(Lumpy.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(Lumpy.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig

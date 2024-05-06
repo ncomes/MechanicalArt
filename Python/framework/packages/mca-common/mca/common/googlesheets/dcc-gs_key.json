@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "dcc-tools-tracking",
+  "private_key_id": "35adb8905015619a3f2e45fa9e6e50b8206eca9a",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC3WpHHVudBivQg\nEc9nVZbG++l20aI3yW3jXaxk+wEY0wUHTvP4ZuLAo+DRAG68xcbtsGo6Yu8wkM9h\nZ+qBbq2UoGEEMHeMOG3dOZeU51VvW+gjMN7DDjPAZko9hvIlnnc1lPMK4iJVZ+W/\nhuyVYdIuPUi+jFtO+p3s2KuSVpZXOM71ND9OHvy00hGLo0jOgQpnaVBMZtf3yGSD\n/K+jKZfVO6eD/RcVbK4NnGNuhZaxUrrs9s4Y7RkgKoEUK64okuaKDbdGttvyG9+j\nWh37LKV2erZs7EHzmBGAORPfGr2TFCKIhrjfkwxsc4tcHqsFdJTSXeM0p0NnKzNH\njp6VzHUFAgMBAAECggEAJK8CK5e/fOWIIkJt9IazO+x6sUMP6Ylraun669ksRwMx\nJl0tgq1TAKfI+wfTIAGR40xAdJ4GrPjMBPj9ehfisrHDt0rbIDrKAFDdevUtqrIA\np8nHR883m27bu6OcHtqtjxLV7X+AzwWSeddMzjZcDtREEZuTSSHrJs/Sw9x/B8QG\ndNqdBFuUg3pY8VR53htno0aBmnvOLuGUGG0oobEw6R3rBxmwQt6au0gb+VOdKGWh\nleSfU6pUn7bZxQUZDYpgleLI5+4uZWVAxEAE6W6lssxbm0oPu1wo8Jea4ie4IGUe\nCT9cOKqBWcu2FpIsnE1cPLDs2M8PMirVVD6x4g1YoQKBgQD254IuPeCXfhBm45BI\n8KtoIZLD6vjAE1awi6hhpyyF7U05mvwOwPrsRinX0ceiRiKaq/7eUl44hnr6N5xr\nm4Agk6wXHGGhI40a4WO1Na63VlFxA4wJC3x92aeGuBN5fvEWNf+NM0yGjDe+6wq8\nj/NJAeKP4xUhwxEwmIgJt+ZMLwKBgQC+G7tm1VjuXpugHqzJdgUBG4vK/pxQObrm\nOZfqWxMK1Q4OOOH2b1ToemOQvRT71nAgV1bMyGZq8n3UGfcqciQltBb9NAjiVPfs\nFsKH01LWgyW1uJx0J3IuCFWpY5STbCCUZfJeR2ZYzvQbvjti2jYALVDPnT+BXP6H\nxygzE1UBCwKBgHeoEMX6ROsGNEq4xEclI9yuUKNUL8NeW+fpduwEiaZKL9/YBYnc\n6n4xLrwiNX6mQMT2z+jMwE7ilZzH8K2RydF/36m/nmzqfsrlKl46qva9BXEgx+/m\nOin/npnCgeWiqJIcD0JN9ytJrwZ+gFCL7tqV6EfVRHt9PspvUZZsIlcPAoGBALZo\n35jdDxaxOnwZ0sr/be/RIYImaY/kxLuQ+X4J4yyan4Dv/Yi67GqgvJYth0vZRv8R\nLp0RkIv/ntJ8E5frq1luAjzzx657vuMON5uiHjLr5awGtkARdVJL9v2wKeiGcIBT\njYn+0mpWMQ3Jqyu/mt7ynD6JcFzNAQEBDEZtvztfAoGBAIxJBxX6UkQsLzTXBTmP\nUno6kMEcLE1SdRcLDeIj8mhSquK4UWVbuHa8g+eMjttMtbaCuSq8n5B437OXWrOC\nPBZE1j6e1vM3CiLT4Kciv1HZndb8jef2lSSCmjSkZtxb//MXrG3GpPUOodGA78EE\nhamAl73Trzw67omPwjxWgGFG\n-----END PRIVATE KEY-----\n",
+  "client_email": "dcc-tracking-mat@dcc-tools-tracking.iam.gserviceaccount.com",
+  "client_id": "114183132054193513366",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dcc-tracking-mat%40dcc-tools-tracking.iam.gserviceaccount.com"
+}

@@ -1,0 +1,14 @@
+description: 'Motion Builder package for MAT DCC Tools framework'
+displayName: 'MAT Motion Builder'
+environment:
+  MAT_MAYA_BASE_PATH: '{self}'
+  MAT_MAYA_CONFIGS_PATH: '{self}/mca/mobu/configs'
+  MAT_MAYA_TOOLS_PATH: '{self}/mca/mobu/tools'
+  MAT_MAYA_PATHS:
+    - '{self}/mca/mobu/pyqt'
+    - '{self}/mca/mobu/utils'
+    - '{self}/mca/mobu/tools'
+name: 'mca-mobu'
+depotName: 'mobu'
+required: True
+version: '1.0.0'

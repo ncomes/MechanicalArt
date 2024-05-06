@@ -10,7 +10,7 @@ Purpose: Creates spline IK
 import pymel.core as pm
 #  python imports
 from mca.mya.rigging import rig_utils
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 from mca.mya.utils import attr_utils, constraint, naming
 from mca.mya.rigging import joint_utils
 
@@ -51,7 +51,7 @@ def spline_ctrl(spline_joint_chain, end_helper_joint, mid_helper_joint, region, 
 
     start_flag = None
     if start_helper_joint:
-        start_flag = tek_flag.Flag.create(start_helper_joint,
+        start_flag = frag_flag.Flag.create(start_helper_joint,
                                       label=f'{region}_{side}_{suffix}_start',
                                       add_align_transform=root_align_transform,
                                       is_sub=True)
@@ -63,7 +63,7 @@ def spline_ctrl(spline_joint_chain, end_helper_joint, mid_helper_joint, region, 
         start_helper_joint = joint_utils.duplicate_joint(spline_joint_chain[0], f'{region}_{side}_{suffix}_start_align')
         start_helper_joint.setParent(None)
 
-    end_flag = tek_flag.Flag.create(end_helper_joint,
+    end_flag = frag_flag.Flag.create(end_helper_joint,
                                 label=f'{region}_{side}_{suffix}_end',
                                 scale=sca,
                                 add_align_transform=root_align_transform)
@@ -71,7 +71,7 @@ def spline_ctrl(spline_joint_chain, end_helper_joint, mid_helper_joint, region, 
     # We want the Spline Ik to follow both the rotation and the position of the end flag.
     constraint_list.append(constraint.parent_constraint_safe(end_flag, end_helper_joint))
 
-    end_aux_flag = tek_flag.Flag.create(end_helper_joint,
+    end_aux_flag = frag_flag.Flag.create(end_helper_joint,
                                     label=f'{region}_{side}_{suffix}_end_aux',
                                     scale=sca*.75,
                                     add_align_transform=True,
@@ -82,7 +82,7 @@ def spline_ctrl(spline_joint_chain, end_helper_joint, mid_helper_joint, region, 
     # We want the AUX flag to handle the orientation of all children joints of the IK Spline.
     end_aux_constraint = constraint.parent_constraint_safe([end_aux_flag, spline_joint_chain[-1]], orient_end)
     constraint_list.append(end_aux_constraint)
-    # appending this in reverse order so it'll better match the bind joint list on tek
+    # appending this in reverse order so it'll better match the bind joint list on frag
     flag_list.append(end_aux_flag)
     flag_list.append(end_flag)
 
@@ -113,7 +113,7 @@ def spline_ctrl(spline_joint_chain, end_helper_joint, mid_helper_joint, region, 
         clus = pm.cluster(spline_ik_curve.cv[2], n=f'{region}_{side}_{suffix}_cluster')[1]
         clus.v.set(False)
 
-        mid_flag = tek_flag.Flag.create(clus,
+        mid_flag = frag_flag.Flag.create(clus,
                                     label=f'{region}_{side}_{suffix}_mid',
                                     scale=sca*.5,
                                     add_align_transform=True,

@@ -11,7 +11,7 @@ import pymel.core as pm
 
 from mca.mya.utils import dag
 from mca.mya.rigging import rig_utils
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 
 
 FLAG_SHAPES = ('square', 'square', 'oval')
@@ -38,13 +38,13 @@ def rfk_chain(start_joint, end_joint, side, region, scale=1.0, create_sub_flags=
     label = label.split(':')[-1]
 
     flags_groups = []
-    start_rotate_flag = tek_flag.Flag.create_ratio(object_to_match=rfkChain[0], scale=scale, label=label)
+    start_rotate_flag = frag_flag.Flag.create_ratio(object_to_match=rfkChain[0], scale=scale, label=label)
     flags_groups.append(start_rotate_flag.getParent())
 
     label = rfkChain[-1].nodeName().replace(('_' + suffix), '')
     label = label.split(':')[-1]
 
-    end_rotate_flag = tek_flag.Flag.create_ratio(object_to_match=rfkChain[-1], scale=scale, label=label)
+    end_rotate_flag = frag_flag.Flag.create_ratio(object_to_match=rfkChain[-1], scale=scale, label=label)
     flags_groups.append(end_rotate_flag.getParent())
 
     mid_groups = []
@@ -138,7 +138,7 @@ def rfk_chain(start_joint, end_joint, side, region, scale=1.0, create_sub_flags=
         offset_group.setParent(mid_control)
         pm.delete(pm.parentConstraint(mid_joint, offset_group, w=True, mo=False))
 
-        mid_flag = tek_flag.Flag.create(mid_joint, scale=scale, label=label, is_sub=True)
+        mid_flag = frag_flag.Flag.create(mid_joint, scale=scale, label=label, is_sub=True)
 
         mid_flag_align = mid_flag.get_align_transform()
         pm.orientConstraint(offset_group, mid_flag_align, w=1, mo=False)
@@ -163,7 +163,7 @@ def rfk_chain(start_joint, end_joint, side, region, scale=1.0, create_sub_flags=
         label = rfkChain[-1].nodeName().replace('_' + suffix, '')
         label = label.split(':')[-1]
 
-        sub_end_flag = tek_flag.Flag.create_ratio(object_to_match=rfkChain[-1],
+        sub_end_flag = frag_flag.Flag.create_ratio(object_to_match=rfkChain[-1],
                                                    label=label,
                                                    scale=scale*.75,
                                                    add_align_transform=False,
@@ -175,7 +175,7 @@ def rfk_chain(start_joint, end_joint, side, region, scale=1.0, create_sub_flags=
 
         label = rfkChain[0].nodeName().replace('_' + suffix, '')
         label = label.split(':')[-1]
-        sub_start_flag = tek_flag.Flag.create_ratio(object_to_match=rfkChain[0],
+        sub_start_flag = frag_flag.Flag.create_ratio(object_to_match=rfkChain[0],
                                                      label=label,
                                                      scale=scale*.75,
                                                      add_align_transform=False,

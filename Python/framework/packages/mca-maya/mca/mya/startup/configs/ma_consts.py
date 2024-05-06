@@ -15,7 +15,7 @@ Module that contains the mca decorators at a base python level
 # Environment Variables Names
 
 
-TEK_NODE_PACKAGE_PATHS = ['tek_node']
+FRAG_NODE_PACKAGE_PATHS = ['frag_node']
 
 TOOLS_PATH = 'MCA_MAYA_TOOLS_PATH'
 CONFIGS_PATH = 'MCA_MAYA_CONFIGS_PATH'

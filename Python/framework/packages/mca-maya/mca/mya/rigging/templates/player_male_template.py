@@ -11,7 +11,7 @@ import pymel.core as pm
 
 # mca python imports
 from mca.common.utils import lists
-from mca.mya.rigging import tek, rig_utils
+from mca.mya.rigging import frag, rig_utils
 from mca.mya.rigging.templates import rig_templates
 from mca.mya.rigging import chain_markup
 from mca.common import log
@@ -37,15 +37,15 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
         # import Skeletal Mesh using ASSET_ID into the namespace
         world_root = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(world_root, self.asset_type, self.asset_id)
-        tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(world_root, self.asset_type, self.asset_id)
+        frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
         root = pm.PyNode('root')
         chain = chain_markup.ChainMarkup(root)
         # world
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                            root,
                                                            'center',
                                                            'world',
@@ -58,7 +58,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Cog
         pelvis_joint = chain.get_start('pelvis', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                        pelvis_joint,
                                                        pelvis_joint,
                                                        'center',
@@ -70,7 +70,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
         # Pelvis
         start_joint = pm.PyNode('pelvis')
         end_joint = pm.PyNode('spine_01')
-        pelvis_component = tek.PelvisComponent.create(tek_rig,
+        pelvis_component = frag.PelvisComponent.create(frag_rig,
                                                              start_joint,
                                                              end_joint,
                                                              'center',
@@ -81,7 +81,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Spine
         spine_chain = chain.get_chain('spine', 'center')
-        spine_component = tek.RFKComponent.create(tek_rig,
+        spine_component = frag.RFKComponent.create(frag_rig,
                                                          spine_chain[0],
                                                          spine_chain[1],
                                                          'center',
@@ -92,7 +92,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Neck
         neck_chain = chain.get_chain('neck', 'center')
-        neck_component = tek.RFKComponent.create(tek_rig,
+        neck_component = frag.RFKComponent.create(frag_rig,
                                                         neck_chain[0],
                                                         neck_chain[1],
                                                         'center',
@@ -108,7 +108,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Left Clavicle
         l_clav_chain = chain.get_chain('clav', 'left')
-        l_clav_component = tek.FKComponent.create(tek_rig,
+        l_clav_component = frag.FKComponent.create(frag_rig,
                                                          l_clav_chain[0],
                                                          l_clav_chain[1],
                                                          side='left',
@@ -119,7 +119,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Right Clavicle
         r_clav_chain = chain.get_chain('clav', 'right')
-        r_clav_component = tek.FKComponent.create(tek_rig,
+        r_clav_component = frag.FKComponent.create(frag_rig,
                                                          r_clav_chain[0],
                                                          r_clav_chain[1],
                                                          side='right',
@@ -130,7 +130,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # IKFK Right arm
         r_arm_chain = chain.get_chain('arm', 'right')
-        r_arm_component = tek.IKFKComponent.create(tek_rig,
+        r_arm_component = frag.IKFKComponent.create(frag_rig,
                                                           r_arm_chain[0],
                                                           r_arm_chain[1],
                                                           side='right',
@@ -144,7 +144,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # IKFK Left arm
         l_arm_chain = chain.get_chain('arm', 'left')
-        l_arm_component = tek.IKFKComponent.create(tek_rig,
+        l_arm_component = frag.IKFKComponent.create(frag_rig,
                                                           l_arm_chain[0],
                                                           l_arm_chain[1],
                                                           side='left',
@@ -158,7 +158,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Left Hand prop
         l_hand_contact = chain.get_start('hand_contact', 'left')
-        l_prop_component = tek.FKComponent.create(tek_rig,
+        l_prop_component = frag.FKComponent.create(frag_rig,
                                                          l_hand_contact,
                                                          l_hand_contact,
                                                          side='left',
@@ -171,7 +171,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Right Hand prop
         r_hand_contact = chain.get_start('hand_contact', 'right')
-        r_prop_component = tek.FKComponent.create(tek_rig,
+        r_prop_component = frag.FKComponent.create(frag_rig,
                                                          r_hand_contact,
                                                          r_hand_contact,
                                                          side='right',
@@ -184,7 +184,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Left Hand weapon
         l_weapon = chain.get_start('hand_prop', 'left')
-        l_weapon_component = tek.FKComponent.create(tek_rig,
+        l_weapon_component = frag.FKComponent.create(frag_rig,
                                                            l_weapon,
                                                            l_weapon,
                                                            side='left',
@@ -197,7 +197,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Right Hand weapon
         r_weapon = chain.get_start('hand_prop', 'right')
-        r_weapon_component = tek.FKComponent.create(tek_rig,
+        r_weapon_component = frag.FKComponent.create(frag_rig,
                                                            r_weapon,
                                                            r_weapon,
                                                            side='right',
@@ -210,7 +210,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # IKFK Left leg
         l_leg_chain = chain.get_chain('leg', 'left')
-        l_leg_component = tek.ReverseFootComponent.create(tek_rig,
+        l_leg_component = frag.ReverseFootComponent.create(frag_rig,
                                                                  l_leg_chain[0],
                                                                  l_leg_chain[1],
                                                                  side='left',
@@ -224,7 +224,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # IKFK Right leg
         r_leg_chain = chain.get_chain('leg', 'right')
-        r_leg_component = tek.ReverseFootComponent.create(tek_rig,
+        r_leg_component = frag.ReverseFootComponent.create(frag_rig,
                                                                  r_leg_chain[0],
                                                                  r_leg_chain[1],
                                                                  side='right',
@@ -239,7 +239,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
         ####  Left Fingers #######
         # left Index Finger
         l_index_chain = chain.get_chain('index_finger', 'left')
-        l_index_component = tek.FKComponent.create(tek_rig,
+        l_index_component = frag.FKComponent.create(frag_rig,
                                                           l_index_chain[0],
                                                           l_index_chain[1],
                                                           side='left',
@@ -249,7 +249,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # left middle Finger
         l_middle_chain = chain.get_chain('middle_finger', 'left')
-        l_middle_component = tek.FKComponent.create(tek_rig,
+        l_middle_component = frag.FKComponent.create(frag_rig,
                                                            l_middle_chain[0],
                                                            l_middle_chain[1],
                                                            side='left',
@@ -259,7 +259,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # left ring Finger
         l_ring_chain = chain.get_chain('ring_finger', 'left')
-        l_ring_component = tek.FKComponent.create(tek_rig,
+        l_ring_component = frag.FKComponent.create(frag_rig,
                                                          l_ring_chain[0],
                                                          l_ring_chain[1],
                                                          side='left',
@@ -269,7 +269,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # left Pinky Finger
         l_pinky_chain = chain.get_chain('pinky_finger', 'left')
-        l_pinky_component = tek.FKComponent.create(tek_rig,
+        l_pinky_component = frag.FKComponent.create(frag_rig,
                                                           l_pinky_chain[0],
                                                           l_pinky_chain[1],
                                                           side='left',
@@ -281,7 +281,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
         start_joint = pm.PyNode('thumb_01_l')
         end_joint = pm.PyNode('thumb_03_l')
         l_thumb_chain = chain.get_chain('thumb', 'left')
-        l_thumb_component = tek.FKComponent.create(tek_rig,
+        l_thumb_component = frag.FKComponent.create(frag_rig,
                                                           l_thumb_chain[0],
                                                           l_thumb_chain[1],
                                                           side='left',
@@ -292,7 +292,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
         ####  Right Fingers #######
         # left Index Finger
         r_index_chain = chain.get_chain('index_finger', 'right')
-        r_index_component = tek.FKComponent.create(tek_rig,
+        r_index_component = frag.FKComponent.create(frag_rig,
                                                           r_index_chain[0],
                                                           r_index_chain[1],
                                                           side='right',
@@ -302,7 +302,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # left middle Finger
         r_middle_chain = chain.get_chain('middle_finger', 'right')
-        r_middle_component = tek.FKComponent.create(tek_rig,
+        r_middle_component = frag.FKComponent.create(frag_rig,
                                                            r_middle_chain[0],
                                                            r_middle_chain[1],
                                                            side='right',
@@ -312,7 +312,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # left ring Finger
         r_ring_chain = chain.get_chain('ring_finger', 'right')
-        r_ring_component = tek.FKComponent.create(tek_rig,
+        r_ring_component = frag.FKComponent.create(frag_rig,
                                                          r_ring_chain[0],
                                                          r_ring_chain[1],
                                                          side='right',
@@ -322,7 +322,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # left Pinky Finger
         r_pinky_chain = chain.get_chain('pinky_finger', 'right')
-        r_pinky_component = tek.FKComponent.create(tek_rig,
+        r_pinky_component = frag.FKComponent.create(frag_rig,
                                                           r_pinky_chain[0],
                                                           r_pinky_chain[1],
                                                           side='right',
@@ -332,7 +332,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Right Thumb Finger
         r_thumb_chain = chain.get_chain('thumb', 'right')
-        r_thumb_component = tek.FKComponent.create(tek_rig,
+        r_thumb_component = frag.FKComponent.create(frag_rig,
                                                           r_thumb_chain[0],
                                                           r_thumb_chain[1],
                                                           side='right',
@@ -343,7 +343,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
         # Utilities
         # util
         util_joint = chain.get_start('utility', 'center')
-        util_component = tek.FKComponent.create(tek_rig,
+        util_component = frag.FKComponent.create(frag_rig,
                                                        util_joint,
                                                        util_joint,
                                                        side='center',
@@ -355,7 +355,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # util warp
         util_warp_joint = chain.get_start('utility_warp', 'center')
-        util_warp_component = tek.FKComponent.create(tek_rig,
+        util_warp_component = frag.FKComponent.create(frag_rig,
                                                             util_warp_joint,
                                                             util_warp_joint,
                                                             side='center',
@@ -368,7 +368,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
         # Floor constraints
         # Pelvis
         contact_joint = chain.get_start('pelvis_contact', 'center')
-        pelvis_contact_component = tek.FKComponent.create(tek_rig,
+        pelvis_contact_component = frag.FKComponent.create(frag_rig,
                                                                  contact_joint,
                                                                  contact_joint,
                                                                  side='center',
@@ -380,7 +380,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Center
         floor_joint = chain.get_start('floor', 'center')
-        floor_component = tek.FKComponent.create(tek_rig,
+        floor_component = frag.FKComponent.create(frag_rig,
                                                         floor_joint,
                                                         floor_joint,
                                                         side='center',
@@ -392,7 +392,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Left
         l_foot_contact = chain.get_start('foot_contact', 'left')
-        l_foot_contact_component = tek.FKComponent.create(tek_rig,
+        l_foot_contact_component = frag.FKComponent.create(frag_rig,
                                                                  l_foot_contact,
                                                                  l_foot_contact,
                                                                  side='left',
@@ -404,7 +404,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         # Right
         r_foot_contact = chain.get_start('foot_contact', 'right')
-        r_foot_contact_component = tek.FKComponent.create(tek_rig,
+        r_foot_contact_component = frag.FKComponent.create(frag_rig,
                                                                  r_foot_contact,
                                                                  r_foot_contact,
                                                                  side='right',
@@ -416,7 +416,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
         ### Multi Constraints ###############
         # floor
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='floor_contact',
                                           source_object=floor_flag,
@@ -424,14 +424,14 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                                        offset_flag],
                                           switch_attr='follow')
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='root',
                                     source_object=root_flag,
                                     target_list=[world_flag,
                                                  offset_flag])
         # Left floor
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='foot_contact',
                                           source_object=l_foot_contact_flag,
@@ -440,7 +440,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           switch_attr='follow')
 
         # Right floor
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='foot_contact',
                                           source_object=r_foot_contact_flag,
@@ -449,7 +449,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           switch_attr='follow')
 
         # Pelvis Contact
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='pelvis_contact',
                                           source_object=pelvis_contact_flag,
@@ -458,7 +458,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           switch_attr='follow')
 
         # Left IK Arm Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='arm',
                                           source_object=l_arm_ik_flag,
@@ -471,7 +471,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           switch_obj=l_arm_switch_flag,
                                           switch_attr='follow')
         # Right IK Arm Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='arm',
                                           source_object=r_arm_ik_flag,
@@ -484,7 +484,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           switch_obj=r_arm_switch_flag)
 
         # Left FK Arm Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='fk_arm',
                                           source_object=l_arm_fk_flag[0],
@@ -495,7 +495,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           t=False,
                                           switch_attr='rotateFollow')
         # Right FK Arm Multi
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='fk_arm',
                                           source_object=r_arm_fk_flag[0],
@@ -507,7 +507,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           switch_attr='rotateFollow')
 
         # Head
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='head',
                                           source_object=head_flag,
@@ -519,14 +519,14 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           translate=False,
                                           switch_attr='rotateFollow')
         # PV Left Arm
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='arm_pv',
                                           source_object=l_arm_component.pv_flag,
                                           target_list=[offset_flag, l_clav_flag, spine_sub_flags[1], cog_flag],
                                           switch_obj=None)
         # PV Right Arm
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='arm_pv',
                                           source_object=r_arm_component.pv_flag,
@@ -534,21 +534,21 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           switch_obj=None)
 
         # IKFK Right Foot
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='foot',
                                           source_object=r_leg_ik_flag,
                                           target_list=[offset_flag, pelvis_flag, cog_flag],
                                           switch_obj=r_leg_switch_flag)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='foot',
                                           source_object=l_leg_ik_flag,
                                           target_list=[offset_flag, pelvis_flag, cog_flag],
                                           switch_obj=l_leg_switch_flag)
         # IKFK Left Foot PV
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='leg_pv',
                                           source_object=l_leg_component.pv_flag,
@@ -556,7 +556,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           switch_obj=None)
 
         # Right Leg PV
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='leg_pv',
                                           source_object=r_leg_component.pv_flag,
@@ -564,7 +564,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           switch_obj=None)
 
         # Spine Top
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='spine_top',
                                           source_object=spine_sub_flags[1],
@@ -576,7 +576,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           switch_attr='rotateFollow',
                                           default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='spine_mid_top',
                                           source_object=spine_component.mid_flags[1],
@@ -588,7 +588,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           switch_attr='rotateFollow',
                                           default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='spine_mid_bottom',
                                           source_object=spine_component.mid_flags[0],
@@ -601,7 +601,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           default_name='default')
 
         # Left Hand Contact
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='hand_prop',
                                           source_object=l_prop_flag,
@@ -616,7 +616,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           default_name='r_weapon')
 
         # Right Hand Contact
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='hand_prop',
                                           source_object=r_prop_flag,
@@ -631,7 +631,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           default_name='r_weapon')
 
         # Right Weapon
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='weapon',
                                           source_object=r_weapon_flag,
@@ -647,7 +647,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
                                           default_name='r_hand')
 
         # Left Weapon
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='weapon',
                                           source_object=l_weapon_flag,
@@ -664,7 +664,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 
 
         # pelvis_cloth = chain.get_chain('pelvis_cloth', 'left')
-        # pelvis_cloth_component = tek.FKComponent.create(tek_rig,
+        # pelvis_cloth_component = frag.FKComponent.create(frag_rig,
         #                                                  pelvis_cloth[0],
         #                                                  pelvis_cloth[1],
         #                                                  side='left',
@@ -676,10 +676,10 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
         # pelvis_cloth_flag = pelvis_cloth_component.get_flags()[0]
 
         if finalize:
-            tek_rig.rigTemplate.set(PlayerMaleTemplate.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(PlayerMaleTemplate.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class CommanderTemplate(PlayerMaleTemplate):
@@ -695,18 +695,18 @@ class CommanderTemplate(PlayerMaleTemplate):
 
         pm.namespace(set=':')
 
-        tek_rig = super(CommanderTemplate, self).build(finalize=False)
-        root_component = tek_rig.get_tek_parent()
-        neck_component = [x for x in tek_rig.get_tek_children(of_type=tek.RFKComponent) if 'neck' in str(x)]
+        frag_rig = super(CommanderTemplate, self).build(finalize=False)
+        root_component = frag_rig.get_frag_parent()
+        neck_component = [x for x in frag_rig.get_frag_children(of_type=frag.RFKComponent) if 'neck' in str(x)]
 
-        spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, side='center', region='spine')[0]
-        pelvis_component = [x for x in tek_rig.get_tek_children(of_type=tek.PelvisComponent) if
+        spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, side='center', region='spine')[0]
+        pelvis_component = [x for x in frag_rig.get_frag_children(of_type=frag.PelvisComponent) if
                             'pelvis' in str(x)]
-        l_clav_component = tek_rig.get_tek_children(of_type=tek.FKComponent, side='left', region='clav')
-        r_clav_component = tek_rig.get_tek_children(of_type=tek.FKComponent, side='right', region='clav')
-        leg_component = tek_rig.get_tek_children(of_type=tek.ReverseFootComponent, side='left', region='leg')
-        arm_r_component = tek_rig.get_tek_children(of_type=tek.IKFKComponent, region='arm', side='right')
-        arm_l_component = tek_rig.get_tek_children(of_type=tek.IKFKComponent, region='arm', side='left')
+        l_clav_component = frag_rig.get_frag_children(of_type=frag.FKComponent, side='left', region='clav')
+        r_clav_component = frag_rig.get_frag_children(of_type=frag.FKComponent, side='right', region='clav')
+        leg_component = frag_rig.get_frag_children(of_type=frag.ReverseFootComponent, side='left', region='leg')
+        arm_r_component = frag_rig.get_frag_children(of_type=frag.IKFKComponent, region='arm', side='right')
+        arm_l_component = frag_rig.get_frag_children(of_type=frag.IKFKComponent, region='arm', side='left')
         if not root_component:
             self.log.error('No Root Component found!')
             return
@@ -752,8 +752,8 @@ class CommanderTemplate(PlayerMaleTemplate):
 
         # Hair Component
         hair_chain = chain.get_full_chain('hair', 'center')
-        hair_lower_component = tek.FKComponent.create(
-            tek_rig,
+        hair_lower_component = frag.FKComponent.create(
+            frag_rig,
             hair_chain[0],
             hair_chain[-1],
             'center',
@@ -764,7 +764,7 @@ class CommanderTemplate(PlayerMaleTemplate):
         hair_lower_component.attach_component(neck_component, head_flag)
 
         back_cloth_l = chain.get_chain('back_cloth', 'left')
-        back_cloth_l_component = tek.FKComponent.create(tek_rig,
+        back_cloth_l_component = frag.FKComponent.create(frag_rig,
                                                         back_cloth_l[0],
                                                         back_cloth_l[1],
                                                         side='left',
@@ -775,7 +775,7 @@ class CommanderTemplate(PlayerMaleTemplate):
         back_cloth_l_flag = back_cloth_l_component.get_flags()[0]
 
         back_cloth_r = chain.get_chain('back_cloth', 'right')
-        back_cloth_r_component = tek.FKComponent.create(tek_rig,
+        back_cloth_r_component = frag.FKComponent.create(frag_rig,
                                                         back_cloth_r[0],
                                                         back_cloth_r[1],
                                                         side='right',
@@ -785,7 +785,7 @@ class CommanderTemplate(PlayerMaleTemplate):
         back_cloth_r_component.attach_component(pelvis_component, pm.PyNode('pelvis'))
 
         coat_l = chain.get_chain('coat', 'left')
-        coat_l_component = tek.FKComponent.create(tek_rig,
+        coat_l_component = frag.FKComponent.create(frag_rig,
                                                          coat_l[0],
                                                          coat_l[1],
                                                          side='left',
@@ -797,7 +797,7 @@ class CommanderTemplate(PlayerMaleTemplate):
         coat_l_flag = coat_l_component.get_flags()[0]
 
         coat_r = chain.get_chain('coat', 'right')
-        coat_r_component = tek.FKComponent.create(tek_rig,
+        coat_r_component = frag.FKComponent.create(frag_rig,
                                                          coat_r[0],
                                                          coat_r[1],
                                                          side='right',
@@ -809,7 +809,7 @@ class CommanderTemplate(PlayerMaleTemplate):
         coat_r_flag = coat_r_component.get_flags()[0]
 
         upperarm_deformer_r = chain.get_chain('upperarm_deformer', 'right')
-        upperarm_deformer_r_component = tek.FKComponent.create(tek_rig,
+        upperarm_deformer_r_component = frag.FKComponent.create(frag_rig,
                                                          upperarm_deformer_r[0],
                                                          upperarm_deformer_r[1],
                                                          side='right',
@@ -821,7 +821,7 @@ class CommanderTemplate(PlayerMaleTemplate):
         upperarm_deformer_r_flag = upperarm_deformer_r_component.get_flags()[0]
 
         upperarm_deformer_l = chain.get_chain('upperarm_deformer', 'left')
-        upperarm_deformer_l_component = tek.FKComponent.create(tek_rig,
+        upperarm_deformer_l_component = frag.FKComponent.create(frag_rig,
                                                          upperarm_deformer_l[0],
                                                          upperarm_deformer_l[1],
                                                          side='left',
@@ -834,8 +834,8 @@ class CommanderTemplate(PlayerMaleTemplate):
 
         # Sword Component
         # leg_unequip_joint = chain.get_start('thigh_unequip', 'left')
-        # sword_component = tek.FKComponent.create(
-        #     tek_rig,
+        # sword_component = frag.FKComponent.create(
+        #     frag_rig,
         #     leg_unequip_joint,
         #     leg_unequip_joint,
         #     'left',
@@ -847,8 +847,8 @@ class CommanderTemplate(PlayerMaleTemplate):
         # sword_flags = sword_component.get_flags()
 
 
-        # tek.MultiConstraint.create(
-        #     tek_rig,
+        # frag.MultiConstraint.create(
+        #     frag_rig,
         #     side='left',
         #     region='sword',
         #     source_object=sword_flags[-1],
@@ -856,10 +856,10 @@ class CommanderTemplate(PlayerMaleTemplate):
         #     translate=False,
         #     switch_obj=None)
 
-        tek_rig.rigTemplate.set(CommanderTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(CommanderTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 class DemonTemplate(PlayerMaleTemplate):
     VERSION = 1
@@ -874,10 +874,10 @@ class DemonTemplate(PlayerMaleTemplate):
 
         pm.namespace(set=':')
 
-        tek_rig = super(DemonTemplate, self).build(finalize=False)
-        root_component = tek_rig.get_tek_parent()
-        neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')
-        spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='spine')
+        frag_rig = super(DemonTemplate, self).build(finalize=False)
+        root_component = frag_rig.get_frag_parent()
+        neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')
+        spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='spine')
 
         if not root_component:
             self.log.error('No Root Component found!')
@@ -897,7 +897,7 @@ class DemonTemplate(PlayerMaleTemplate):
         chain = chain_markup.ChainMarkup(root)
 
         r_breasts = chain.get_start('breasts', 'right')
-        r_breasts_component = tek.FKComponent.create(tek_rig,
+        r_breasts_component = frag.FKComponent.create(frag_rig,
                                                             r_breasts,
                                                             r_breasts,
                                                             side='right',
@@ -907,7 +907,7 @@ class DemonTemplate(PlayerMaleTemplate):
         r_breasts_flag = r_breasts_component.get_end_flag()
 
         l_breasts = chain.get_start('breasts', 'left')
-        l_breasts_component = tek.FKComponent.create(tek_rig,
+        l_breasts_component = frag.FKComponent.create(frag_rig,
                                                             l_breasts,
                                                             l_breasts,
                                                             side='left',
@@ -917,7 +917,7 @@ class DemonTemplate(PlayerMaleTemplate):
         l_breasts_flag = l_breasts_component.get_end_flag()
 
         r_hair_upper = chain.get_chain('hair_upper', 'right')
-        r_hair_upper_component = tek.FKComponent.create(tek_rig,
+        r_hair_upper_component = frag.FKComponent.create(frag_rig,
                                                                r_hair_upper[0],
                                                                r_hair_upper[1],
                                                                side='right',
@@ -926,7 +926,7 @@ class DemonTemplate(PlayerMaleTemplate):
         r_hair_upper_flag = r_hair_upper_component.get_end_flag()
 
         l_hair_upper = chain.get_chain('hair_upper', 'left')
-        l_hair_upper_component = tek.FKComponent.create(tek_rig,
+        l_hair_upper_component = frag.FKComponent.create(frag_rig,
                                                                l_hair_upper[0],
                                                                l_hair_upper[1],
                                                                side='left',
@@ -935,7 +935,7 @@ class DemonTemplate(PlayerMaleTemplate):
         l_hair_upper_flag = l_hair_upper_component.get_end_flag()
 
         l_hair_lower = chain.get_chain('hair_lower', 'left')
-        l_hair_lower_component = tek.FKComponent.create(tek_rig,
+        l_hair_lower_component = frag.FKComponent.create(frag_rig,
                                                                l_hair_lower[0],
                                                                l_hair_lower[1],
                                                                side='left',
@@ -944,7 +944,7 @@ class DemonTemplate(PlayerMaleTemplate):
         l_hair_lower_flag = l_hair_lower_component.get_end_flag()
 
         r_hair_lower = chain.get_chain('hair_lower', 'right')
-        r_hair_lower_component = tek.FKComponent.create(tek_rig,
+        r_hair_lower_component = frag.FKComponent.create(frag_rig,
                                                                r_hair_lower[0],
                                                                r_hair_lower[1],
                                                                side='right',
@@ -953,7 +953,7 @@ class DemonTemplate(PlayerMaleTemplate):
         r_hair_lower_flag = r_hair_lower_component.get_end_flag()
 
         hair_main = chain.get_chain('hair_main', 'center')
-        hair_main_component = tek.FKComponent.create(tek_rig,
+        hair_main_component = frag.FKComponent.create(frag_rig,
                                                             hair_main[0],
                                                             hair_main[1],
                                                             side='center',
@@ -962,7 +962,7 @@ class DemonTemplate(PlayerMaleTemplate):
         hair_main_flag = hair_main_component.get_end_flag()
 
         bracelet_01 = chain.get_chain('lowerarm_prop_01', 'left')
-        bracelet_01_component = tek.FKComponent.create(tek_rig,
+        bracelet_01_component = frag.FKComponent.create(frag_rig,
                                                               bracelet_01[0],
                                                               bracelet_01[1],
                                                               side='left',
@@ -974,7 +974,7 @@ class DemonTemplate(PlayerMaleTemplate):
         bracelet_01_flag.set_as_detail()
 
         bracelet_02 = chain.get_chain('lowerarm_prop_02', 'left')
-        bracelet_02_component = tek.FKComponent.create(tek_rig,
+        bracelet_02_component = frag.FKComponent.create(frag_rig,
                                                               bracelet_02[0],
                                                               bracelet_02[1],
                                                               side='left',
@@ -986,7 +986,7 @@ class DemonTemplate(PlayerMaleTemplate):
         bracelet_02_flag.set_as_detail()
 
         bracelet_03 = chain.get_chain('lowerarm_prop_03', 'left')
-        bracelet_03_component = tek.FKComponent.create(tek_rig,
+        bracelet_03_component = frag.FKComponent.create(frag_rig,
                                                               bracelet_03[0],
                                                               bracelet_03[1],
                                                               side='left',
@@ -998,7 +998,7 @@ class DemonTemplate(PlayerMaleTemplate):
         bracelet_03_flag.set_as_detail()
 
         bracelet_04 = chain.get_chain('lowerarm_prop_04', 'left')
-        bracelet_04_component = tek.FKComponent.create(tek_rig,
+        bracelet_04_component = frag.FKComponent.create(frag_rig,
                                                               bracelet_04[0],
                                                               bracelet_04[1],
                                                               side='left',
@@ -1010,7 +1010,7 @@ class DemonTemplate(PlayerMaleTemplate):
         bracelet_04_flag.set_as_detail()
 
         bracelet_05 = chain.get_chain('lowerarm_prop_05', 'left')
-        bracelet_05_component = tek.FKComponent.create(tek_rig,
+        bracelet_05_component = frag.FKComponent.create(frag_rig,
                                                               bracelet_05[0],
                                                               bracelet_05[1],
                                                               side='left',
@@ -1022,7 +1022,7 @@ class DemonTemplate(PlayerMaleTemplate):
         bracelet_05_flag.set_as_detail()
 
         necklace_01 = chain.get_start('necklace_01', 'center')
-        necklace_01_component = tek.FKComponent.create(tek_rig,
+        necklace_01_component = frag.FKComponent.create(frag_rig,
                                                               necklace_01,
                                                               necklace_01,
                                                               side='center',
@@ -1033,7 +1033,7 @@ class DemonTemplate(PlayerMaleTemplate):
         necklace_01_flag = necklace_01_component.get_flags()
 
         necklace_02 = chain.get_start('necklace_02', 'center')
-        necklace_02_component = tek.FKComponent.create(tek_rig,
+        necklace_02_component = frag.FKComponent.create(frag_rig,
                                                               necklace_02,
                                                               necklace_02,
                                                               side='center',
@@ -1044,7 +1044,7 @@ class DemonTemplate(PlayerMaleTemplate):
         necklace_02_flag = necklace_02_component.get_flags()
 
         necklace_03 = chain.get_chain('necklace_03', 'center')
-        necklace_03_component = tek.FKComponent.create(tek_rig,
+        necklace_03_component = frag.FKComponent.create(frag_rig,
                                                               necklace_03[0],
                                                               necklace_03[1],
                                                               side='center',
@@ -1055,7 +1055,7 @@ class DemonTemplate(PlayerMaleTemplate):
         necklace_03_flag = necklace_03_component.get_flags()
 
         breast_l = chain.get_chain('breast', 'left')
-        breast_l_component = tek.FKComponent.create(tek_rig,
+        breast_l_component = frag.FKComponent.create(frag_rig,
                                                            breast_l[0],
                                                            breast_l[1],
                                                            side='left',
@@ -1066,7 +1066,7 @@ class DemonTemplate(PlayerMaleTemplate):
         breast_l_flag.set_as_sub()
 
         breast_r = chain.get_chain('breast', 'right')
-        breast_r_component = tek.FKComponent.create(tek_rig,
+        breast_r_component = frag.FKComponent.create(frag_rig,
                                                            breast_r[0],
                                                            breast_r[1],
                                                            side='right',
@@ -1076,7 +1076,7 @@ class DemonTemplate(PlayerMaleTemplate):
         breast_r_flag = breast_r_component.get_end_flag()
         breast_r_flag.set_as_sub()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='left',
                                           region='breast',
                                           source_object=breast_l_flag,
@@ -1084,7 +1084,7 @@ class DemonTemplate(PlayerMaleTemplate):
                                                        r_breasts_flag],
                                           switch_obj=None)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='right',
                                           region='breast',
                                           source_object=breast_r_flag,
@@ -1092,10 +1092,10 @@ class DemonTemplate(PlayerMaleTemplate):
                                                        r_breasts_flag],
                                           switch_obj=None)
 
-        tek_rig.rigTemplate.set(DemonTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(DemonTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 class OperatorTemplate(PlayerMaleTemplate):
     VERSION = 1
@@ -1110,13 +1110,13 @@ class OperatorTemplate(PlayerMaleTemplate):
 
         pm.namespace(set=':')
 
-        tek_rig = super(OperatorTemplate, self).build(finalize=False)
-        root_component = tek_rig.get_tek_parent()
-        neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')
-        spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='spine')
-        arm_r_component = tek_rig.get_tek_children(of_type=tek.IKFKComponent, region='arm', side='right')
-        arm_l_component = tek_rig.get_tek_children(of_type=tek.IKFKComponent, region='arm', side='left')
-        pelvis_component = tek_rig.get_tek_children(of_type=tek.PelvisComponent)
+        frag_rig = super(OperatorTemplate, self).build(finalize=False)
+        root_component = frag_rig.get_frag_parent()
+        neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')
+        spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='spine')
+        arm_r_component = frag_rig.get_frag_children(of_type=frag.IKFKComponent, region='arm', side='right')
+        arm_l_component = frag_rig.get_frag_children(of_type=frag.IKFKComponent, region='arm', side='left')
+        pelvis_component = frag_rig.get_frag_children(of_type=frag.PelvisComponent)
 
         if not root_component:
             self.log.error('No Root Component found!')
@@ -1151,7 +1151,7 @@ class OperatorTemplate(PlayerMaleTemplate):
         chain = chain_markup.ChainMarkup(root)
 
         l_hair = chain.get_chain('hair', 'left')
-        l_hair_component = tek.FKComponent.create(tek_rig,
+        l_hair_component = frag.FKComponent.create(frag_rig,
                                                          l_hair[0],
                                                          l_hair[1],
                                                          side='left',
@@ -1161,7 +1161,7 @@ class OperatorTemplate(PlayerMaleTemplate):
         l_hair_flag = l_hair_component.get_flags()[0]
 
         r_hair = chain.get_chain('hair', 'right')
-        r_hair_component = tek.FKComponent.create(tek_rig,
+        r_hair_component = frag.FKComponent.create(frag_rig,
                                                          r_hair[0],
                                                          r_hair[1],
                                                          side='right',
@@ -1171,7 +1171,7 @@ class OperatorTemplate(PlayerMaleTemplate):
         r_hair_flag = r_hair_component.get_flags()[0]
 
         shirt = chain.get_chain('shirt_back', 'center')
-        shirt_component = tek.FKComponent.create(tek_rig,
+        shirt_component = frag.FKComponent.create(frag_rig,
                                                         shirt[0],
                                                         shirt[1],
                                                         side='center',
@@ -1182,7 +1182,7 @@ class OperatorTemplate(PlayerMaleTemplate):
         shirt_flag = shirt_component.get_flags()[0]
 
         back_cloth_l = chain.get_chain('back_cloth', 'left')
-        back_cloth_l_component = tek.FKComponent.create(tek_rig,
+        back_cloth_l_component = frag.FKComponent.create(frag_rig,
                                                         back_cloth_l[0],
                                                         back_cloth_l[1],
                                                         side='left',
@@ -1193,7 +1193,7 @@ class OperatorTemplate(PlayerMaleTemplate):
         back_cloth_l_flag = back_cloth_l_component.get_flags()[0]
 
         back_cloth_r = chain.get_chain('back_cloth', 'right')
-        back_cloth_r_component = tek.FKComponent.create(tek_rig,
+        back_cloth_r_component = frag.FKComponent.create(frag_rig,
                                                         back_cloth_r[0],
                                                         back_cloth_r[1],
                                                         side='right',
@@ -1205,7 +1205,7 @@ class OperatorTemplate(PlayerMaleTemplate):
         back_cloth_r_flag = back_cloth_r_component.get_flags()[0]
 
         coat_pd_l = chain.get_chain('coat_pd', 'left')
-        coat_pd_l_component = tek.FKComponent.create(tek_rig,
+        coat_pd_l_component = frag.FKComponent.create(frag_rig,
                                                    coat_pd_l[0],
                                                    coat_pd_l[0],
                                                    side='left',
@@ -1217,7 +1217,7 @@ class OperatorTemplate(PlayerMaleTemplate):
         coat_pd_l_flag = coat_pd_l_component.get_flags()[0]
 
         coat_pd_r = chain.get_chain('coat_pd', 'right')
-        coat_pd_r_component = tek.FKComponent.create(tek_rig,
+        coat_pd_r_component = frag.FKComponent.create(frag_rig,
                                                    coat_pd_r[0],
                                                    coat_pd_r[0],
                                                    side='right',
@@ -1228,7 +1228,7 @@ class OperatorTemplate(PlayerMaleTemplate):
         coat_pd_r_component.attach_component(pelvis_component, pm.PyNode('pelvis'))
 
         coat_l = chain.get_chain('coat', 'left')
-        coat_l_component = tek.FKComponent.create(tek_rig,
+        coat_l_component = frag.FKComponent.create(frag_rig,
                                                          coat_l[0],
                                                          coat_l[1],
                                                          side='left',
@@ -1240,7 +1240,7 @@ class OperatorTemplate(PlayerMaleTemplate):
         coat_l_flag = coat_l_component.get_flags()[0]
 
         coat_r = chain.get_chain('coat', 'right')
-        coat_r_component = tek.FKComponent.create(tek_rig,
+        coat_r_component = frag.FKComponent.create(frag_rig,
                                                          coat_r[0],
                                                          coat_r[1],
                                                          side='right',
@@ -1252,7 +1252,7 @@ class OperatorTemplate(PlayerMaleTemplate):
         coat_r_flag = coat_r_component.get_flags()[0]
 
         # upperarm_deformer_r = chain.get_chain('upperarm_deformer', 'right')
-        # upperarm_deformer_r_component = tek.FKComponent.create(tek_rig,
+        # upperarm_deformer_r_component = frag.FKComponent.create(frag_rig,
         #                                                  upperarm_deformer_r[0],
         #                                                  upperarm_deformer_r[1],
         #                                                  side='right',
@@ -1264,7 +1264,7 @@ class OperatorTemplate(PlayerMaleTemplate):
         # upperarm_deformer_r_flag = upperarm_deformer_r_component.get_flags()[0]
         #
         # upperarm_deformer_l = chain.get_chain('upperarm_deformer', 'left')
-        # upperarm_deformer_l_component = tek.FKComponent.create(tek_rig,
+        # upperarm_deformer_l_component = frag.FKComponent.create(frag_rig,
         #                                                  upperarm_deformer_l[0],
         #                                                  upperarm_deformer_l[1],
         #                                                  side='left',
@@ -1276,7 +1276,7 @@ class OperatorTemplate(PlayerMaleTemplate):
         # upperarm_deformer_l_flag = upperarm_deformer_l_component.get_flags()[0]
 
         pelvis_cloth = chain.get_chain('pelvis_cloth', 'left')
-        pelvis_cloth_component = tek.FKComponent.create(tek_rig,
+        pelvis_cloth_component = frag.FKComponent.create(frag_rig,
                                                    pelvis_cloth[0],
                                                    pelvis_cloth[1],
                                                    side='left',
@@ -1287,8 +1287,8 @@ class OperatorTemplate(PlayerMaleTemplate):
         pelvis_cloth_component.attach_component(pelvis_component, pm.PyNode('pelvis'))
         pelvis_cloth_flag = pelvis_cloth_component.get_flags()[0]
 
-        tek_rig.rigTemplate.set(OperatorTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(OperatorTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
         # Flag Rotation Changes
         XYZ = ('f_clavicle_l', 'f_clavicle_r', 'f_lowerarm_l', 'f_lowerarm_r', 'f_left_leg', 'f_right_leg', 'f_ball_l',
@@ -1326,7 +1326,7 @@ class OperatorTemplate(PlayerMaleTemplate):
             flagName = f'{x}{rotateString}'
             pm.setAttr(flagName, 5)
 
-        return tek_rig
+        return frag_rig
 
 class AngelTemplate(PlayerMaleTemplate):
     VERSION = 1
@@ -1341,12 +1341,12 @@ class AngelTemplate(PlayerMaleTemplate):
 
         pm.namespace(set=':')
 
-        tek_rig = super(AngelTemplate, self).build(finalize=False)
-        root_component = tek_rig.get_tek_parent()
-        spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='spine')
-        pelvis_component = tek_rig.get_tek_children(of_type=tek.PelvisComponent, region='cog')
-        arm_r_component = tek_rig.get_tek_children(of_type=tek.IKFKComponent, region='arm', side='right')
-        arm_l_component = tek_rig.get_tek_children(of_type=tek.IKFKComponent, region='arm', side='left')
+        frag_rig = super(AngelTemplate, self).build(finalize=False)
+        root_component = frag_rig.get_frag_parent()
+        spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='spine')
+        pelvis_component = frag_rig.get_frag_children(of_type=frag.PelvisComponent, region='cog')
+        arm_r_component = frag_rig.get_frag_children(of_type=frag.IKFKComponent, region='arm', side='right')
+        arm_l_component = frag_rig.get_frag_children(of_type=frag.IKFKComponent, region='arm', side='left')
 
         if not root_component:
             self.log.error('No Root Component found!')
@@ -1371,7 +1371,7 @@ class AngelTemplate(PlayerMaleTemplate):
         root = root_component.root_joint
         chain = chain_markup.ChainMarkup(root)
         back_cloth_l = chain.get_chain('back_cloth', 'left')
-        back_cloth_l_component = tek.FKComponent.create(tek_rig,
+        back_cloth_l_component = frag.FKComponent.create(frag_rig,
                                                         back_cloth_l[0],
                                                         back_cloth_l[1],
                                                         side='left',
@@ -1382,7 +1382,7 @@ class AngelTemplate(PlayerMaleTemplate):
         back_cloth_l_flag = back_cloth_l_component.get_flags()[0]
 
         back_cloth_r = chain.get_chain('back_cloth', 'right')
-        back_cloth_r_component = tek.FKComponent.create(tek_rig,
+        back_cloth_r_component = frag.FKComponent.create(frag_rig,
                                                         back_cloth_r[0],
                                                         back_cloth_r[1],
                                                         side='right',
@@ -1393,7 +1393,7 @@ class AngelTemplate(PlayerMaleTemplate):
 
 
         coat_l = chain.get_chain('coat', 'left')
-        coat_l_component = tek.FKComponent.create(tek_rig,
+        coat_l_component = frag.FKComponent.create(frag_rig,
                                                          coat_l[0],
                                                          coat_l[1],
                                                          side='left',
@@ -1405,7 +1405,7 @@ class AngelTemplate(PlayerMaleTemplate):
         coat_l_flag = coat_l_component.get_flags()[0]
 
         coat_r = chain.get_chain('coat', 'right')
-        coat_r_component = tek.FKComponent.create(tek_rig,
+        coat_r_component = frag.FKComponent.create(frag_rig,
                                                          coat_r[0],
                                                          coat_r[1],
                                                          side='right',
@@ -1417,7 +1417,7 @@ class AngelTemplate(PlayerMaleTemplate):
         coat_r_flag = coat_r_component.get_flags()[0]
 
         upperarm_deformer_r = chain.get_chain('upperarm_deformer', 'right')
-        upperarm_deformer_r_component = tek.FKComponent.create(tek_rig,
+        upperarm_deformer_r_component = frag.FKComponent.create(frag_rig,
                                                          upperarm_deformer_r[0],
                                                          upperarm_deformer_r[1],
                                                          side='right',
@@ -1429,7 +1429,7 @@ class AngelTemplate(PlayerMaleTemplate):
         upperarm_deformer_r_flag = upperarm_deformer_r_component.get_flags()[0]
 
         upperarm_deformer_l = chain.get_chain('upperarm_deformer', 'left')
-        upperarm_deformer_l_component = tek.FKComponent.create(tek_rig,
+        upperarm_deformer_l_component = frag.FKComponent.create(frag_rig,
                                                          upperarm_deformer_l[0],
                                                          upperarm_deformer_l[1],
                                                          side='left',
@@ -1440,11 +1440,11 @@ class AngelTemplate(PlayerMaleTemplate):
         upperarm_deformer_l_component.attach_component(arm_l_component, pm.PyNode('upperarm_l'))
         upperarm_deformer_l_flag = upperarm_deformer_l_component.get_flags()[0]
 
-        tek_rig.rigTemplate.set(OperatorTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(OperatorTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
         coat_upper_l = chain.get_chain('coat_upper', 'left')
-        coat_upper_l_component = tek.FKComponent.create(tek_rig,
+        coat_upper_l_component = frag.FKComponent.create(frag_rig,
                                                                coat_upper_l[0],
                                                                coat_upper_l[1],
                                                                side='left',
@@ -1456,7 +1456,7 @@ class AngelTemplate(PlayerMaleTemplate):
         coat_upper_l_flag = coat_upper_l_component.get_flags()[0]
 
         coat_upper_r = chain.get_chain('coat_upper', 'right')
-        coat_upper_r_component = tek.FKComponent.create(tek_rig,
+        coat_upper_r_component = frag.FKComponent.create(frag_rig,
                                                                coat_upper_r[0],
                                                                coat_upper_r[1],
                                                                side='right',
@@ -1468,7 +1468,7 @@ class AngelTemplate(PlayerMaleTemplate):
         coat_upper_r_flag = coat_upper_r_component.get_flags()[0]
 
         shirt = chain.get_start('shirt_back', 'center')
-        shirt_component = tek.FKComponent.create(tek_rig,
+        shirt_component = frag.FKComponent.create(frag_rig,
                                                         shirt,
                                                         shirt,
                                                         side='center',
@@ -1478,10 +1478,10 @@ class AngelTemplate(PlayerMaleTemplate):
         shirt_component.attach_component(spine_component, pm.PyNode('spine_04'))
         shirt_flag = shirt_component.get_flags()[0]
 
-        tek_rig.rigTemplate.set(AngelTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(AngelTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 class ArchivistTemplate(PlayerMaleTemplate):
     VERSION = 1
@@ -1496,9 +1496,9 @@ class ArchivistTemplate(PlayerMaleTemplate):
 
         pm.namespace(set=':')
 
-        tek_rig = super(ArchivistTemplate, self).build(finalize=False)
-        root_component = tek_rig.get_tek_parent()
-        neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')
+        frag_rig = super(ArchivistTemplate, self).build(finalize=False)
+        root_component = frag_rig.get_frag_parent()
+        neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')
 
         if not root_component:
             logger.warning('No Root Component found!')
@@ -1513,7 +1513,7 @@ class ArchivistTemplate(PlayerMaleTemplate):
         chain = chain_markup.ChainMarkup(root)
 
         nose_prop = chain.get_chain('nose_prop', 'center')
-        nose_prop_component = tek.FKComponent.create(tek_rig,
+        nose_prop_component = frag.FKComponent.create(frag_rig,
                                                          nose_prop[0],
                                                          nose_prop[1],
                                                          side='center',
@@ -1524,10 +1524,10 @@ class ArchivistTemplate(PlayerMaleTemplate):
         nose_prop_component.attach_component(neck_component, pm.PyNode('head'))
         nose_prop_flag = nose_prop_component.get_flags()[0]
 
-        tek_rig.rigTemplate.set(ArchivistTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(ArchivistTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class ScientistTemplate(PlayerMaleTemplate):
@@ -1543,11 +1543,11 @@ class ScientistTemplate(PlayerMaleTemplate):
 
         pm.namespace(set=':')
 
-        tek_rig = super(ScientistTemplate, self).build(finalize=False)
-        root_component = tek_rig.get_tek_parent()
-        spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='spine')
-        cog_component = tek_rig.get_tek_children(of_type=tek.CogComponent, region='cog')
-        head_component = tek_rig.get_tek_children(of_type=tek.CogComponent, region='neck')
+        frag_rig = super(ScientistTemplate, self).build(finalize=False)
+        root_component = frag_rig.get_frag_parent()
+        spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='spine')
+        cog_component = frag_rig.get_frag_children(of_type=frag.CogComponent, region='cog')
+        head_component = frag_rig.get_frag_children(of_type=frag.CogComponent, region='neck')
 
         if not root_component:
             self.log.error('No Root Component found!')
@@ -1570,7 +1570,7 @@ class ScientistTemplate(PlayerMaleTemplate):
         chain = chain_markup.ChainMarkup(root)
 
         coat_l = chain.get_chain('coat', 'left')
-        coat_l_component = tek.FKComponent.create(tek_rig,
+        coat_l_component = frag.FKComponent.create(frag_rig,
                                                          coat_l[0],
                                                          coat_l[1],
                                                          side='left',
@@ -1582,7 +1582,7 @@ class ScientistTemplate(PlayerMaleTemplate):
         coat_l_flag = coat_l_component.get_flags()[0]
 
         coat_r = chain.get_chain('coat', 'right')
-        coat_r_component = tek.FKComponent.create(tek_rig,
+        coat_r_component = frag.FKComponent.create(frag_rig,
                                                          coat_r[0],
                                                          coat_r[1],
                                                          side='right',
@@ -1594,7 +1594,7 @@ class ScientistTemplate(PlayerMaleTemplate):
         coat_r_flag = coat_r_component.get_flags()[0]
 
         coat_back = chain.get_chain('coat', 'center')
-        coat_back_component = tek.FKComponent.create(tek_rig,
+        coat_back_component = frag.FKComponent.create(frag_rig,
                                                             coat_back[0],
                                                             coat_back[1],
                                                             side='center',
@@ -1606,7 +1606,7 @@ class ScientistTemplate(PlayerMaleTemplate):
         coat_back_flag = coat_back_component.get_flags()[0]
 
         coat_inner_r = chain.get_chain('coat_inner', 'right')
-        coat_inner_r_component = tek.FKComponent.create(tek_rig,
+        coat_inner_r_component = frag.FKComponent.create(frag_rig,
                                                                coat_inner_r[0],
                                                                coat_inner_r[1],
                                                                side='right',
@@ -1618,7 +1618,7 @@ class ScientistTemplate(PlayerMaleTemplate):
         coat_inner_r_flag = coat_inner_r_component.get_flags()[0]
 
         coat_inner_l = chain.get_chain('coat_inner', 'left')
-        coat_inner_l_component = tek.FKComponent.create(tek_rig,
+        coat_inner_l_component = frag.FKComponent.create(frag_rig,
                                                                coat_inner_l[0],
                                                                coat_inner_l[1],
                                                                side='left',
@@ -1630,7 +1630,7 @@ class ScientistTemplate(PlayerMaleTemplate):
         coat_inner_l_flag = coat_inner_l_component.get_flags()[0]
 
         earring_l = chain.get_chain('earring', 'left')
-        earring_l_component = tek.FKComponent.create(tek_rig,
+        earring_l_component = frag.FKComponent.create(frag_rig,
                                                                earring_l[0],
                                                                earring_l[1],
                                                                side='left',
@@ -1642,7 +1642,7 @@ class ScientistTemplate(PlayerMaleTemplate):
         earring_l_flag = earring_l_component.get_flags()[0]
 
         earring_r = chain.get_chain('earring', 'right')
-        earring_r_component = tek.FKComponent.create(tek_rig,
+        earring_r_component = frag.FKComponent.create(frag_rig,
                                                                earring_r[0],
                                                                earring_r[1],
                                                                side='right',
@@ -1654,7 +1654,7 @@ class ScientistTemplate(PlayerMaleTemplate):
         earring_r_flag = earring_r_component.get_flags()[0]
 
         monocle = chain.get_chain('monocle', 'right')
-        monocle_component = tek.FKComponent.create(tek_rig,
+        monocle_component = frag.FKComponent.create(frag_rig,
                                                                monocle[0],
                                                                monocle[1],
                                                                side='right',
@@ -1666,10 +1666,10 @@ class ScientistTemplate(PlayerMaleTemplate):
         monocle_flag = monocle_component.get_flags()[0]
 
 
-        tek_rig.rigTemplate.set(ScientistTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(ScientistTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 class TacticalSkirmisherTemplate(PlayerMaleTemplate):
     VERSION = 1
@@ -1684,12 +1684,12 @@ class TacticalSkirmisherTemplate(PlayerMaleTemplate):
 
         pm.namespace(set=':')
 
-        tek_rig = super(TacticalSkirmisherTemplate, self).build(finalize=False)
-        print(tek_rig)
-        root_component = tek_rig.get_tek_parent()
-        neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')
-        r_clav_component = tek_rig.get_tek_children(of_type=tek.FKComponent, region='clav', side='right')
-        l_clav_component = tek_rig.get_tek_children(of_type=tek.FKComponent, region='clav', side='left')
+        frag_rig = super(TacticalSkirmisherTemplate, self).build(finalize=False)
+        print(frag_rig)
+        root_component = frag_rig.get_frag_parent()
+        neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')
+        r_clav_component = frag_rig.get_frag_children(of_type=frag.FKComponent, region='clav', side='right')
+        l_clav_component = frag_rig.get_frag_children(of_type=frag.FKComponent, region='clav', side='left')
 
         if not root_component:
             logger.warning('No Root Component found!')
@@ -1713,7 +1713,7 @@ class TacticalSkirmisherTemplate(PlayerMaleTemplate):
         chain = chain_markup.ChainMarkup(root)
 
         neck_collar_l = chain.get_chain('neck_collar', 'left')
-        neck_collar_l_component = tek.FKComponent.create(tek_rig,
+        neck_collar_l_component = frag.FKComponent.create(frag_rig,
                                                          neck_collar_l[0],
                                                          neck_collar_l[1],
                                                          side='left',
@@ -1725,7 +1725,7 @@ class TacticalSkirmisherTemplate(PlayerMaleTemplate):
         neck_collar_l_flag = neck_collar_l_component.get_flags()[0]
 
         neck_collar_r = chain.get_chain('neck_collar', 'right')
-        neck_collar_r_component = tek.FKComponent.create(tek_rig,
+        neck_collar_r_component = frag.FKComponent.create(frag_rig,
                                                          neck_collar_r[0],
                                                          neck_collar_r[1],
                                                          side='right',
@@ -1737,7 +1737,7 @@ class TacticalSkirmisherTemplate(PlayerMaleTemplate):
         neck_collar_r_flag = neck_collar_r_component.get_flags()[0]
 
         clavicle_deformer_r = chain.get_chain('clavicle_deformer', 'right')
-        clavicle_deformer_r_component = tek.FKComponent.create(tek_rig,
+        clavicle_deformer_r_component = frag.FKComponent.create(frag_rig,
                                                          clavicle_deformer_r[0],
                                                          clavicle_deformer_r[1],
                                                          side='right',
@@ -1750,7 +1750,7 @@ class TacticalSkirmisherTemplate(PlayerMaleTemplate):
 
 
         clavicle_deformer_l = chain.get_chain('clavicle_deformer', 'left')
-        clavicle_deformer_l_component = tek.FKComponent.create(tek_rig,
+        clavicle_deformer_l_component = frag.FKComponent.create(frag_rig,
                                                          clavicle_deformer_l[0],
                                                          clavicle_deformer_l[1],
                                                          side='left',
@@ -1763,9 +1763,9 @@ class TacticalSkirmisherTemplate(PlayerMaleTemplate):
 
 
 
-        tek_rig.rigTemplate.set(TacticalSkirmisherTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
-        return tek_rig
+        frag_rig.rigTemplate.set(TacticalSkirmisherTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
+        return frag_rig
 
 
 class DemonicCrawlerTemplate(PlayerMaleTemplate):
@@ -1779,18 +1779,18 @@ class DemonicCrawlerTemplate(PlayerMaleTemplate):
     # We would not normally create the root and skel mesh here.
     def build(self, finalize=True):
         pm.namespace(set=':')
-        tek_rig = super(DemonicCrawlerTemplate, self).build(finalize=False)
+        frag_rig = super(DemonicCrawlerTemplate, self).build(finalize=False)
 
-        tek_root = tek_rig.get_tek_parent()
+        frag_root = frag_rig.get_frag_parent()
 
-        skel_root = tek_root.root_joint
+        skel_root = frag_root.root_joint
         skel_hierarchy = chain_markup.ChainMarkup(skel_root)
 
-        head_component = lists.get_first_in_list(tek_rig.get_tek_children(side='center', region='neck'))
+        head_component = lists.get_first_in_list(frag_rig.get_frag_children(side='center', region='neck'))
         head_joint = skel_hierarchy.get_end('neck', 'center')
 
         jaw_joint = skel_hierarchy.get_start('jaw', 'center')
-        jaw_component = tek.FKComponent.create(tek_rig,
+        jaw_component = frag.FKComponent.create(frag_rig,
                                                                       jaw_joint,
                                                                       jaw_joint,
                                                                       side='center',
@@ -1803,7 +1803,7 @@ class DemonicCrawlerTemplate(PlayerMaleTemplate):
                 start_joint, end_joint = skel_hierarchy.get_chain(f'hair_{hair_region}', side)
                 if not start_joint:
                     continue
-                hair_component = tek.FKComponent.create(tek_rig,
+                hair_component = frag.FKComponent.create(frag_rig,
                                                               start_joint,
                                                               end_joint,
                                                               side=side,
@@ -1813,7 +1813,7 @@ class DemonicCrawlerTemplate(PlayerMaleTemplate):
 
         start_joint, end_joint = skel_hierarchy.get_chain(f'hair', 'center')
         if start_joint:
-            hair_component = tek.FKComponent.create(tek_rig,
+            hair_component = frag.FKComponent.create(frag_rig,
                                                            start_joint,
                                                            end_joint,
                                                            side='center',
@@ -1821,10 +1821,10 @@ class DemonicCrawlerTemplate(PlayerMaleTemplate):
                                                            scale=0.1)
             hair_component.attach_component(head_component, head_joint)
 
-        tek_rig.rigTemplate.set(DemonicCrawlerTemplate.__name__)
+        frag_rig.rigTemplate.set(DemonicCrawlerTemplate.__name__)
         if finalize:
-            tek_rig.finalize_rig(self.get_flags_path())
-        return tek_rig
+            frag_rig.finalize_rig(self.get_flags_path())
+        return frag_rig
 
 class PossessedStrikerTemplate(PlayerMaleTemplate):
     VERSION = 1
@@ -1839,11 +1839,11 @@ class PossessedStrikerTemplate(PlayerMaleTemplate):
 
         pm.namespace(set=':')
 
-        tek_rig = super(PossessedStrikerTemplate, self).build(finalize=False)
-        root_component = tek_rig.get_tek_parent()
-        neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')
-        r_clav_component = tek_rig.get_tek_children(of_type=tek.FKComponent, region='clav', side='right')
-        l_clav_component = tek_rig.get_tek_children(of_type=tek.FKComponent, region='clav', side='left')
+        frag_rig = super(PossessedStrikerTemplate, self).build(finalize=False)
+        root_component = frag_rig.get_frag_parent()
+        neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')
+        r_clav_component = frag_rig.get_frag_children(of_type=frag.FKComponent, region='clav', side='right')
+        l_clav_component = frag_rig.get_frag_children(of_type=frag.FKComponent, region='clav', side='left')
 
         if not root_component:
             logger.warning('No Root Component found!')
@@ -1867,7 +1867,7 @@ class PossessedStrikerTemplate(PlayerMaleTemplate):
         chain = chain_markup.ChainMarkup(root)
 
         jaw = chain.get_start('jaw', 'center')
-        jaw_component = tek.FKComponent.create(tek_rig,
+        jaw_component = frag.FKComponent.create(frag_rig,
                                                       jaw,
                                                       jaw,
                                                       side='center',
@@ -1876,7 +1876,7 @@ class PossessedStrikerTemplate(PlayerMaleTemplate):
         jaw_component.attach_component(neck_component, pm.PyNode('head'))
 
         clavicle_deformer_r = chain.get_chain('clavicle_deformer', 'right')
-        clavicle_deformer_r_component = tek.FKComponent.create(tek_rig,
+        clavicle_deformer_r_component = frag.FKComponent.create(frag_rig,
                                                          clavicle_deformer_r[0],
                                                          clavicle_deformer_r[1],
                                                          side='right',
@@ -1889,7 +1889,7 @@ class PossessedStrikerTemplate(PlayerMaleTemplate):
 
 
         clavicle_deformer_l = chain.get_chain('clavicle_deformer', 'left')
-        clavicle_deformer_l_component = tek.FKComponent.create(tek_rig,
+        clavicle_deformer_l_component = frag.FKComponent.create(frag_rig,
                                                          clavicle_deformer_l[0],
                                                          clavicle_deformer_l[1],
                                                          side='left',
@@ -1902,9 +1902,9 @@ class PossessedStrikerTemplate(PlayerMaleTemplate):
 
 
 
-        tek_rig.rigTemplate.set(PossessedStrikerTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
-        return tek_rig
+        frag_rig.rigTemplate.set(PossessedStrikerTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
+        return frag_rig
 
 
 class PlayerTemplate(PlayerMaleTemplate):
@@ -1920,10 +1920,10 @@ class PlayerTemplate(PlayerMaleTemplate):
 
         pm.namespace(set=':')
 
-        tek_rig = super(PlayerTemplate, self).build(finalize=False)
-        root_component = tek_rig.get_tek_parent()
-        neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')
-        pelvis_component = tek_rig.get_tek_children(of_type=tek.PelvisComponent)
+        frag_rig = super(PlayerTemplate, self).build(finalize=False)
+        root_component = frag_rig.get_frag_parent()
+        neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')
+        pelvis_component = frag_rig.get_frag_children(of_type=frag.PelvisComponent)
 
         if not root_component:
             self.log.error('No Root Component found!')
@@ -1943,7 +1943,7 @@ class PlayerTemplate(PlayerMaleTemplate):
         chain = chain_markup.ChainMarkup(root)
 
         neck_collar_l = chain.get_chain('neck_collar', 'left')
-        neck_collar_l_component = tek.FKComponent.create(tek_rig,
+        neck_collar_l_component = frag.FKComponent.create(frag_rig,
                                                          neck_collar_l[0],
                                                          neck_collar_l[1],
                                                          side='left',
@@ -1955,7 +1955,7 @@ class PlayerTemplate(PlayerMaleTemplate):
         neck_collar_l_flag = neck_collar_l_component.get_flags()[0]
 
         neck_collar_r = chain.get_chain('neck_collar', 'right')
-        neck_collar_r_component = tek.FKComponent.create(tek_rig,
+        neck_collar_r_component = frag.FKComponent.create(frag_rig,
                                                          neck_collar_r[0],
                                                          neck_collar_r[1],
                                                          side='right',
@@ -1967,7 +1967,7 @@ class PlayerTemplate(PlayerMaleTemplate):
         neck_collar_r_flag = neck_collar_r_component.get_flags()[0]
 
         back_cloth_l = chain.get_chain('back_cloth', 'left')
-        back_cloth_l_component = tek.FKComponent.create(tek_rig,
+        back_cloth_l_component = frag.FKComponent.create(frag_rig,
                                                         back_cloth_l[0],
                                                         back_cloth_l[1],
                                                         side='left',
@@ -1978,7 +1978,7 @@ class PlayerTemplate(PlayerMaleTemplate):
         back_cloth_l_flag = back_cloth_l_component.get_flags()[0]
 
         back_cloth_r = chain.get_chain('back_cloth', 'right')
-        back_cloth_r_component = tek.FKComponent.create(tek_rig,
+        back_cloth_r_component = frag.FKComponent.create(frag_rig,
                                                         back_cloth_r[0],
                                                         back_cloth_r[1],
                                                         side='right',
@@ -1988,7 +1988,7 @@ class PlayerTemplate(PlayerMaleTemplate):
         back_cloth_r_component.attach_component(pelvis_component, pm.PyNode('pelvis'))
 
         coat_l = chain.get_chain('coat', 'left')
-        coat_l_component = tek.FKComponent.create(tek_rig,
+        coat_l_component = frag.FKComponent.create(frag_rig,
                                                          coat_l[0],
                                                          coat_l[1],
                                                          side='left',
@@ -1999,10 +1999,10 @@ class PlayerTemplate(PlayerMaleTemplate):
         coat_l_component.attach_component(pelvis_component, pm.PyNode('pelvis'))
         coat_l_flag = coat_l_component.get_flags()[0]
 
-        tek_rig.rigTemplate.set(PlayerTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(PlayerTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 class ZaminaChildTemplate(PlayerMaleTemplate):
     VERSION = 1
@@ -2017,13 +2017,13 @@ class ZaminaChildTemplate(PlayerMaleTemplate):
 
         pm.namespace(set=':')
 
-        tek_rig = super(ZaminaChildTemplate, self).build(finalize=False)
-        root_component = tek_rig.get_tek_parent()
-        neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')
-        spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='spine')
-        arm_r_component = tek_rig.get_tek_children(of_type=tek.IKFKComponent, region='arm', side='right')
-        arm_l_component = tek_rig.get_tek_children(of_type=tek.IKFKComponent, region='arm', side='left')
-        pelvis_component = tek_rig.get_tek_children(of_type=tek.PelvisComponent)
+        frag_rig = super(ZaminaChildTemplate, self).build(finalize=False)
+        root_component = frag_rig.get_frag_parent()
+        neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')
+        spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='spine')
+        arm_r_component = frag_rig.get_frag_children(of_type=frag.IKFKComponent, region='arm', side='right')
+        arm_l_component = frag_rig.get_frag_children(of_type=frag.IKFKComponent, region='arm', side='left')
+        pelvis_component = frag_rig.get_frag_children(of_type=frag.PelvisComponent)
 
         if not root_component:
             self.log.error('No Root Component found!')
@@ -2058,7 +2058,7 @@ class ZaminaChildTemplate(PlayerMaleTemplate):
         chain = chain_markup.ChainMarkup(root)
 
         pelvis_cloth = chain.get_chain('pelvis_cloth', 'left')
-        pelvis_cloth_component = tek.FKComponent.create(tek_rig,
+        pelvis_cloth_component = frag.FKComponent.create(frag_rig,
                                                          pelvis_cloth[0],
                                                          pelvis_cloth[1],
                                                          side='left',
@@ -2070,7 +2070,7 @@ class ZaminaChildTemplate(PlayerMaleTemplate):
         pelvis_cloth_flag = pelvis_cloth_component.get_flags()[0]
 
         sleeve_l = chain.get_chain('sleeve', 'left')
-        sleeve_l_component = tek.FKComponent.create(tek_rig,
+        sleeve_l_component = frag.FKComponent.create(frag_rig,
                                                      sleeve_l[0],
                                                      sleeve_l[1],
                                                      side='left',
@@ -2080,7 +2080,7 @@ class ZaminaChildTemplate(PlayerMaleTemplate):
         sleeve_l_component.attach_component(arm_l_component, pm.PyNode('lowerarm_l'))
 
         sleeve_r = chain.get_chain('sleeve', 'right')
-        sleeve_r_component = tek.FKComponent.create(tek_rig,
+        sleeve_r_component = frag.FKComponent.create(frag_rig,
                                                      sleeve_r[0],
                                                      sleeve_r[1],
                                                      side='right',
@@ -2091,7 +2091,7 @@ class ZaminaChildTemplate(PlayerMaleTemplate):
 
 
         coat_l = chain.get_chain('coat', 'left')
-        coat_l_component = tek.FKComponent.create(tek_rig,
+        coat_l_component = frag.FKComponent.create(frag_rig,
                                                    coat_l[0],
                                                    coat_l[1],
                                                    side='left',
@@ -2102,7 +2102,7 @@ class ZaminaChildTemplate(PlayerMaleTemplate):
         coat_l_flag = coat_l_component.get_flags()[0]
 
         coat_r = chain.get_chain('coat', 'right')
-        coat_r_component = tek.FKComponent.create(tek_rig,
+        coat_r_component = frag.FKComponent.create(frag_rig,
                                                    coat_r[0],
                                                    coat_r[1],
                                                    side='right',
@@ -2112,7 +2112,7 @@ class ZaminaChildTemplate(PlayerMaleTemplate):
         coat_r_component.attach_component(pelvis_component, pm.PyNode('pelvis'))
         coat_r_flag = coat_r_component.get_flags()[0]
         back_cloth_l = chain.get_chain('back_cloth', 'left')
-        back_cloth_l_component = tek.FKComponent.create(tek_rig,
+        back_cloth_l_component = frag.FKComponent.create(frag_rig,
                                                          back_cloth_l[0],
                                                          back_cloth_l[1],
                                                          side='left',
@@ -2122,7 +2122,7 @@ class ZaminaChildTemplate(PlayerMaleTemplate):
         back_cloth_l_flag = back_cloth_l_component.get_flags()[0]
 
         back_cloth_r = chain.get_chain('back_cloth', 'right')
-        back_cloth_r_component = tek.FKComponent.create(tek_rig,
+        back_cloth_r_component = frag.FKComponent.create(frag_rig,
                                                          back_cloth_r[0],
                                                          back_cloth_r[1],
                                                          side='right',
@@ -2130,8 +2130,8 @@ class ZaminaChildTemplate(PlayerMaleTemplate):
                                                          lock_root_translate_axes=[])
         back_cloth_r_component.attach_component(pelvis_component, pm.PyNode('pelvis'))
 
-        tek_rig.rigTemplate.set(ZaminaChildTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(ZaminaChildTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
         # Flag Rotation Changes
         XYZ = ('f_clavicle_l', 'f_clavicle_r', 'f_lowerarm_l', 'f_lowerarm_r', 'f_left_leg', 'f_right_leg', 'f_ball_l',
@@ -2169,7 +2169,7 @@ class ZaminaChildTemplate(PlayerMaleTemplate):
             flagName = f'{x}{rotateString}'
             pm.setAttr(flagName, 5)
 
-        return tek_rig
+        return frag_rig
 
 class AngeloSacrificeTemplate(PlayerMaleTemplate):
     VERSION = 1
@@ -2184,13 +2184,13 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
 
         pm.namespace(set=':')
 
-        tek_rig = super(AngeloSacrificeTemplate, self).build(finalize=False)
-        root_component = tek_rig.get_tek_parent()
+        frag_rig = super(AngeloSacrificeTemplate, self).build(finalize=False)
+        root_component = frag_rig.get_frag_parent()
 
-        spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='spine', side='center')[0]
-        pelvis_component = tek_rig.get_tek_children(of_type=tek.PelvisComponent)[0]
-        cog_component = tek_rig.get_tek_children(of_type=tek.CogComponent)[0]
-        world_component = tek_rig.get_tek_children(of_type=tek.WorldComponent)[0]
+        spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='spine', side='center')[0]
+        pelvis_component = frag_rig.get_frag_children(of_type=frag.PelvisComponent)[0]
+        cog_component = frag_rig.get_frag_children(of_type=frag.CogComponent)[0]
+        world_component = frag_rig.get_frag_children(of_type=frag.WorldComponent)[0]
 
         pelvis_flag = pelvis_component.get_flags()[0]
         cog_flag = cog_component.get_flags()[0]
@@ -2202,7 +2202,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
         chain = chain_markup.ChainMarkup(root)
 
         back_cloth_l = chain.get_chain('back_cloth', 'left')
-        back_cloth_l_component = tek.FKComponent.create(tek_rig,
+        back_cloth_l_component = frag.FKComponent.create(frag_rig,
                                                          back_cloth_l[0],
                                                          back_cloth_l[1],
                                                          side='left',
@@ -2212,7 +2212,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
         back_cloth_l_flag = back_cloth_l_component.get_flags()[0]
 
         back_cloth_r = chain.get_chain('back_cloth', 'right')
-        back_cloth_r_component = tek.FKComponent.create(tek_rig,
+        back_cloth_r_component = frag.FKComponent.create(frag_rig,
                                                          back_cloth_r[0],
                                                          back_cloth_r[1],
                                                          side='right',
@@ -2222,7 +2222,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
 
         back_cloth_r_flag = back_cloth_r_component.get_flags()[0]
         coat_inner_r = chain.get_chain('coat_inner', 'right')
-        coat_inner_r_component = tek.FKComponent.create(tek_rig,
+        coat_inner_r_component = frag.FKComponent.create(frag_rig,
                                                          coat_inner_r[0],
                                                          coat_inner_r[1],
                                                          side='right',
@@ -2233,7 +2233,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
         coat_inner_r_flag = coat_inner_r_component.get_flags()[0]
 
         coat_inner_l = chain.get_chain('coat_inner', 'left')
-        coat_inner_l_component = tek.FKComponent.create(tek_rig,
+        coat_inner_l_component = frag.FKComponent.create(frag_rig,
                                                          coat_inner_l[0],
                                                          coat_inner_l[1],
                                                          side='left',
@@ -2244,7 +2244,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
         coat_inner_l_flag = coat_inner_l_component.get_flags()[0]
 
         coat_l = chain.get_chain('coat', 'left')
-        coat_l_component = tek.FKComponent.create(tek_rig,
+        coat_l_component = frag.FKComponent.create(frag_rig,
                                                    coat_l[0],
                                                    coat_l[1],
                                                    side='left',
@@ -2255,7 +2255,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
         coat_l_flag = coat_l_component.get_flags()[0]
 
         coat_r = chain.get_chain('coat', 'right')
-        coat_r_component = tek.FKComponent.create(tek_rig,
+        coat_r_component = frag.FKComponent.create(frag_rig,
                                                    coat_r[0],
                                                    coat_r[1],
                                                    side='right',
@@ -2266,7 +2266,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
         coat_r_flag = coat_r_component.get_flags()[0]
 
         coat_middle = chain.get_chain('coat_middle', 'center')
-        coat_middle_component = tek.FKComponent.create(tek_rig,
+        coat_middle_component = frag.FKComponent.create(frag_rig,
                                                    coat_middle[0],
                                                    coat_middle[1],
                                                    side='center',
@@ -2277,7 +2277,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
         coat_middle_flag = coat_middle_component.get_flags()[0]
 
         collar_01_l = chain.get_chain('collar_01', 'left')
-        collar_01_l_component = tek.FKComponent.create(tek_rig,
+        collar_01_l_component = frag.FKComponent.create(frag_rig,
                                                    collar_01_l[0],
                                                    collar_01_l[1],
                                                    side='left',
@@ -2288,7 +2288,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
         collar_01_l_flag = collar_01_l_component.get_flags()[0]
 
         collar_01_r = chain.get_chain('collar_01', 'right')
-        collar_01_r_component = tek.FKComponent.create(tek_rig,
+        collar_01_r_component = frag.FKComponent.create(frag_rig,
                                                    collar_01_r[0],
                                                    collar_01_r[1],
                                                    side='right',
@@ -2299,7 +2299,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
         collar_01_r_flag = collar_01_r_component.get_flags()[0]
 
         robe = chain.get_chain('robe', 'center')
-        robe_component = tek.FKComponent.create(tek_rig,
+        robe_component = frag.FKComponent.create(frag_rig,
                                                         robe[0],
                                                         robe[1],
                                                         side='center',
@@ -2313,7 +2313,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
         ### Multi Constraints ###############
 
         # Coat Middle
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='coat_middle',
                                     source_object=coat_middle_flag,
@@ -2322,7 +2322,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
                                     translate=True)
 
         # Coat Left
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='left',
                                     region='coat',
                                     source_object=coat_l_flag,
@@ -2331,7 +2331,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
                                     translate=True)
 
         # Coat Right
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='right',
                                     region='coat',
                                     source_object=coat_r_flag,
@@ -2340,7 +2340,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
                                     translate=True)
 
         # Coat Inner Left
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='left',
                                     region='coat_inner',
                                     source_object=coat_inner_l_flag,
@@ -2349,7 +2349,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
                                     translate=True)
 
         # Coat Inner Right
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='right',
                                     region='coat_inner',
                                     source_object=coat_inner_r_flag,
@@ -2358,7 +2358,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
                                     translate=True)
 
         # Back Cloth Left
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='left',
                                     region='back_cloth',
                                     source_object=back_cloth_l_flag,
@@ -2367,7 +2367,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
                                     translate=True)
 
         # Back Cloth Right
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='right',
                                     region='back_cloth',
                                     source_object=back_cloth_r_flag,
@@ -2376,7 +2376,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
                                     translate=True)
 
         # Collar 01 Left
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='left',
                                     region='collar_01',
                                     source_object=collar_01_l_flag,
@@ -2384,7 +2384,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
                                     switch_obj=None,
                                     translate=True)
         # Collar 01 Right
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='right',
                                     region='collar_01',
                                     source_object=collar_01_r_flag,
@@ -2393,7 +2393,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
                                     translate=True)
 
         # Robe
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='robe',
                                     source_object=robe_flag,
@@ -2402,8 +2402,8 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
                                     translate=True)
 
 
-        tek_rig.rigTemplate.set(AngeloSacrificeTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(AngeloSacrificeTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
         # Flag Rotation Changes
         XYZ = ('f_clavicle_l', 'f_clavicle_r', 'f_lowerarm_l', 'f_lowerarm_r', 'f_left_leg', 'f_right_leg', 'f_ball_l',
@@ -2441,7 +2441,7 @@ class AngeloSacrificeTemplate(PlayerMaleTemplate):
             flagName = f'{x}{rotateString}'
             pm.setAttr(flagName, 5)
 
-        return tek_rig
+        return frag_rig
 
 class AngeloTemplate(AngeloSacrificeTemplate):
     VERSION = 1
@@ -2456,16 +2456,16 @@ class AngeloTemplate(AngeloSacrificeTemplate):
 
         pm.namespace(set=':')
 
-        tek_rig = super(AngeloSacrificeTemplate, self).build(finalize=False)
-        root_component = tek_rig.get_tek_parent()
+        frag_rig = super(AngeloSacrificeTemplate, self).build(finalize=False)
+        root_component = frag_rig.get_frag_parent()
 
-        pelvis_component = tek_rig.get_tek_children(of_type=tek.PelvisComponent)[0]
-        spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='spine', side='center')[0]
-        cog_component = tek_rig.get_tek_children(of_type=tek.CogComponent)[0]
-        world_component = tek_rig.get_tek_children(of_type=tek.WorldComponent)[0]
-        arm_r_component = tek_rig.get_tek_children(of_type=tek.IKFKComponent, region='arm', side='right')[0]
-        arm_l_component = tek_rig.get_tek_children(of_type=tek.IKFKComponent, region='arm', side='left')[0]
-        neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck', side='center')[0]
+        pelvis_component = frag_rig.get_frag_children(of_type=frag.PelvisComponent)[0]
+        spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='spine', side='center')[0]
+        cog_component = frag_rig.get_frag_children(of_type=frag.CogComponent)[0]
+        world_component = frag_rig.get_frag_children(of_type=frag.WorldComponent)[0]
+        arm_r_component = frag_rig.get_frag_children(of_type=frag.IKFKComponent, region='arm', side='right')[0]
+        arm_l_component = frag_rig.get_frag_children(of_type=frag.IKFKComponent, region='arm', side='left')[0]
+        neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck', side='center')[0]
 
         pelvis_flag = pelvis_component.get_flags()[0]
         cog_flag = cog_component.get_flags()[0]
@@ -2478,7 +2478,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         chain = chain_markup.ChainMarkup(root)
 
         back_cloth_l = chain.get_chain('back_cloth', 'left')
-        back_cloth_l_component = tek.FKComponent.create(tek_rig,
+        back_cloth_l_component = frag.FKComponent.create(frag_rig,
                                                          back_cloth_l[0],
                                                          back_cloth_l[1],
                                                          side='left',
@@ -2488,7 +2488,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         back_cloth_l_flag = back_cloth_l_component.get_flags()[0]
 
         back_cloth_r = chain.get_chain('back_cloth', 'right')
-        back_cloth_r_component = tek.FKComponent.create(tek_rig,
+        back_cloth_r_component = frag.FKComponent.create(frag_rig,
                                                          back_cloth_r[0],
                                                          back_cloth_r[1],
                                                          side='right',
@@ -2498,7 +2498,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
 
         back_cloth_r_flag = back_cloth_r_component.get_flags()[0]
         coat_inner_r = chain.get_chain('coat_inner', 'right')
-        coat_inner_r_component = tek.FKComponent.create(tek_rig,
+        coat_inner_r_component = frag.FKComponent.create(frag_rig,
                                                          coat_inner_r[0],
                                                          coat_inner_r[1],
                                                          side='right',
@@ -2509,7 +2509,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         coat_inner_r_flag = coat_inner_r_component.get_flags()[0]
 
         coat_inner_l = chain.get_chain('coat_inner', 'left')
-        coat_inner_l_component = tek.FKComponent.create(tek_rig,
+        coat_inner_l_component = frag.FKComponent.create(frag_rig,
                                                          coat_inner_l[0],
                                                          coat_inner_l[1],
                                                          side='left',
@@ -2520,7 +2520,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         coat_inner_l_flag = coat_inner_l_component.get_flags()[0]
 
         coat_l = chain.get_chain('coat', 'left')
-        coat_l_component = tek.FKComponent.create(tek_rig,
+        coat_l_component = frag.FKComponent.create(frag_rig,
                                                    coat_l[0],
                                                    coat_l[1],
                                                    side='left',
@@ -2531,7 +2531,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         coat_l_flag = coat_l_component.get_flags()[0]
 
         coat_r = chain.get_chain('coat', 'right')
-        coat_r_component = tek.FKComponent.create(tek_rig,
+        coat_r_component = frag.FKComponent.create(frag_rig,
                                                    coat_r[0],
                                                    coat_r[1],
                                                    side='right',
@@ -2542,7 +2542,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         coat_r_flag = coat_r_component.get_flags()[0]
 
         coat_middle = chain.get_chain('coat_middle', 'center')
-        coat_middle_component = tek.FKComponent.create(tek_rig,
+        coat_middle_component = frag.FKComponent.create(frag_rig,
                                                         coat_middle[0],
                                                         coat_middle[1],
                                                         side='center',
@@ -2555,7 +2555,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         # ------------------------------------------------------------------------------------
 
         pelvis_cloth = chain.get_chain('pelvis_cloth', 'left')
-        pelvis_cloth_component = tek.FKComponent.create(tek_rig,
+        pelvis_cloth_component = frag.FKComponent.create(frag_rig,
                                                          pelvis_cloth[0],
                                                          pelvis_cloth[1],
                                                          side='left',
@@ -2566,7 +2566,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         pelvis_cloth_flag = pelvis_cloth_component.get_flags()[0]
 
         sleeve_l = chain.get_chain('sleeve', 'left')
-        sleeve_l_component = tek.FKComponent.create(tek_rig,
+        sleeve_l_component = frag.FKComponent.create(frag_rig,
                                                      sleeve_l[0],
                                                      sleeve_l[1],
                                                      side='left',
@@ -2577,7 +2577,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         sleeve_l_flag = sleeve_l_component.get_flags()[0]
 
         sleeve_r = chain.get_chain('sleeve', 'right')
-        sleeve_r_component = tek.FKComponent.create(tek_rig,
+        sleeve_r_component = frag.FKComponent.create(frag_rig,
                                                      sleeve_r[0],
                                                      sleeve_r[1],
                                                      side='right',
@@ -2588,7 +2588,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         sleeve_r_flag = sleeve_r_component.get_flags()[0]
 
         sleeve_inner_l = chain.get_chain('sleeve_inner', 'left')
-        sleeve_inner_l_component = tek.FKComponent.create(tek_rig,
+        sleeve_inner_l_component = frag.FKComponent.create(frag_rig,
                                                      sleeve_inner_l[0],
                                                      sleeve_inner_l[1],
                                                      side='left',
@@ -2599,7 +2599,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         sleeve_inner_l_flag = sleeve_inner_l_component.get_flags()[0]
 
         sleeve_inner_r = chain.get_chain('sleeve_inner', 'right')
-        sleeve_inner_r_component = tek.FKComponent.create(tek_rig,
+        sleeve_inner_r_component = frag.FKComponent.create(frag_rig,
                                                      sleeve_inner_r[0],
                                                      sleeve_inner_r[1],
                                                      side='right',
@@ -2610,7 +2610,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         sleeve_inner_r_flag = sleeve_inner_r_component.get_flags()[0]
 
         collar_01_l = chain.get_chain('collar_01', 'left')
-        collar_01_l_component = tek.FKComponent.create(tek_rig,
+        collar_01_l_component = frag.FKComponent.create(frag_rig,
                                                         collar_01_l[0],
                                                         collar_01_l[1],
                                                         side='left',
@@ -2621,7 +2621,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         collar_01_l_flag = collar_01_l_component.get_flags()[0]
 
         collar_01_r = chain.get_chain('collar_01', 'right')
-        collar_01_r_component = tek.FKComponent.create(tek_rig,
+        collar_01_r_component = frag.FKComponent.create(frag_rig,
                                                         collar_01_r[0],
                                                         collar_01_r[1],
                                                         side='right',
@@ -2632,7 +2632,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         collar_01_r_flag = collar_01_r_component.get_flags()[0]
 
         collar_02_l = chain.get_chain('collar_02', 'left')
-        collar_02_l_component = tek.FKComponent.create(tek_rig,
+        collar_02_l_component = frag.FKComponent.create(frag_rig,
                                                         collar_02_l[0],
                                                         collar_02_l[1],
                                                         side='left',
@@ -2643,7 +2643,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         collar_02_l_flag = collar_02_l_component.get_flags()[0]
 
         collar_02_r = chain.get_chain('collar_02', 'right')
-        collar_02_r_component = tek.FKComponent.create(tek_rig,
+        collar_02_r_component = frag.FKComponent.create(frag_rig,
                                                         collar_02_r[0],
                                                         collar_02_r[1],
                                                         side='right',
@@ -2654,7 +2654,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         collar_02_r_flag = collar_02_r_component.get_flags()[0]
 
         collar_back = chain.get_chain('collar_back', 'center')
-        collar_back_component = tek.FKComponent.create(tek_rig,
+        collar_back_component = frag.FKComponent.create(frag_rig,
                                                         collar_back[0],
                                                         collar_back[1],
                                                         side='center',
@@ -2667,7 +2667,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         ### Multi Constraints ###############
 
         # Coat Middle
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='coat_middle',
                                     source_object=coat_middle_flag,
@@ -2676,7 +2676,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Coat Left
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='left',
                                     region='coat',
                                     source_object=coat_l_flag,
@@ -2685,7 +2685,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Coat Right
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='right',
                                     region='coat',
                                     source_object=coat_r_flag,
@@ -2694,7 +2694,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Coat Inner Left
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='left',
                                     region='coat_inner',
                                     source_object=coat_inner_l_flag,
@@ -2703,7 +2703,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Coat Inner Right
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='right',
                                     region='coat_inner',
                                     source_object=coat_inner_r_flag,
@@ -2712,7 +2712,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Back Cloth Left
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='left',
                                     region='back_cloth',
                                     source_object=back_cloth_l_flag,
@@ -2721,7 +2721,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Back Cloth Right
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='right',
                                     region='back_cloth',
                                     source_object=back_cloth_r_flag,
@@ -2732,7 +2732,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
         # -----------------------------------------------------------------------------------
 
         # Coat Middle
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='left',
                                     region='pelvis_cloth',
                                     source_object=pelvis_cloth_flag,
@@ -2741,7 +2741,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Collar 01 Left
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='left',
                                     region='collar_01',
                                     source_object=collar_01_l_flag,
@@ -2750,7 +2750,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     switch_obj=None,
                                     translate=True)
         # Collar 01 Right
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='right',
                                     region='collar_01',
                                     source_object=collar_01_r_flag,
@@ -2760,7 +2760,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Collar 02 Left
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='left',
                                     region='collar_01',
                                     source_object=collar_02_l_flag,
@@ -2770,7 +2770,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Collar 02 Right
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='right',
                                     region='collar_01',
                                     source_object=collar_02_r_flag,
@@ -2780,7 +2780,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Collar Back
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='collar_back',
                                     source_object=collar_back_flag,
@@ -2790,7 +2790,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Sleeve 01 Left
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='left',
                                     region='sleeve',
                                     source_object=sleeve_l_flag,
@@ -2799,7 +2799,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Sleeve 01 Right
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='right',
                                     region='sleeve',
                                     source_object=sleeve_r_flag,
@@ -2808,7 +2808,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Sleeve Inner Left
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='left',
                                     region='sleeve_inner',
                                     source_object=sleeve_inner_l_flag,
@@ -2818,7 +2818,7 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
         # Sleeve Inner Right
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='right',
                                     region='sleeve_inner',
                                     source_object=sleeve_inner_r_flag,
@@ -2828,8 +2828,8 @@ class AngeloTemplate(AngeloSacrificeTemplate):
                                     translate=True)
 
 
-        tek_rig.rigTemplate.set(AngeloTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(AngeloTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
 
 class HagTemplate(PlayerMaleTemplate):
@@ -2843,21 +2843,21 @@ class HagTemplate(PlayerMaleTemplate):
     def build(self):
 
         pm.namespace(set=':')
-        tek_rig = super(HagTemplate, self).build(finalize=False)
+        frag_rig = super(HagTemplate, self).build(finalize=False)
         root = pm.PyNode('root')
         chain = chain_markup.ChainMarkup(root)
 
-        pelvis_component = tek_rig.get_tek_children(of_type=tek.PelvisComponent)[0]
+        pelvis_component = frag_rig.get_frag_children(of_type=frag.PelvisComponent)[0]
 
-        tek_root = tek_rig.get_tek_parent()
-        skel_root = tek_root.root_joint
+        frag_root = frag_rig.get_frag_parent()
+        skel_root = frag_root.root_joint
         skel_hierarchy = chain_markup.ChainMarkup(skel_root)
 
-        head_component = lists.get_first_in_list(tek_rig.get_tek_children(side='center', region='neck'))
+        head_component = lists.get_first_in_list(frag_rig.get_frag_children(side='center', region='neck'))
         head_joint = skel_hierarchy.get_end('neck', 'center')
 
         jaw_joint = skel_hierarchy.get_start('jaw', 'center')
-        jaw_component = tek.FKComponent.create(tek_rig,
+        jaw_component = frag.FKComponent.create(frag_rig,
                                                 jaw_joint,
                                                 jaw_joint,
                                                 side='center',
@@ -2866,7 +2866,7 @@ class HagTemplate(PlayerMaleTemplate):
         jaw_component.attach_component(head_component, head_joint)
 
         coat_l = chain.get_chain('coat', 'left')
-        coat_l_component = tek.FKComponent.create(tek_rig,
+        coat_l_component = frag.FKComponent.create(frag_rig,
                                                    coat_l[0],
                                                    coat_l[1],
                                                    side='left',
@@ -2878,7 +2878,7 @@ class HagTemplate(PlayerMaleTemplate):
         coat_l_flag = coat_l_component.get_flags()[0]
 
         coat_r = chain.get_chain('coat', 'right')
-        coat_r_component = tek.FKComponent.create(tek_rig,
+        coat_r_component = frag.FKComponent.create(frag_rig,
                                                    coat_r[0],
                                                    coat_r[1],
                                                    side='right',
@@ -2889,5 +2889,5 @@ class HagTemplate(PlayerMaleTemplate):
         coat_r_component.attach_component(pelvis_component, pm.PyNode('pelvis'))
         coat_r_flag = coat_l_component.get_flags()[0]
 
-        tek_rig.rigTemplate.set(HagTemplate.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(HagTemplate.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())

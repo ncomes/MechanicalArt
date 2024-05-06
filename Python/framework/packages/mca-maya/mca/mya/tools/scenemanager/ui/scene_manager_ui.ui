@@ -84,16 +84,16 @@
     <property name="title">
      <string>Scene</string>
     </property>
-    <addaction name="actionRemove_Dead_TEK_Nodes"/>
+    <addaction name="actionRemove_Dead_FRAG_Nodes"/>
     <addaction name="actionClean_Scene"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuScene"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionRemove_Dead_TEK_Nodes">
+  <action name="actionRemove_Dead_FRAG_Nodes">
    <property name="text">
-    <string>Remove Dead TEK Nodes</string>
+    <string>Remove Dead FRAG Nodes</string>
    </property>
   </action>
   <action name="actionClean_Scene">

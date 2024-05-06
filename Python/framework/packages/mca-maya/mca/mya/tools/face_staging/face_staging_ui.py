@@ -36,10 +36,10 @@ from mca.common.resources import resources
 from mca.common.pyqt.qt_utils import listwidget_utils
 
 from mca.mya.modifiers import ma_decorators
-from mca.mya.rigging import tek, skel_utils
+from mca.mya.rigging import frag, skel_utils
 from mca.mya.modeling import face_model
 from mca.mya.face import source_meshes, face_vertex_data, source_data
-from mca.mya.rigging.flags import flag_utils, tek_flag, serialize_flag
+from mca.mya.rigging.flags import flag_utils, frag_flag, serialize_flag
 from mca.mya.rigging import mesh_markup_rig, chain_markup
 from mca.mya.face.face_utils import face_util, face_import_export, eyelash_snapping, face_skinning
 from mca.mya.face.face_poses import pose_files
@@ -701,11 +701,11 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
     def get_display_layers(self):
         """
-        Gets all the display layers from tek.DisplayLayers
+        Gets all the display layers from frag.DisplayLayers
         """
 
-        tek_rig = self.get_rig()
-        dsp_lyrs = tek_rig.get_tek_children(of_type=tek.DisplayLayers)
+        frag_rig = self.get_rig()
+        dsp_lyrs = frag_rig.get_frag_children(of_type=frag.DisplayLayers)
         if not dsp_lyrs:
             return
         return dsp_lyrs[0]
@@ -997,8 +997,8 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         """
 
         meshes = self.get_all_skinned_meshes()
-        tek_root = tek.get_tek_root_by_assetid(self.asset_id)
-        root_joint = tek_root.rootJoint.listConnections()[0]
+        frag_root = frag.get_frag_root_by_assetid(self.asset_id)
+        root_joint = frag_root.rootJoint.listConnections()[0]
         sk_path = self.get_asset_sk_name_path()
 
         face_util.export_head_sk(meshes, root_joint, sk_path)
@@ -1106,29 +1106,29 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
     ####################
     def get_rigs(self):
         """
-        Returns a list of all the tek rigs in the scene.
+        Returns a list of all the frag rigs in the scene.
 
-        :return: Returns a list of all the tek rigs in the scene.
-        :rtype: list(TEKRig)
+        :return: Returns a list of all the frag rigs in the scene.
+        :rtype: list(FRAGRig)
         """
 
-        all_roots = tek.get_all_tek_roots()
-        all_tek_rigs = list(map(lambda x: x.get_rig(), all_roots))
-        all_tek_rigs = list(set(all_tek_rigs))
-        return all_tek_rigs
+        all_roots = frag.get_all_frag_roots()
+        all_frag_rigs = list(map(lambda x: x.get_rig(), all_roots))
+        all_frag_rigs = list(set(all_frag_rigs))
+        return all_frag_rigs
 
     def get_rig(self):
         """
-        Returns the tek by the asset ID.
+        Returns the frag by the asset ID.
 
-        :return: Returns the tek by the asset ID.
-        :rtype: TEKRig
+        :return: Returns the frag by the asset ID.
+        :rtype: FRAGRig
         """
 
-        tek_root = tek.get_tek_root_by_assetid(self.asset_id)
-        if not tek_root:
+        frag_root = frag.get_frag_root_by_assetid(self.asset_id)
+        if not frag_root:
             return
-        return tek_root.get_rig()
+        return frag_root.get_rig()
 
     def get_pose_grp(self):
         """
@@ -1138,48 +1138,48 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         :rtype: pm.nt.Transform
         """
 
-        tek_rig = self.get_rig()
-        if not tek_rig:
+        frag_rig = self.get_rig()
+        if not frag_rig:
             return
-        if not tek_rig.hasAttribute('facePoseGrp'):
-            logging.warning(f'There is no pose group attached to the {tek_rig}.')
+        if not frag_rig.hasAttribute('facePoseGrp'):
+            logging.warning(f'There is no pose group attached to the {frag_rig}.')
             pose_grp = [x.node() for x in pm.ls('*.isPoseGrp', r=True, o=True, type=pm.nt.Transform)]
             if not pose_grp:
                 logging.warning(f'Cannot find the pose group in the scene!')
                 return
             else:
                 return pose_grp[0]
-        return tek_rig.facePoseGrp.get()
+        return frag_rig.facePoseGrp.get()
 
     def get_parameter_node(self):
         """
-        Returns the TEK parameters node.
+        Returns the FRAG parameters node.
 
-        :return: Returns the TEK parameters node.
+        :return: Returns the FRAG parameters node.
         :rtype: FragFaceParameters
         """
 
-        tek_rig = self.get_rig()
-        if not tek_rig:
+        frag_rig = self.get_rig()
+        if not frag_rig:
             return
-        parameter_node = tek_rig.get_tek_children(of_type=tek.FragFaceParameters)
+        parameter_node = frag_rig.get_frag_children(of_type=frag.FragFaceParameters)
         if not parameter_node:
             return
         return parameter_node[0]
 
     def get_face_component(self):
         """
-        Returns the TEK face mesh component.
+        Returns the FRAG face mesh component.
 
-        :return: Returns the TEK face mesh component.
+        :return: Returns the FRAG face mesh component.
         :rtype: FaceMeshComponent
         """
 
-        tek_root = tek.get_tek_root_by_assetid(self.asset_id)
-        if not tek_root:
+        frag_root = frag.get_frag_root_by_assetid(self.asset_id)
+        if not frag_root:
             return
-        skeletal_mesh = tek_root.get_skeletal_mesh()
-        face_components = skeletal_mesh.get_tek_children(of_type=tek.FaceMeshComponent)
+        skeletal_mesh = frag_root.get_skeletal_mesh()
+        face_components = skeletal_mesh.get_frag_children(of_type=frag.FaceMeshComponent)
         if not face_components:
             return
         self.face_component = face_components[0]
@@ -1196,7 +1196,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         face_component = self.get_face_component()
         if not face_component:
             return
-        skinned_meshes = face_component.get_all_category_meshes(tek.FACE_SKINNED_CATEGORY)
+        skinned_meshes = face_component.get_all_category_meshes(frag.FACE_SKINNED_CATEGORY)
         return skinned_meshes
 
     def get_all_blendshape_meshes(self):
@@ -1210,7 +1210,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         face_component = self.get_face_component()
         if not face_component:
             return
-        blendshape_meshes = face_component.get_all_category_meshes(tek.FACE_BLENDSHAPE_CATEGORY)
+        blendshape_meshes = face_component.get_all_category_meshes(frag.FACE_BLENDSHAPE_CATEGORY)
         return blendshape_meshes
 
     @decorators.track_fnc
@@ -1227,13 +1227,13 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         Adds an animation to the rig scene
         """
 
-        tek_rig = self.get_rig()
-        if not tek_rig:
+        frag_rig = self.get_rig()
+        if not frag_rig:
             return
-        flags = tek_rig.get_flags()
+        flags = frag_rig.get_flags()
 
         path = os.path.join(paths.get_common_face(), 'Animations', 'face_calibration.ma')
-        anim_curves_component = tek.AnimatedCurvesComponent.import_animated_curve_data(path)
+        anim_curves_component = frag.AnimatedCurvesComponent.import_animated_curve_data(path)
         anim_curves_component.restore_all_animation_curves(flags)
         pm.playbackOptions(min=anim_curves_component.startFrame.get(), max=anim_curves_component.endFrame.get())
         anim_curves_component.remove()
@@ -1244,10 +1244,10 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         Removes the animation from the rig.
         """
 
-        tek_rig = self.get_rig()
-        if not tek_rig:
+        frag_rig = self.get_rig()
+        if not frag_rig:
             return
-        flag_utils.cut_all_flag_animations(tek_rig)
+        flag_utils.cut_all_flag_animations(frag_rig)
         dialogs.display_view_message(text=f'Animation Cut Successfully!', header='Face Staging', fade_time=220)
 
     @decorators.track_fnc
@@ -1259,12 +1259,12 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         if result != 'Yes':
             return
 
-        tek_rig = self.get_rig()
-        if not tek_rig:
+        frag_rig = self.get_rig()
+        if not frag_rig:
             return
-        flags = tek_rig.get_flags()
+        flags = frag_rig.get_flags()
 
-        anim_curves_component = tek.AnimatedCurvesComponent.create(tek_rig)
+        anim_curves_component = frag.AnimatedCurvesComponent.create(frag_rig)
         anim_curves_component.store_all_animation_curves(flags)
 
         path = os.path.join(paths.get_common_face(), 'Animations', 'face_calibration.ma')
@@ -1284,8 +1284,8 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             self.tab_start_ups()
             return
 
-        all_tek_rigs = self.get_rigs()
-        flag_utils.zero_flags(all_tek_rigs)
+        all_frag_rigs = self.get_rigs()
+        flag_utils.zero_flags(all_frag_rigs)
         self.tab_start_ups()
 
     @decorators.track_fnc
@@ -1299,8 +1299,8 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             flag_utils.flags_visibility(selection, toggle=True)
             return
 
-        all_tek_rigs = self.get_rigs()
-        flag_utils.flags_visibility(all_tek_rigs, toggle=True)
+        all_frag_rigs = self.get_rigs()
+        flag_utils.flags_visibility(all_frag_rigs, toggle=True)
 
     @decorators.track_fnc
     def refreshUI(self):
@@ -1739,13 +1739,13 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         Sets the local axis display on the face joints.
         """
 
-        tek_rigs = self.get_rigs()
-        #Return all the tek rigs
-        if not tek_rigs:
+        frag_rigs = self.get_rigs()
+        #Return all the frag rigs
+        if not frag_rigs:
             return
         # Get the root joint
-        tek_rig = tek_rigs[0]
-        root_joint = tek.get_root_joint(tek_rig)
+        frag_rig = frag_rigs[0]
+        root_joint = frag.get_root_joint(frag_rig)
         if not root_joint:
             return
         # Get all the pose joints
@@ -1949,7 +1949,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         """
 
         face_component = self.get_face_component()
-        blendshape_list = face_component.get_all_category_meshes(tek.FACE_BLENDSHAPE_CATEGORY)
+        blendshape_list = face_component.get_all_category_meshes(frag.FACE_BLENDSHAPE_CATEGORY)
         for blendshape in blendshape_list:
             blendshape = face_model.FaceModel(blendshape)
             blendshape.reconnect_shapes_to_rig(self.asset_id)
@@ -2009,8 +2009,8 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         """
         Checks to see if specific data is set before starting a pose edit.
 
-        :return: Returns a TEKRig
-        :rtype: TEKRig
+        :return: Returns a FRAGRig
+        :rtype: FRAGRig
         """
 
         if self._get_percent() and self._get_percent() < 100.0:
@@ -2018,17 +2018,17 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
                                 text='The pose needs to be completely set.\n'
                                         'Please make sure the Flag is set to the max.')
             return None
-        tek_rigs = self.get_rigs()
-        if not tek_rigs:
-            dialogs.info_prompt(title='No Rig', text='Cannot not find the TEK Rig node.\nNo rig in the scene.')
-            return tek_rigs
-        return tek_rigs[0]
+        frag_rigs = self.get_rigs()
+        if not frag_rigs:
+            dialogs.info_prompt(title='No Rig', text='Cannot not find the FRAG Rig node.\nNo rig in the scene.')
+            return frag_rigs
+        return frag_rigs[0]
 
     def _get_edit_node(self):
-        tek_rigs = self.get_rigs()
-        if not tek_rigs:
+        frag_rigs = self.get_rigs()
+        if not frag_rigs:
             return
-        edit_node = tek.get_face_edit_node(tek_rigs[0], skip_dialog=True)
+        edit_node = frag.get_face_edit_node(frag_rigs[0], skip_dialog=True)
         if not edit_node:
             return
         return face_pose_edit.FacePoseEdit(edit_inst=edit_node)
@@ -2043,11 +2043,11 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         """
 
         edit_node = self._get_edit_node()
-        tek_rig = self._pose_edit_start_check()
-        if not tek_rig:
+        frag_rig = self._pose_edit_start_check()
+        if not frag_rig:
             return
         if not edit_node:
-            self.single_pose_edit_start(tek_rig)
+            self.single_pose_edit_start(frag_rig)
             dialogs.display_view_message(text='Entered Single Pose Edit', header='Face Staging Tool', fade_time=220)
         elif edit_node and edit_node.edit_inst.single_pose and not edit_node.edit_inst.paint_neutral:
             edit_node.pose_edit_end(due_mirror=self.ui.auto_mirror_checkBox.isChecked(),
@@ -2067,11 +2067,11 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             dialogs.display_view_message(text='Single Pose Edit Successful!', header='Face Staging Tool', fade_time=220)
 
     @decorators.track_fnc
-    def single_pose_edit_start(self, tek_rig):
+    def single_pose_edit_start(self, frag_rig):
         """
         Starts the Single pose edit.
 
-        :param TEKRig tek_rig: TEK Rig Component.
+        :param FRAGRig frag_rig: FRAG Rig Component.
         """
 
         mesh = self._get_blendshape_mesh_from_qlistwidget()
@@ -2083,7 +2083,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             dialogs.info_prompt(title='No Pose Selected', text='Please select a pose from the active pose list.')
             return
 
-        edit_node = face_pose_edit.FacePoseEdit.create(main_pose=pose_name, mesh=mesh, tek_node=tek_rig)
+        edit_node = face_pose_edit.FacePoseEdit.create(main_pose=pose_name, mesh=mesh, frag_node=frag_rig)
         edit_node.pose_edit_start(show_skel=self.ui.show_skeleton_checkBox.isChecked(),
                                     symmetry=self.ui.symmetry_checkBox.isChecked(),
                                     transfer_jnts=self.ui.edit_transfer_joints_checkBox.isChecked())
@@ -2097,11 +2097,11 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         """
 
         edit_node = self._get_edit_node()
-        tek_rig = self._pose_edit_start_check()
-        if not tek_rig:
+        frag_rig = self._pose_edit_start_check()
+        if not frag_rig:
             return
         if not edit_node:
-            start_multi = self.multi_pose_edit_start(tek_rig)
+            start_multi = self.multi_pose_edit_start(frag_rig)
             if not start_multi:
                 return
             self.ui.multi_pose_edit_pushButton.setStyleSheet(STAGING_BUTTON_ACTIVE_COLORS)
@@ -2117,11 +2117,11 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             dialogs.display_view_message(text='Multi Pose Edit Successful!', header='Face Staging Tool', fade_time=220)
 
     @decorators.track_fnc
-    def multi_pose_edit_start(self, tek_rig):
+    def multi_pose_edit_start(self, frag_rig):
         """
         Starts the Single pose edit.
 
-        :param TEKRig tek_rig: TEK Rig Component.
+        :param FRAGRig frag_rig: FRAG Rig Component.
         """
 
         mesh = self._get_blendshape_mesh_from_qlistwidget()
@@ -2131,7 +2131,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         if not pose_name:
             dialogs.info_prompt(title='No Pose Selected', text='Please select a pose from the active pose list.')
             return False
-        edit_node = face_pose_edit.FacePoseEdit.create(main_pose=pose_name, mesh=mesh, tek_node=tek_rig)
+        edit_node = face_pose_edit.FacePoseEdit.create(main_pose=pose_name, mesh=mesh, frag_node=frag_rig)
         edit_node.pose_edit_start(multi_edit=True,
                                     show_skel=self.ui.show_skeleton_checkBox.isChecked(),
                                     symmetry=self.ui.symmetry_checkBox.isChecked(),
@@ -2174,8 +2174,8 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         """
 
         edit_node = self._get_edit_node()
-        tek_rig = self._pose_edit_start_check()
-        if not tek_rig:
+        frag_rig = self._pose_edit_start_check()
+        if not frag_rig:
             return
         pose_name = self._get_pose_from_listwidget()
         if not pose_name:
@@ -2183,7 +2183,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             return
 
         if not edit_node:
-            self.single_pose_edit_start(tek_rig)
+            self.single_pose_edit_start(frag_rig)
             dialogs.display_view_message(text='Entered Single Pose Edit', header='Face Staging Tool', fade_time=220)
             edit_node = self._get_edit_node()
             self.paint_neutral_start(edit_node)
@@ -2223,15 +2223,15 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         """
 
         edit_node = self._get_edit_node()
-        tek_rig = self.get_rig()
-        if not tek_rig:
-            dialogs.info_prompt(title='No Rig', text='Cannot not find the TEK Rig node.\nNo rig in the scene.')
+        frag_rig = self.get_rig()
+        if not frag_rig:
+            dialogs.info_prompt(title='No Rig', text='Cannot not find the FRAG Rig node.\nNo rig in the scene.')
 
-        if not tek_rig:
+        if not frag_rig:
             return
 
         if not edit_node:
-            self.base_edit_start(tek_rig)
+            self.base_edit_start(frag_rig)
             self.ui.base_edit_pushButton.setStyleSheet(STAGING_BUTTON_ACTIVE_COLORS)
             self.ui.base_color_edit_frame.setStyleSheet(STAGING_BACKGROUND_GREY)
             dialogs.display_view_message(text='Entered Base Edit Mode', header='Face Staging Tool', fade_time=220)
@@ -2252,17 +2252,17 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             dialogs.display_view_message(text='Base Edit Successful!', header='Face Staging Tool', fade_time=220)
 
     @decorators.track_fnc
-    def base_edit_start(self, tek_rig):
+    def base_edit_start(self, frag_rig):
         """
         Starts the editing process where the base mesh can be edited.
 
-        :param TEKRig tek_rig: TEK Rig Component.
+        :param FRAGRig frag_rig: FRAG Rig Component.
         """
 
         mesh = self._get_blendshape_mesh_from_qlistwidget()
         if not mesh:
             return
-        edit_node = face_pose_edit.FacePoseEdit.create(mesh=mesh, main_pose=None, tek_node=tek_rig)
+        edit_node = face_pose_edit.FacePoseEdit.create(mesh=mesh, main_pose=None, frag_node=frag_rig)
         edit_node.base_edit_start(symmetry=self.ui.symmetry_checkBox.isChecked(),
                                     show_skel=self.ui.show_skeleton_checkBox.isChecked())
 
@@ -2299,15 +2299,15 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         replacement_mesh = selection[0]
 
-        tek_rig = self.get_rig()
-        if not tek_rig:
-            dialogs.info_prompt(title='No Rig', text='Cannot not find the TEK Rig node.\n'
+        frag_rig = self.get_rig()
+        if not frag_rig:
+            dialogs.info_prompt(title='No Rig', text='Cannot not find the FRAG Rig node.\n'
                                                         'No rig in the scene.')
             return
         mesh = self._get_blendshape_mesh_from_qlistwidget()
         if not mesh:
             return
-        edit_node = face_pose_edit.FacePoseEdit.create(mesh=mesh, main_pose=None, tek_node=tek_rig)
+        edit_node = face_pose_edit.FacePoseEdit.create(mesh=mesh, main_pose=None, frag_node=frag_rig)
         edit_node.replace_base(replacement_mesh, due_export=self.ui.export_bs_checkBox.isChecked())
         if self.ui.export_bs_checkBox.isChecked():
             self.export_skin_meshes_as_fbx()
@@ -2530,9 +2530,9 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
                 self.cut_animation()
 
-                tek_rigs = self.get_rigs()
-                tek_rig = tek_rigs[0]
-                root_joint = tek.get_root_joint(tek_rig)
+                frag_rigs = self.get_rigs()
+                frag_rig = frag_rigs[0]
+                root_joint = frag.get_root_joint(frag_rig)
                 wrapped_root = chain_markup.ChainMarkup(root_joint)
 
                 face_skinning.post_lsd_face_cleanup(skin_mesh.mesh,
@@ -2589,8 +2589,8 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         rivet_group = next((xform for xform in pm.ls(type=pm.nt.Transform) if xform.hasAttr('isRivetGrp')), None)
         if rivet_group:
-            tek_rig = self.get_rig()
-            dnt_group = tek_rig.getAttr('doNotTouch')
+            frag_rig = self.get_rig()
+            dnt_group = frag_rig.getAttr('doNotTouch')
             rivet_group.setParent(dnt_group)
 
     @decorators.track_fnc
@@ -2613,10 +2613,10 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             os.makedirs(flag_path)
         if not os.listdir(flag_path):
             common_flag_path = os.path.join(paths.get_common_face(), 'Flags')
-            tek_rig = self.get_rig()
-            flags = tek_rig.get_flags()
-            tek_flag.swap_flags(flags, common_flag_path)
-            tek_rig.color_flags()
+            frag_rig = self.get_rig()
+            flags = frag_rig.get_flags()
+            frag_flag.swap_flags(flags, common_flag_path)
+            frag_rig.color_flags()
             list(map(lambda x: serialize_flag.export_flag(pm.PyNode(x), flag_path), flags))
             return True
         else:

@@ -18,7 +18,7 @@ from mca.common.textio import jsonio
 from mca.common.paths import project_paths
 from mca.mya.utils import node_util, attr_utils, maya_utils, dag
 from mca.common import log
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 
 
 logger = log.MCA_LOGGER
@@ -96,7 +96,7 @@ def deserialize_flag(flag_data, name=None, space=None, parent=None, replace=Fals
     """
 
     # import here to avoid cyclic imports
-    from mca.mya.rigging.flags import tek_flag
+    from mca.mya.rigging.flags import frag_flag
 
     space = flag_data.get('space', '') or space or 'world'
 
@@ -134,7 +134,7 @@ def deserialize_flag(flag_data, name=None, space=None, parent=None, replace=Fals
     if name:
         pm.rename(new_curve, name)
 
-    return tek_flag.Flag(new_curve)
+    return frag_flag.Flag(new_curve)
 
 
 def export_flag(transform_node, directory, flag_name=None, export_color=True, in_place=False):

@@ -20,7 +20,7 @@ from mca.common.modifiers import decorators
 from mca.common.tools.dcctracking import dcc_tracking
 from mca.mya.pyqt import mayawindows
 from mca.mya.cinematics import cine_sequence_nodes, cine_file_utils
-from mca.mya.rigging.tek import cine_sequence_component
+from mca.mya.rigging.frag import cine_sequence_component
 from mca.common.paths import paths
 logger = log.MCA_LOGGER
 

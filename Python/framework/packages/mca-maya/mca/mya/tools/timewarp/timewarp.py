@@ -16,9 +16,9 @@ from mca.common.modifiers import decorators
 from mca.common.tools.dcctracking import dcc_tracking
 from mca.mya.animation import baking
 from mca.mya.utils import attr_utils
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 from mca.mya.pyqt import mayawindows
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 
 
 logger = log.MCA_LOGGER
@@ -230,12 +230,12 @@ def add_objects_to_timewarp_cmd():
     """
 
     selection = pm.selected()
-    filtered_selection = [x for x in selection if tek_flag.is_flag_node(x)]
+    filtered_selection = [x for x in selection if frag_flag.is_flag_node(x)]
     add_remove_objects_from_timewarp(filtered_selection, True)
     if filtered_selection:
-        tek_root = tek.get_tek_root(filtered_selection[0])
+        frag_root = frag.get_frag_root(filtered_selection[0])
         # dcc data
-        dcc_tracking.ddc_tool_entry_thead(fn=add_objects_to_timewarp_cmd, asset_id=tek_root.asset_id)
+        dcc_tracking.ddc_tool_entry_thead(fn=add_objects_to_timewarp_cmd, asset_id=frag_root.asset_id)
 
 
 @decorators.track_fnc
@@ -246,12 +246,12 @@ def remove_objects_from_timewarp_cmd():
     """
 
     selection = pm.selected()
-    filtered_selection = [x for x in selection if tek_flag.is_flag_node(x)]
+    filtered_selection = [x for x in selection if frag_flag.is_flag_node(x)]
     add_remove_objects_from_timewarp(filtered_selection, False)
     if filtered_selection:
-        tek_root = tek.get_tek_root(filtered_selection[0])
+        frag_root = frag.get_frag_root(filtered_selection[0])
         # dcc data
-        dcc_tracking.ddc_tool_entry_thead(fn=remove_objects_from_timewarp_cmd, asset_id=tek_root.asset_id)
+        dcc_tracking.ddc_tool_entry_thead(fn=remove_objects_from_timewarp_cmd, asset_id=frag_root.asset_id)
 
 
 @decorators.track_fnc

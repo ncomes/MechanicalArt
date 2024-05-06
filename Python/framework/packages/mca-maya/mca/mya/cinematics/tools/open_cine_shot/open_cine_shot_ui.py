@@ -22,7 +22,7 @@ from mca.mya.cinematics import cine_file_utils, shot_utils, cine_sequence_nodes
 from mca.mya.tools.sequencenodeeditor import sequence_node_editor_tool
 from mca.common.pyqt import messages
 from mca.common.paths import paths
-from mca.mya.rigging.tek import cine_sequence_component
+from mca.mya.rigging.frag import cine_sequence_component
 
 logger = log.MCA_LOGGER
 

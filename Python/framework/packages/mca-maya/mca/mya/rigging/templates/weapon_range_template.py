@@ -9,7 +9,7 @@ Simple Weapon Template
 # mca python imports
 import pymel.core as pm
 # mca python imports
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.mya.rigging.templates import rig_templates
 
 
@@ -30,15 +30,15 @@ class WeaponSR25(rig_templates.RigTemplates):
 		# import Skeletal Mesh using ASSET_ID into the namespace
 		root_joint = pm.PyNode('root')
 		
-		tek_root = tek.TEKRoot.create(root_joint, self.asset_type, self.asset_id)
-		tek.SkeletalMesh.create(tek_root)
-		tek_rig = tek.TEKRig.create(tek_root)
+		frag_root = frag.FRAGRoot.create(root_joint, self.asset_type, self.asset_id)
+		frag.SkeletalMesh.create(frag_root)
+		frag_rig = frag.FRAGRig.create(frag_root)
 		
-		flags_all = tek_rig.flagsAll.get()
+		flags_all = frag_rig.flagsAll.get()
 		
 		# world
 		start_joint = pm.PyNode('root')
-		world_component = tek.WorldComponent.create(tek_rig,
+		world_component = frag.WorldComponent.create(frag_rig,
 															start_joint,
 															'center',
 															'world',
@@ -48,7 +48,7 @@ class WeaponSR25(rig_templates.RigTemplates):
 		
 		start_joint = pm.PyNode('weapon')
 		end_joint = pm.PyNode('weapon')
-		weapon_component = tek.FKComponent.create(tek_rig,
+		weapon_component = frag.FKComponent.create(frag_rig,
 															start_joint,
 															end_joint,
 															side='center',
@@ -59,7 +59,7 @@ class WeaponSR25(rig_templates.RigTemplates):
 		
 		start_joint = pm.PyNode('bolt_01')
 		end_joint = pm.PyNode('bolt_01')
-		bolt_component = tek.FKComponent.create(tek_rig,
+		bolt_component = frag.FKComponent.create(frag_rig,
 															start_joint,
 															end_joint,
 															side='center',
@@ -71,7 +71,7 @@ class WeaponSR25(rig_templates.RigTemplates):
 		
 		start_joint = pm.PyNode('breech_01')
 		end_joint = pm.PyNode('breech_01')
-		breech_component = tek.FKComponent.create(tek_rig,
+		breech_component = frag.FKComponent.create(frag_rig,
 														start_joint,
 														end_joint,
 														side='right',
@@ -82,7 +82,7 @@ class WeaponSR25(rig_templates.RigTemplates):
 		
 		start_joint = pm.PyNode('breech_door_01')
 		end_joint = pm.PyNode('breech_door_01')
-		breech_door_component = tek.FKComponent.create(tek_rig,
+		breech_door_component = frag.FKComponent.create(frag_rig,
 															start_joint,
 															end_joint,
 															side='right',
@@ -93,7 +93,7 @@ class WeaponSR25(rig_templates.RigTemplates):
 		
 		start_joint = pm.PyNode('trigger_01')
 		end_joint = pm.PyNode('trigger_01')
-		trigger_component = tek.FKComponent.create(tek_rig,
+		trigger_component = frag.FKComponent.create(frag_rig,
 															start_joint,
 															end_joint,
 															side='center',
@@ -104,7 +104,7 @@ class WeaponSR25(rig_templates.RigTemplates):
 		
 		start_joint = pm.PyNode('magazine_01')
 		end_joint = pm.PyNode('magazine_01')
-		magazine_component = tek.FKComponent.create(tek_rig,
+		magazine_component = frag.FKComponent.create(frag_rig,
 															start_joint,
 															end_joint,
 															side='center',
@@ -114,24 +114,24 @@ class WeaponSR25(rig_templates.RigTemplates):
 		magazine_flag = magazine_component.get_end_flag()
 
 
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 											side='right',
 											region='hand_prop',
 											source_object=weapon_flag,
 											target_list=[world_flag, root_flag, flags_all],
 											switch_obj=None)
 		
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 											side='center',
 											region='magazine',
 											source_object=magazine_flag,
 											target_list=[weapon_flag, world_flag, root_flag, flags_all],
 											switch_obj=None)
 
-		tek_rig.rigTemplate.set(WeaponSR25.__name__)
-		tek_rig.finalize_rig(self.get_flags_path())
+		frag_rig.rigTemplate.set(WeaponSR25.__name__)
+		frag_rig.finalize_rig(self.get_flags_path())
 		
-		return tek_rig
+		return frag_rig
 
 
 class WeaponRangeTemplate(rig_templates.RigTemplates):
@@ -151,15 +151,15 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 		# import Skeletal Mesh using ASSET_ID into the namespace
 		root_joint = pm.PyNode('root')
 
-		tek_root = tek.TEKRoot.create(root_joint, self.asset_type, self.asset_id)
-		tek.SkeletalMesh.create(tek_root)
-		tek_rig = tek.TEKRig.create(tek_root)
+		frag_root = frag.FRAGRoot.create(root_joint, self.asset_type, self.asset_id)
+		frag.SkeletalMesh.create(frag_root)
+		frag_rig = frag.FRAGRig.create(frag_root)
 
-		flags_all = tek_rig.flagsAll.get()
+		flags_all = frag_rig.flagsAll.get()
 
 		# world
 		start_joint = pm.PyNode('root')
-		world_component = tek.WorldComponent.create(tek_rig,
+		world_component = frag.WorldComponent.create(frag_rig,
 														   start_joint,
 														   'center',
 														   'world',
@@ -172,7 +172,7 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 
 		start_joint = pm.PyNode('weapon')
 		end_joint = pm.PyNode('weapon')
-		weapon_component = tek.FKComponent.create(tek_rig,
+		weapon_component = frag.FKComponent.create(frag_rig,
 														 start_joint,
 														 end_joint,
 														 side='center',
@@ -183,7 +183,7 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 
 		# start_joint = pm.PyNode('breech_01')
 		# end_joint = pm.PyNode('breech_01')
-		# breech_component = tek.FKComponent.create(tek_rig,
+		# breech_component = frag.FKComponent.create(frag_rig,
 		# 												 start_joint,
 		# 												 end_joint,
 		# 												 side='right',
@@ -194,7 +194,7 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 
 		# start_joint = pm.PyNode('forestock_01')
 		# end_joint = pm.PyNode('forestock_01')
-		# forestock_component = tek.FKComponent.create(tek_rig,
+		# forestock_component = frag.FKComponent.create(frag_rig,
 		# 												 start_joint,
 		# 												 end_joint,
 		# 												 side='center',
@@ -205,7 +205,7 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 
 		# start_joint = pm.PyNode('bolt_01')
 		# end_joint = pm.PyNode('bolt_01')
-		# bolt_component = tek.FKComponent.create(tek_rig,
+		# bolt_component = frag.FKComponent.create(frag_rig,
 		# 											   start_joint,
 		# 											   end_joint,
 		# 											   side='center',
@@ -217,7 +217,7 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 
 		# start_joint = pm.PyNode('trigger_01')
 		# end_joint = pm.PyNode('trigger_01')
-		# trigger_component = tek.FKComponent.create(tek_rig,
+		# trigger_component = frag.FKComponent.create(frag_rig,
 		# 												  start_joint,
 		# 												  end_joint,
 		# 												  side='center',
@@ -228,7 +228,7 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 
 		# start_joint = pm.PyNode('hammer_01')
 		# end_joint = pm.PyNode('hammer_01')
-		# hammer_component = tek.FKComponent.create(tek_rig,
+		# hammer_component = frag.FKComponent.create(frag_rig,
 		# 												start_joint,
 		# 												end_joint,
 		# 												side='center',
@@ -239,7 +239,7 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 
 		# start_joint = pm.PyNode('crane_01')
 		# end_joint = pm.PyNode('crane_01')
-		# crane_component = tek.FKComponent.create(tek_rig,
+		# crane_component = frag.FKComponent.create(frag_rig,
 		# 												  start_joint,
 		# 												  end_joint,
 		# 												  side='right',
@@ -250,7 +250,7 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 
 		# start_joint = pm.PyNode('cylinder_01')
 		# end_joint = pm.PyNode('cylinder_01')
-		# cylinder_component = tek.FKComponent.create(tek_rig,
+		# cylinder_component = frag.FKComponent.create(frag_rig,
 		# 												start_joint,
 		# 												end_joint,
 		# 												side='right',
@@ -261,7 +261,7 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 
 		start_joint = pm.PyNode('magazine_01')
 		end_joint = pm.PyNode('magazine_01')
-		magazine_component = tek.FKComponent.create(tek_rig,
+		magazine_component = frag.FKComponent.create(frag_rig,
 														start_joint,
 														end_joint,
 														side='center',
@@ -272,7 +272,7 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 
 		# start_joint = pm.PyNode('body_fuse')
 		# end_joint = pm.PyNode('body_fuse')
-		# bodyfuse_component = tek.FKComponent.create(tek_rig,
+		# bodyfuse_component = frag.FKComponent.create(frag_rig,
 		# 												start_joint,
 		# 												end_joint,
 		# 												side='center',
@@ -283,7 +283,7 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 
 		# start_joint = pm.PyNode('charging_handle_01')
 		# end_joint = pm.PyNode('charging_handle_01')
-		# charging_handle_component = tek.FKComponent.create(tek_rig,
+		# charging_handle_component = frag.FKComponent.create(frag_rig,
 		# 											   start_joint,
 		# 											   end_joint,
 		# 											   side='center',
@@ -293,24 +293,24 @@ class WeaponRangeTemplate(rig_templates.RigTemplates):
 		# charging_handle_flag = charging_handle_component.get_end_flag()
 		# charging_handle_flag.set_as_sub()
 
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='right',
 										  region='hand_prop',
 										  source_object=weapon_flag,
 										  target_list=[world_flag, root_flag, flags_all],
 										  switch_obj=None)
 
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='center',
 										  region='magazine',
 										  source_object=magazine_flag,
 										  target_list=[weapon_flag, world_flag, root_flag, flags_all],
 										  switch_obj=None)
 
-		tek_rig.rigTemplate.set(WeaponRangeTemplate.__name__)
-		tek_rig.finalize_rig(self.get_flags_path())
+		frag_rig.rigTemplate.set(WeaponRangeTemplate.__name__)
+		frag_rig.finalize_rig(self.get_flags_path())
 
-		return tek_rig
+		return frag_rig
 
 
 class WeaponLeverActionTemplate(rig_templates.RigTemplates):
@@ -330,15 +330,15 @@ class WeaponLeverActionTemplate(rig_templates.RigTemplates):
 		# import Skeletal Mesh using ASSET_ID into the namespace
 		root_joint = pm.PyNode('root')
 
-		tek_root = tek.TEKRoot.create(root_joint, self.asset_type, self.asset_id)
-		tek.SkeletalMesh.create(tek_root)
-		tek_rig = tek.TEKRig.create(tek_root)
+		frag_root = frag.FRAGRoot.create(root_joint, self.asset_type, self.asset_id)
+		frag.SkeletalMesh.create(frag_root)
+		frag_rig = frag.FRAGRig.create(frag_root)
 
-		flags_all = tek_rig.flagsAll.get()
+		flags_all = frag_rig.flagsAll.get()
 
 		# world
 		start_joint = pm.PyNode('root')
-		world_component = tek.WorldComponent.create(tek_rig,
+		world_component = frag.WorldComponent.create(frag_rig,
 														   start_joint,
 														   'center',
 														   'world',
@@ -351,7 +351,7 @@ class WeaponLeverActionTemplate(rig_templates.RigTemplates):
 
 		start_joint = pm.PyNode('weapon')
 		end_joint = pm.PyNode('weapon')
-		weapon_component = tek.FKComponent.create(tek_rig,
+		weapon_component = frag.FKComponent.create(frag_rig,
 														 start_joint,
 														 end_joint,
 														 side='center',
@@ -362,7 +362,7 @@ class WeaponLeverActionTemplate(rig_templates.RigTemplates):
 
 		start_joint = pm.PyNode('bolt_carrier_01')
 		end_joint = pm.PyNode('bolt_carrier_01')
-		bolt_component = tek.FKComponent.create(tek_rig,
+		bolt_component = frag.FKComponent.create(frag_rig,
 												   start_joint,
 												   end_joint,
 												   side='center',
@@ -373,7 +373,7 @@ class WeaponLeverActionTemplate(rig_templates.RigTemplates):
 
 		start_joint = pm.PyNode('bolt_carrier_door_01')
 		end_joint = pm.PyNode('bolt_carrier_door_01')
-		bolt_door_component = tek.FKComponent.create(tek_rig,
+		bolt_door_component = frag.FKComponent.create(frag_rig,
 												 start_joint,
 												 end_joint,
 												 side='center',
@@ -384,7 +384,7 @@ class WeaponLeverActionTemplate(rig_templates.RigTemplates):
 
 		start_joint = pm.PyNode('loading_hinge_01')
 		end_joint = pm.PyNode('loading_hinge_01')
-		hinge_component = tek.FKComponent.create(tek_rig,
+		hinge_component = frag.FKComponent.create(frag_rig,
 													  start_joint,
 													  end_joint,
 													  side='center',
@@ -395,7 +395,7 @@ class WeaponLeverActionTemplate(rig_templates.RigTemplates):
 
 		start_joint = pm.PyNode('trigger_01')
 		end_joint = pm.PyNode('trigger_01')
-		trigger_component = tek.FKComponent.create(tek_rig,
+		trigger_component = frag.FKComponent.create(frag_rig,
 												  start_joint,
 												  end_joint,
 												  side='center',
@@ -406,7 +406,7 @@ class WeaponLeverActionTemplate(rig_templates.RigTemplates):
 
 		start_joint = pm.PyNode('hammer_01')
 		end_joint = pm.PyNode('hammer_01')
-		hammer_component = tek.FKComponent.create(tek_rig,
+		hammer_component = frag.FKComponent.create(frag_rig,
 													start_joint,
 													end_joint,
 													side='center',
@@ -415,17 +415,17 @@ class WeaponLeverActionTemplate(rig_templates.RigTemplates):
 		hammer_component.attach_component(weapon_component, pm.PyNode('weapon'))
 		hammer_flag = hammer_component.get_end_flag()
 
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='right',
 										  region='hand_prop',
 										  source_object=weapon_flag,
 										  target_list=[world_flag, root_flag, flags_all],
 										  switch_obj=None)
 
-		tek_rig.rigTemplate.set(WeaponRangeTemplate.__name__)
-		tek_rig.finalize_rig(self.get_flags_path())
+		frag_rig.rigTemplate.set(WeaponRangeTemplate.__name__)
+		frag_rig.finalize_rig(self.get_flags_path())
 
-		return tek_rig
+		return frag_rig
 
 
 class WeaponArmatusTemplate(rig_templates.RigTemplates):
@@ -445,15 +445,15 @@ class WeaponArmatusTemplate(rig_templates.RigTemplates):
 		# import Skeletal Mesh using ASSET_ID into the namespace
 		root_joint = pm.PyNode('root')
 
-		tek_root = tek.TEKRoot.create(root_joint, self.asset_type, self.asset_id)
-		tek.SkeletalMesh.create(tek_root)
-		tek_rig = tek.TEKRig.create(tek_root)
+		frag_root = frag.FRAGRoot.create(root_joint, self.asset_type, self.asset_id)
+		frag.SkeletalMesh.create(frag_root)
+		frag_rig = frag.FRAGRig.create(frag_root)
 
-		flags_all = tek_rig.flagsAll.get()
+		flags_all = frag_rig.flagsAll.get()
 
 		# world
 		start_joint = pm.PyNode('root')
-		world_component = tek.WorldComponent.create(tek_rig,
+		world_component = frag.WorldComponent.create(frag_rig,
 														   start_joint,
 														   'center',
 														   'world',
@@ -466,7 +466,7 @@ class WeaponArmatusTemplate(rig_templates.RigTemplates):
 
 		start_joint = pm.PyNode('weapon')
 		end_joint = pm.PyNode('weapon')
-		weapon_component = tek.FKComponent.create(tek_rig,
+		weapon_component = frag.FKComponent.create(frag_rig,
 														 start_joint,
 														 end_joint,
 														 side='center',
@@ -477,7 +477,7 @@ class WeaponArmatusTemplate(rig_templates.RigTemplates):
 
 		start_joint = pm.PyNode('bolt_carrier_01')
 		end_joint = pm.PyNode('bolt_carrier_01')
-		bolt_component = tek.FKComponent.create(tek_rig,
+		bolt_component = frag.FKComponent.create(frag_rig,
 												   start_joint,
 												   end_joint,
 												   side='center',
@@ -488,7 +488,7 @@ class WeaponArmatusTemplate(rig_templates.RigTemplates):
 
 		start_joint = pm.PyNode('trigger_01')
 		end_joint = pm.PyNode('trigger_01')
-		trigger_component = tek.FKComponent.create(tek_rig,
+		trigger_component = frag.FKComponent.create(frag_rig,
 												  start_joint,
 												  end_joint,
 												  side='center',
@@ -497,14 +497,14 @@ class WeaponArmatusTemplate(rig_templates.RigTemplates):
 		trigger_component.attach_component(weapon_component, pm.PyNode('weapon'))
 		trigger_flag = trigger_component.get_end_flag()
 
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='right',
 										  region='hand_prop',
 										  source_object=weapon_flag,
 										  target_list=[world_flag, root_flag, flags_all],
 										  switch_obj=None)
 
-		tek_rig.rigTemplate.set(WeaponRangeTemplate.__name__)
-		tek_rig.finalize_rig(self.get_flags_path())
+		frag_rig.rigTemplate.set(WeaponRangeTemplate.__name__)
+		frag_rig.finalize_rig(self.get_flags_path())
 
-		return tek_rig
+		return frag_rig

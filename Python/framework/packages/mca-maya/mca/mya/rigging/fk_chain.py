@@ -10,7 +10,7 @@ Purpose: Creates an fk chain
 import pymel.core as pm
 #  python imports
 from mca.mya.utils import dag, constraint
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 
 
 def fk_joint_chain(start_joint,
@@ -54,11 +54,11 @@ def fk_joint_chain(start_joint,
         label = label.split(':')[-1].replace('_' + suffix, "")
 
         if inc == 0:
-            flag_node = tek_flag.Flag.create_ratio(jnt, label=label, add_align_transform=root_align_transform, scale=scale)
+            flag_node = frag_flag.Flag.create_ratio(jnt, label=label, add_align_transform=root_align_transform, scale=scale)
         elif create_end_flag and inc == (len(chain_to_rig)):
-            flag_node = tek_flag.Flag.create(jnt, label=label, add_align_transform=root_align_transform, scale=scale)
+            flag_node = frag_flag.Flag.create(jnt, label=label, add_align_transform=root_align_transform, scale=scale)
         else:
-            flag_node = tek_flag.Flag.create_ratio(jnt, label=label, add_align_transform=children_align_transforms, scale=scale)
+            flag_node = frag_flag.Flag.create_ratio(jnt, label=label, add_align_transform=children_align_transforms, scale=scale)
 
         flag_align_transform = flag_node.alignTransform.get()
         if flag_align_transform:
@@ -67,7 +67,7 @@ def fk_joint_chain(start_joint,
             flag_node.setParent(last)
 
         if offset_flag and chain_to_rig[inc] == chain_to_rig[-1]:
-            new_offset_flag = tek_flag.Flag.create(jnt,
+            new_offset_flag = frag_flag.Flag.create(jnt,
                                                     scale=scale*.75,
                                                     label=label+'_offset',
                                                     add_align_transform=True,

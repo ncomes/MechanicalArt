@@ -20,7 +20,7 @@ from mca.common.pyqt import messages
 from mca.common.tools.dcctracking import dcc_tracking
 from mca.common.utils import lists, pymaths
 
-from mca.mya.rigging import chain_markup, tek
+from mca.mya.rigging import chain_markup, frag
 from mca.mya.utils import attr_utils
 
 SCA_MULTIPLIER = 651.7317791852719
@@ -50,9 +50,9 @@ class FallbackComponentRigBuilder:
         return region, side, start_joint, end_joint
 
     def get_component_scale(self, start_joint):
-        tek_rig = self.main_ui.tek_rig
-        tek_root = tek.get_tek_root(tek_rig)
-        skel_root = tek_root.root_joint
+        frag_rig = self.main_ui.frag_rig
+        frag_root = frag.get_frag_root(frag_rig)
+        skel_root = frag_root.root_joint
         skel_bb = pm.xform(skel_root, q=True, ws=True, bb=True)
 
         scale = pymaths.find_distance_between_points(skel_bb[:3], skel_bb[3:]) / SCA_MULTIPLIER
@@ -69,9 +69,9 @@ class CogComponentRigBuilder(FallbackComponentRigBuilder):
         # Standard data finding.
         scale = self.get_component_scale(start_joint)
 
-        tek_rig = self.main_ui.tek_rig
+        frag_rig = self.main_ui.frag_rig
 
-        parent_component = tek_rig.get_tek_child(tek.WorldComponent)
+        parent_component = frag_rig.get_frag_child(frag.WorldComponent)
         if not parent_component:
             messages.error_message('Build Error', 'The COG expects to attach to a world component please add one before attempting to add a COG component.')
             return
@@ -80,7 +80,7 @@ class CogComponentRigBuilder(FallbackComponentRigBuilder):
         # Post check
 
         # Build and auto attach
-        rfk_component = tek.CogComponent.create(tek_rig,
+        rfk_component = frag.CogComponent.create(frag_rig,
                                                  start_joint,
                                                  start_joint,
                                                  'center',
@@ -138,11 +138,11 @@ class FKComponentRigBuilder(FallbackComponentRigBuilder):
         region, side, start_joint, end_joint = self.get_component_info(start_joint)
         scale = self.get_component_scale(start_joint)
 
-        tek_rig = self.main_ui.tek_rig
+        frag_rig = self.main_ui.frag_rig
 
         parent_joint = start_joint.getParent()
         parent_component = lists.get_first_in_list(list(set([x for x in parent_joint.listConnections(type=pm.nt.Network) if 'Constraint' not in x.name()])))
-        parent_component = tek.TEKNode(parent_component) if parent_component else tek_rig
+        parent_component = frag.FRAGNode(parent_component) if parent_component else frag_rig
 
         # Post check
 
@@ -157,7 +157,7 @@ class FKComponentRigBuilder(FallbackComponentRigBuilder):
         child_scale = attr_utils.SCALE_ATTRS if self.cs_checkbox.isChecked() else ()
 
         # Build and auto attach
-        fk_component = tek.FKComponent.create(tek_rig,
+        fk_component = frag.FKComponent.create(frag_rig,
                                                start_joint,
                                                end_joint,
                                                side,
@@ -185,11 +185,11 @@ class IKFKComponentRigBuilder(FallbackComponentRigBuilder):
         region, side, start_joint, end_joint = self.get_component_info(start_joint)
         scale = self.get_component_scale(start_joint)
 
-        tek_rig = self.main_ui.tek_rig
+        frag_rig = self.main_ui.frag_rig
 
         parent_joint = start_joint.getParent()
         parent_component = lists.get_first_in_list(list(set([x for x in parent_joint.listConnections(type=pm.nt.Network) if 'Constraint' not in x.name()])))
-        parent_component = tek.TEKNode(parent_component) if parent_component else tek_rig
+        parent_component = frag.FRAGNode(parent_component) if parent_component else frag_rig
 
         # Post check
         skel_hierarchy = chain_markup.ChainMarkup(start_joint)
@@ -198,7 +198,7 @@ class IKFKComponentRigBuilder(FallbackComponentRigBuilder):
             return
 
         # Build and auto attach
-        ikfk_component = tek.IKFKComponent.create(tek_rig,
+        ikfk_component = frag.IKFKComponent.create(frag_rig,
                                                    start_joint,
                                                    end_joint,
                                                    side,
@@ -219,15 +219,15 @@ class PelvisComponentRigBuilder(FallbackComponentRigBuilder):
         region, side, start_joint, end_joint = self.get_component_info(start_joint)
         scale = self.get_component_scale(start_joint)
 
-        tek_rig = self.main_ui.tek_rig
+        frag_rig = self.main_ui.frag_rig
 
         parent_component = lists.get_first_in_list(list(set([x for x in start_joint.listConnections(type=pm.nt.Network) if 'Constraint' not in x.name()])))
-        parent_component = tek.TEKNode(parent_component) if parent_component else tek_rig
+        parent_component = frag.FRAGNode(parent_component) if parent_component else frag_rig
 
         # Post check
 
         # Build and auto attach
-        rfk_component = tek.PelvisComponent.create(tek_rig,
+        rfk_component = frag.PelvisComponent.create(frag_rig,
                                                              start_joint,
                                                              end_joint,
                                                              side,
@@ -248,11 +248,11 @@ class ReverseFootComponentRigBuilder(FallbackComponentRigBuilder):
         region, side, start_joint, end_joint = self.get_component_info(start_joint)
         scale = self.get_component_scale(start_joint)
 
-        tek_rig = self.main_ui.tek_rig
+        frag_rig = self.main_ui.frag_rig
 
         parent_joint = start_joint.getParent()
         parent_component = lists.get_first_in_list(list(set([x for x in parent_joint.listConnections(type=pm.nt.Network) if 'Constraint' not in x.name()])))
-        parent_component = tek.TEKNode(parent_component) if parent_component else tek_rig
+        parent_component = frag.FRAGNode(parent_component) if parent_component else frag_rig
 
         # Post check
         skel_hierarchy = chain_markup.ChainMarkup(start_joint)
@@ -272,7 +272,7 @@ class ReverseFootComponentRigBuilder(FallbackComponentRigBuilder):
                 return
 
         # Build and auto attach
-        leg_component = tek.ReverseFootComponent.create(tek_rig,
+        leg_component = frag.ReverseFootComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side,
@@ -293,7 +293,7 @@ class RFKComponentRigBuilder(FallbackComponentRigBuilder):
         region, side, start_joint, end_joint = self.get_component_info(start_joint)
         scale = self.get_component_scale(start_joint)*2.5
 
-        tek_rig = self.main_ui.tek_rig
+        frag_rig = self.main_ui.frag_rig
 
         parent_object = start_joint.getParent()
         parent_component = None
@@ -304,12 +304,12 @@ class RFKComponentRigBuilder(FallbackComponentRigBuilder):
             if 'Cog' in x.name():
                 parent_object = parent_component.cogFlag.get()
                 break
-        parent_component = tek.TEKNode(parent_component) if parent_component else tek_rig
+        parent_component = frag.FRAGNode(parent_component) if parent_component else frag_rig
 
         # Post check
 
         # Build and auto attach
-        rfk_component = tek.RFKComponent.create(tek_rig,
+        rfk_component = frag.RFKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side,
@@ -346,12 +346,12 @@ class SplineIKComponentRigBuilder(FallbackComponentRigBuilder):
         region, side, start_joint, end_joint = self.get_component_info(start_joint)
         scale = self.get_component_scale(start_joint)
 
-        tek_rig = self.main_ui.tek_rig
+        frag_rig = self.main_ui.frag_rig
 
         parent_joint = start_joint.getParent()
         parent_component = lists.get_first_in_list(
             list(set([x for x in parent_joint.listConnections(type=pm.nt.Network) if 'Constraint' not in x.name()])))
-        parent_component = tek.TEKNode(parent_component) if parent_component else tek_rig
+        parent_component = frag.FRAGNode(parent_component) if parent_component else frag_rig
 
         # Post check
 
@@ -370,7 +370,7 @@ class SplineIKComponentRigBuilder(FallbackComponentRigBuilder):
 
         print(start_joint, end_joint, start_helper_joint, mid_helper_joint, end_helper_joint)
         # Build and auto attach
-        spline_component = tek.SplineIKComponent.create(tek_rig,
+        spline_component = frag.SplineIKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          end_helper_joint,
@@ -396,11 +396,11 @@ class SplineIKRibbonComponentRigBuilder(FallbackComponentRigBuilder):
         region, side, start_joint, end_joint = self.get_component_info(start_joint)
         scale = self.get_component_scale(start_joint)
 
-        tek_rig = self.main_ui.tek_rig
+        frag_rig = self.main_ui.frag_rig
 
         parent_joint = start_joint.getParent()
         parent_component = lists.get_first_in_list(list(set([x for x in parent_joint.listConnections(type=pm.nt.Network) if 'Constraint' not in x.name()])))
-        parent_component = tek.TEKNode(parent_component) if parent_component else tek_rig
+        parent_component = frag.FRAGNode(parent_component) if parent_component else frag_rig
 
         # Post check
 
@@ -416,7 +416,7 @@ class SplineIKRibbonComponentRigBuilder(FallbackComponentRigBuilder):
             return
 
         # Build and auto attach
-        ribbon_component = tek.SplineIKRibbonComponent.create(tek_rig,
+        ribbon_component = frag.SplineIKRibbonComponent.create(frag_rig,
                                                                start_joint,
                                                                end_joint,
                                                                side,
@@ -437,16 +437,16 @@ class WorldComponentRigBuilder(FallbackComponentRigBuilder):
         region, side, start_joint, end_joint = self.get_component_info(start_joint)
         scale = self.get_component_scale(start_joint)
 
-        tek_rig = self.main_ui.tek_rig
+        frag_rig = self.main_ui.frag_rig
 
         # Post check
-        world_component = tek_rig.get_tek_child(tek.WorldComponent)
+        world_component = frag_rig.get_frag_child(frag.WorldComponent)
         if world_component:
             # We already have a world component, don't build another.
             return
 
         # Build and auto attach
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                      start_joint,
                                                      'center',
                                                      'world',
@@ -456,7 +456,7 @@ class WorldComponentRigBuilder(FallbackComponentRigBuilder):
         offset_flag = world_component.offset_flag
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='root',
                                     source_object=root_flag,
@@ -476,11 +476,11 @@ class ZLegComponentRigBuilder(FallbackComponentRigBuilder):
         region, side, start_joint, end_joint = self.get_component_info(start_joint)
         scale = self.get_component_scale(start_joint)
 
-        tek_rig = self.main_ui.tek_rig
+        frag_rig = self.main_ui.frag_rig
 
         parent_joint = start_joint.getParent()
         parent_component = lists.get_first_in_list(list(set([x for x in parent_joint.listConnections(type=pm.nt.Network) if 'Constraint' not in x.name()])))
-        parent_component = tek.TEKNode(parent_component) if parent_component else tek_rig
+        parent_component = frag.FRAGNode(parent_component) if parent_component else frag_rig
 
         # Post check
         skel_hierarchy = chain_markup.ChainMarkup(start_joint)
@@ -500,7 +500,7 @@ class ZLegComponentRigBuilder(FallbackComponentRigBuilder):
                 return
 
         # Build and auto attach
-        z_leg_component = tek.ZLegComponent.create(tek_rig,
+        z_leg_component = frag.ZLegComponent.create(frag_rig,
                                                     start_joint,
                                                     end_joint,
                                                     side,

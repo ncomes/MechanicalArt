@@ -11,7 +11,7 @@ import pymel.core as pm
 # mca python imports
 from mca.mya.rigging.templates import rig_templates
 from mca.mya.rigging import chain_markup
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.common.utils import lists
 
 
@@ -28,15 +28,15 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # import Skeletal Mesh using ASSET_ID into the namespace
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, asset_type, self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, asset_type, self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        flags_all = tek_rig.flagsAll.get()
+        flags_all = frag_rig.flagsAll.get()
 
         # world
         start_joint = pm.PyNode('root')
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                           start_joint,
                                                           'center',
                                                           'world')
@@ -45,7 +45,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         offset_flag = world_component.offset_flag
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='root',
                                           source_object=root_flag,
@@ -56,7 +56,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Body
         start_joint = pm.PyNode('body')
         end_joint = pm.PyNode('body')
-        body_component = tek.FKComponent.create(tek_rig,
+        body_component = frag.FKComponent.create(frag_rig,
                                                       start_joint,
                                                       end_joint,
                                                       side='center',
@@ -68,7 +68,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Yaw Pivot
         start_joint = pm.PyNode('yaw_pivot')
         end_joint = pm.PyNode('yaw_pivot')
-        yaw_component = tek.FKComponent.create(tek_rig,
+        yaw_component = frag.FKComponent.create(frag_rig,
                                                      start_joint,
                                                      end_joint,
                                                      side='center',
@@ -80,7 +80,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # pitch Pivot
         start_joint = pm.PyNode('pitch_pivot')
         end_joint = pm.PyNode('pitch_pivot')
-        pitch_component = tek.FKComponent.create(tek_rig,
+        pitch_component = frag.FKComponent.create(frag_rig,
                                                        start_joint,
                                                        end_joint,
                                                        side='center',
@@ -93,7 +93,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # shields
         start_joint = pm.PyNode('shield_c')
         end_joint = pm.PyNode('shield_c')
-        shield_component = tek.FKComponent.create(tek_rig,
+        shield_component = frag.FKComponent.create(frag_rig,
                                                         start_joint,
                                                         end_joint,
                                                         side='center',
@@ -106,7 +106,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Left
         start_joint = pm.PyNode('shield_l')
         end_joint = pm.PyNode('shield_l')
-        shield_l_component = tek.FKComponent.create(tek_rig,
+        shield_l_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='left',
@@ -117,7 +117,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Right
         start_joint = pm.PyNode('shield_r')
         end_joint = pm.PyNode('shield_r')
-        shield_r_component = tek.FKComponent.create(tek_rig,
+        shield_r_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='right',
@@ -128,7 +128,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Left Exhaust 01
         start_joint = pm.PyNode('exhaust_01_l')
         end_joint = pm.PyNode('exhaust_01_l')
-        exhaust_01_component = tek.FKComponent.create(tek_rig,
+        exhaust_01_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -139,7 +139,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Left Exhaust 02
         start_joint = pm.PyNode('exhaust_02_l')
         end_joint = pm.PyNode('exhaust_02_l')
-        exhaust_02_component = tek.FKComponent.create(tek_rig,
+        exhaust_02_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -150,7 +150,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Left Exhaust 03
         start_joint = pm.PyNode('exhaust_03_l')
         end_joint = pm.PyNode('exhaust_03_l')
-        exhaust_03_component = tek.FKComponent.create(tek_rig,
+        exhaust_03_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -161,7 +161,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Left Exhaust 04
         start_joint = pm.PyNode('exhaust_04_l')
         end_joint = pm.PyNode('exhaust_04_l')
-        exhaust_04_component = tek.FKComponent.create(tek_rig,
+        exhaust_04_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='left',
@@ -172,7 +172,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Right Exhaust 01
         start_joint = pm.PyNode('exhaust_01_r')
         end_joint = pm.PyNode('exhaust_01_r')
-        exhaust_01_r_component = tek.FKComponent.create(tek_rig,
+        exhaust_01_r_component = frag.FKComponent.create(frag_rig,
                                                               start_joint,
                                                               end_joint,
                                                               side='right',
@@ -183,7 +183,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Right Exhaust 02
         start_joint = pm.PyNode('exhaust_02_r')
         end_joint = pm.PyNode('exhaust_02_r')
-        exhaust_02_r_component = tek.FKComponent.create(tek_rig,
+        exhaust_02_r_component = frag.FKComponent.create(frag_rig,
                                                               start_joint,
                                                               end_joint,
                                                               side='right',
@@ -194,7 +194,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Right Exhaust 03
         start_joint = pm.PyNode('exhaust_03_r')
         end_joint = pm.PyNode('exhaust_03_r')
-        exhaust_03_r_component = tek.FKComponent.create(tek_rig,
+        exhaust_03_r_component = frag.FKComponent.create(frag_rig,
                                                               start_joint,
                                                               end_joint,
                                                               side='right',
@@ -205,7 +205,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Eye Shield
         start_joint = pm.PyNode('eye_shield')
         end_joint = pm.PyNode('eye_shield')
-        eye_shield_component = tek.FKComponent.create(tek_rig,
+        eye_shield_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -218,7 +218,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         # Eye Shield
         start_joint = pm.PyNode('utility_warp')
         end_joint = pm.PyNode('utility_warp')
-        warp_component = tek.FKComponent.create(tek_rig,
+        warp_component = frag.FKComponent.create(frag_rig,
                                                                 start_joint,
                                                                 end_joint,
                                                                 side='center',
@@ -229,7 +229,7 @@ class DroneAngraRig(rig_templates.RigTemplates):
         warp_flag.set_as_detail()
 
         # Space Switching
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                          side='center',
                                          region='body',
                                          source_object=body_flag,
@@ -237,14 +237,14 @@ class DroneAngraRig(rig_templates.RigTemplates):
                                          switch_obj=None)
         
         # utility warp
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                             side='center',
                                             region='utility_warp',
                                             source_object=warp_flag,
                                             target_list=[world_flag, root_flag, flags_all],
                                             switch_obj=None)
 
-        return tek_rig
+        return frag_rig
 
 
 class DroneChainsawRig(DroneAngraRig):
@@ -259,10 +259,10 @@ class DroneChainsawRig(DroneAngraRig):
         pm.namespace(set=':')
 
         DroneAngraRig(self.ASSET_ID).rig()
-        tek_root = tek.get_tek_root_by_assetid(self.ASSET_ID)
-        tek_rig = tek_root.get_rig()
-        pitch_component = [x for x in tek_rig.get_tek_children(of_type=tek.FKComponent) if 'pitch' in str(x)]
-        body_component = [x for x in tek_rig.get_tek_children(of_type=tek.FKComponent) if 'body' in str(x)]
+        frag_root = frag.get_frag_root_by_assetid(self.ASSET_ID)
+        frag_rig = frag_root.get_rig()
+        pitch_component = [x for x in frag_rig.get_frag_children(of_type=frag.FKComponent) if 'pitch' in str(x)]
+        body_component = [x for x in frag_rig.get_frag_children(of_type=frag.FKComponent) if 'body' in str(x)]
 
         if not pitch_component:
             # Need a log here!
@@ -276,7 +276,7 @@ class DroneChainsawRig(DroneAngraRig):
         # curve_teeth_01
         start_joint = pm.PyNode('curve_teeth_01')
         end_joint = pm.PyNode('curve_teeth_01')
-        tooth_01_component = tek.FKComponent.create(tek_rig,
+        tooth_01_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='center',
@@ -289,7 +289,7 @@ class DroneChainsawRig(DroneAngraRig):
         # curve_teeth_02
         start_joint = pm.PyNode('curve_teeth_02')
         end_joint = pm.PyNode('curve_teeth_02')
-        tooth_02_component = tek.FKComponent.create(tek_rig,
+        tooth_02_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='center',
@@ -302,7 +302,7 @@ class DroneChainsawRig(DroneAngraRig):
         # curve_teeth_03
         start_joint = pm.PyNode('curve_teeth_03')
         end_joint = pm.PyNode('curve_teeth_03')
-        tooth_03_component = tek.FKComponent.create(tek_rig,
+        tooth_03_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='center',
@@ -315,7 +315,7 @@ class DroneChainsawRig(DroneAngraRig):
         # curve_teeth_04
         start_joint = pm.PyNode('curve_teeth_04')
         end_joint = pm.PyNode('curve_teeth_04')
-        tooth_04_component = tek.FKComponent.create(tek_rig,
+        tooth_04_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='center',
@@ -328,7 +328,7 @@ class DroneChainsawRig(DroneAngraRig):
         # curve_teeth_05
         start_joint = pm.PyNode('curve_teeth_05')
         end_joint = pm.PyNode('curve_teeth_05')
-        tooth_05_component = tek.FKComponent.create(tek_rig,
+        tooth_05_component = frag.FKComponent.create(frag_rig,
                                                           start_joint,
                                                           end_joint,
                                                           side='center',
@@ -341,7 +341,7 @@ class DroneChainsawRig(DroneAngraRig):
         # Bottom Teeth
         start_joint = pm.PyNode('bottom_teeth_c')
         end_joint = pm.PyNode('bottom_teeth_c')
-        bottom_tooth_component = tek.FKComponent.create(tek_rig,
+        bottom_tooth_component = frag.FKComponent.create(frag_rig,
                                                               start_joint,
                                                               end_joint,
                                                               side='center',
@@ -354,7 +354,7 @@ class DroneChainsawRig(DroneAngraRig):
         # Top Teeth
         start_joint = pm.PyNode('top_teeth_c')
         end_joint = pm.PyNode('top_teeth_c')
-        top_tooth_component = tek.FKComponent.create(tek_rig,
+        top_tooth_component = frag.FKComponent.create(frag_rig,
                                                            start_joint,
                                                            end_joint,
                                                            side='center',
@@ -364,10 +364,10 @@ class DroneChainsawRig(DroneAngraRig):
         top_tooth_flag = top_tooth_component.get_flags()[0]
         top_tooth_flag.set_as_detail()
         
-        tek_rig.rigTemplate.set(DroneChainsawRig.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(DroneChainsawRig.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class DroneGatlingRig(rig_templates.RigTemplates):
@@ -381,9 +381,9 @@ class DroneGatlingRig(rig_templates.RigTemplates):
         pm.namespace(set=':')
 
         DroneAngraRig(self.ASSET_ID).rig()
-        tek_root = tek.get_tek_root_by_assetid(self.ASSET_ID)
-        tek_rig = tek_root.get_rig()
-        pitch_component = [x for x in tek_rig.get_tek_children(of_type=tek.FKComponent) if 'pitch' in str(x)]
+        frag_root = frag.get_frag_root_by_assetid(self.ASSET_ID)
+        frag_rig = frag_root.get_rig()
+        pitch_component = [x for x in frag_rig.get_frag_children(of_type=frag.FKComponent) if 'pitch' in str(x)]
     
         if not pitch_component:
             # Need a log here!
@@ -393,7 +393,7 @@ class DroneGatlingRig(rig_templates.RigTemplates):
         # Gatling Barrel
         start_joint = pm.PyNode('gatling_barrel_c')
         end_joint = pm.PyNode('gatling_barrel_c')
-        gatling_component = tek.FKComponent.create(tek_rig,
+        gatling_component = frag.FKComponent.create(frag_rig,
                                                          start_joint,
                                                          end_joint,
                                                          side='center',
@@ -403,10 +403,10 @@ class DroneGatlingRig(rig_templates.RigTemplates):
         gatling_flag = gatling_component.get_flags()[0]
         gatling_flag.set_as_sub()
         
-        tek_rig.rigTemplate.set(DroneGatlingRig.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(DroneGatlingRig.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class DronePhasingFlyerRig(rig_templates.RigTemplates):
@@ -425,15 +425,15 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
 
         skel_markup = chain_markup.ChainMarkup(root_joint)
 
-        tek_root = tek.TEKRoot.create(root_joint, asset_type, self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, asset_type, self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        flags_all = tek_rig.flagsAll.get()
+        flags_all = frag_rig.flagsAll.get()
 
         # World
         start_joint = skel_markup.get_start('root', 'center')
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                            start_joint,
                                                            'center',
                                                            'world')
@@ -443,7 +443,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
 
         # Cog
         pelvis_joint = skel_markup.get_start('body', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                        pelvis_joint,
                                                        pelvis_joint,
                                                        'center',
@@ -454,7 +454,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
 
         # Body
         body_start_joint, body_end_joint = skel_markup.get_chain('body', 'center')
-        body_component = tek.FKComponent.create(tek_rig,
+        body_component = frag.FKComponent.create(frag_rig,
                                                        body_start_joint,
                                                        body_end_joint,
                                                        side='center',
@@ -464,7 +464,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
 
         # Neck
         head_start_joint, head_end_joint = skel_markup.get_chain('head', 'center')
-        neck_component = tek.FKComponent.create(tek_rig,
+        neck_component = frag.FKComponent.create(frag_rig,
                                                        head_start_joint,
                                                        head_end_joint,
                                                        side='center',
@@ -475,7 +475,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
         # Tail
         """
         start_joint, end_joint = skel_markup.get_chain('tail', 'center')
-        tail_component = tek.FKComponent.create(tek_rig,
+        tail_component = frag.FKComponent.create(frag_rig,
                                                        start_joint,
                                                        end_joint,
                                                        side='center',
@@ -483,7 +483,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
         tail_component.attach_component(body_component, body_start_joint)
         """
         tail_chain = skel_markup.get_full_chain('tail', 'center')
-        tail_component = tek.IKFKRibbonComponent.create(tek_rig,
+        tail_component = frag.IKFKRibbonComponent.create(frag_rig,
                                                              tail_chain[0],
                                                              tail_chain[-1],
                                                              side='center',
@@ -493,7 +493,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
         tail_ik_flag = tail_component.ik_flag
         tail_ik_pv_flag = tail_component.pv_flag
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='fk_tail',
                                           source_object=tail_fk_flag,
@@ -502,28 +502,28 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
                                           t=False,
                                           switch_attr='follow')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='ik_tail',
                                           source_object=tail_ik_flag,
                                           target_list=[body_flag,
                                                        world_flag])
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='fk_pv_tail',
                                           source_object=tail_ik_pv_flag,
                                           target_list=[body_flag,
                                                        world_flag])
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='neck',
                                           source_object=neck_component.get_flags()[0],
                                           target_list=[body_flag,
                                                        world_flag])
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='neck',
                                           source_object=neck_component.get_flags()[-1],
@@ -533,7 +533,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
         # Wings
         for side in ['left', 'right']:
             clav_joint = skel_markup.get_start('clavicle', side)
-            clavicle_component = tek.FKComponent.create(tek_rig,
+            clavicle_component = frag.FKComponent.create(frag_rig,
                                                           clav_joint,
                                                           clav_joint,
                                                           side=side,
@@ -542,7 +542,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             clav_flag = clavicle_component.get_flags()[0]
 
             arm_start_joint, arm_end_joint = skel_markup.get_chain('arm', side)
-            arm_component = tek.FKComponent.create(tek_rig,
+            arm_component = frag.FKComponent.create(frag_rig,
                                                            arm_start_joint,
                                                            arm_end_joint,
                                                            side=side,
@@ -551,7 +551,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             arm_component.get_flags()[1].lock_and_hide_attrs(['rx', 'ry'])
 
             thumb_start_joint, thumb_end_joint = skel_markup.get_chain('thumb', side)
-            thumb_component = tek.FKComponent.create(tek_rig,
+            thumb_component = frag.FKComponent.create(frag_rig,
                                                             thumb_start_joint,
                                                             thumb_end_joint,
                                                             side=side,
@@ -559,7 +559,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             thumb_component.attach_component(arm_component, arm_end_joint)
 
             index_start_joint, index_end_joint = skel_markup.get_chain('index', side)
-            index_component = tek.FKComponent.create(tek_rig,
+            index_component = frag.FKComponent.create(frag_rig,
                                                           index_start_joint,
                                                           index_end_joint,
                                                           side=side,
@@ -567,7 +567,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             index_component.attach_component(arm_component, arm_end_joint)
 
             middle_start_joint, middle_end_joint = skel_markup.get_chain('middle', side)
-            middle_component = tek.FKComponent.create(tek_rig,
+            middle_component = frag.FKComponent.create(frag_rig,
                                                             middle_start_joint,
                                                             middle_end_joint,
                                                             side=side,
@@ -575,7 +575,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             middle_component.attach_component(index_component, index_start_joint)
 
             ring_start_joint, ring_end_joint = skel_markup.get_chain('ring', side)
-            ring_component = tek.FKComponent.create(tek_rig,
+            ring_component = frag.FKComponent.create(frag_rig,
                                                              ring_start_joint,
                                                              ring_end_joint,
                                                              side=side,
@@ -583,7 +583,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             ring_component.attach_component(index_component, index_start_joint)
 
             ring_split_start_joint, ring_split_end_joint = skel_markup.get_chain('ring_split', side)
-            ring_split_component = tek.FKComponent.create(tek_rig,
+            ring_split_component = frag.FKComponent.create(frag_rig,
                                                            ring_split_start_joint,
                                                            ring_split_end_joint,
                                                            side=side,
@@ -591,7 +591,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             ring_split_component.attach_component(index_component, ring_end_joint.getParent())
 
             wing_float_start_joint, wing_float_end_joint = skel_markup.get_chain('wing_float', side)
-            wing_float_component = tek.FKComponent.create(tek_rig,
+            wing_float_component = frag.FKComponent.create(frag_rig,
                                                                  wing_float_start_joint,
                                                                  wing_float_end_joint,
                                                                  side=side,
@@ -600,7 +600,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             wing_float_component.attach_component(arm_component, arm_end_joint)
 
             pinky_start_joint, pinky_end_joint = skel_markup.get_chain('pinky', side)
-            pinky_component = tek.FKComponent.create(tek_rig,
+            pinky_component = frag.FKComponent.create(frag_rig,
                                                                  pinky_start_joint,
                                                                  pinky_end_joint,
                                                                  side=side,
@@ -608,7 +608,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             pinky_component.attach_component(arm_component, arm_start_joint)
 
             hexadactyl_start_joint, hexadactyl_end_joint = skel_markup.get_chain('hexadactyl', side)
-            hexadactyl_component = tek.FKComponent.create(tek_rig,
+            hexadactyl_component = frag.FKComponent.create(frag_rig,
                                                             hexadactyl_start_joint,
                                                             hexadactyl_end_joint,
                                                             side=side,
@@ -616,7 +616,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             hexadactyl_component.attach_component(arm_component, arm_start_joint)
 
             septadactyl_start_joint, septadactyl_end_joint = skel_markup.get_chain('septadactyl', side)
-            septadactyl_component = tek.FKComponent.create(tek_rig,
+            septadactyl_component = frag.FKComponent.create(frag_rig,
                                                             septadactyl_start_joint,
                                                             septadactyl_end_joint,
                                                             side=side,
@@ -624,14 +624,14 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             septadactyl_component.attach_component(arm_component, arm_start_joint)
 
             septadactyl_split_start_joint, septadactyl_split_end_joint = skel_markup.get_chain('septadactyl_split', side)
-            septadactyl_split_component = tek.FKComponent.create(tek_rig,
+            septadactyl_split_component = frag.FKComponent.create(frag_rig,
                                                                  septadactyl_split_start_joint,
                                                                  septadactyl_split_end_joint,
                                                                  side=side,
                                                                  region='septadactyl_split')
             septadactyl_split_component.attach_component(septadactyl_component, septadactyl_split_end_joint.getParent())
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                               side=side,
                                               region='fk_arm',
                                               source_object=clav_flag,
@@ -642,7 +642,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
 
             # Tail Fingers
             index_top_tail_start_joint, index_top_tail_end_joint = skel_markup.get_chain('index_top_tail', side)
-            index_top_tail_component = tek.FKComponent.create(tek_rig,
+            index_top_tail_component = frag.FKComponent.create(frag_rig,
                                                                   index_top_tail_start_joint,
                                                                   index_top_tail_end_joint,
                                                                   side=side,
@@ -650,7 +650,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             index_top_tail_component.attach_component(tail_component, tail_chain[0])
 
             middle_top_tail_start_joint, middle_top_tail_end_joint = skel_markup.get_chain('middle_top_tail', side)
-            middle_top_tail_component = tek.FKComponent.create(tek_rig,
+            middle_top_tail_component = frag.FKComponent.create(frag_rig,
                                                                      middle_top_tail_start_joint,
                                                                      middle_top_tail_end_joint,
                                                                      side=side,
@@ -658,7 +658,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             middle_top_tail_component.attach_component(tail_component, tail_chain[1])
 
             index_bot_tail_start_joint, index_bot_tail_end_joint = skel_markup.get_chain('index_bot_tail', side)
-            index_bot_tail_component = tek.FKComponent.create(tek_rig,
+            index_bot_tail_component = frag.FKComponent.create(frag_rig,
                                                                      index_bot_tail_start_joint,
                                                                      index_bot_tail_end_joint,
                                                                      side=side,
@@ -666,7 +666,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             index_bot_tail_component.attach_component(tail_component, tail_chain[-3])
 
             middle_bot_tail_start_joint, middle_bot_tail_end_joint = skel_markup.get_chain('middle_bot_tail', side)
-            middle_bot_tail_component = tek.FKComponent.create(tek_rig,
+            middle_bot_tail_component = frag.FKComponent.create(frag_rig,
                                                                      middle_bot_tail_start_joint,
                                                                      middle_bot_tail_end_joint,
                                                                      side=side,
@@ -674,7 +674,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             middle_bot_tail_component.attach_component(tail_component, tail_chain[-2])
 
             ring_bot_tail_start_joint, ring_bot_tail_end_joint = skel_markup.get_chain('ring_bot_tail', side)
-            ring_bot_tail_component = tek.FKComponent.create(tek_rig,
+            ring_bot_tail_component = frag.FKComponent.create(frag_rig,
                                                                      ring_bot_tail_start_joint,
                                                                      ring_bot_tail_end_joint,
                                                                      side=side,
@@ -684,7 +684,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
             # Face Joints
             for region in ['sub_index_face', 'index_face', 'sub_middle_face', 'middle_face', 'ring_face', 'jaw']:
                 start_joint, end_joint = skel_markup.get_chain(region, side)
-                new_component = tek.FKComponent.create(tek_rig,
+                new_component = frag.FKComponent.create(frag_rig,
                                                                      start_joint,
                                                                      end_joint,
                                                                      side=side,
@@ -692,7 +692,7 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
                 new_component.attach_component(neck_component, head_end_joint)
 
         thumb_face_start_joint, thumb_face_end_joint = skel_markup.get_chain('thumb_face', 'center')
-        thumb_face_component = tek.FKComponent.create(tek_rig,
+        thumb_face_component = frag.FKComponent.create(frag_rig,
                                                                 thumb_face_start_joint,
                                                                 thumb_face_end_joint,
                                                                 side='center',
@@ -700,10 +700,10 @@ class DronePhasingFlyerRig(rig_templates.RigTemplates):
         thumb_face_component.attach_component(neck_component, head_end_joint)
 
         if finalize:
-            tek_rig.rigTemplate.set(ExplodingEyeTemplate.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(ExplodingEyeTemplate.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 class ExplodingEyeTemplate(rig_templates.RigTemplates):
     VERSION = 1
@@ -718,15 +718,15 @@ class ExplodingEyeTemplate(rig_templates.RigTemplates):
         # import Skeletal Mesh using ASSET_ID into the namespace
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, 'combatant', self.ASSET_ID)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, 'combatant', self.ASSET_ID)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
         # Core Components
         # world
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                            root_joint,
                                                            'center',
                                                            'world')
@@ -737,7 +737,7 @@ class ExplodingEyeTemplate(rig_templates.RigTemplates):
         offset_flag.set_as_detail()
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='root',
                                           source_object=root_flag,
@@ -746,7 +746,7 @@ class ExplodingEyeTemplate(rig_templates.RigTemplates):
 
         # Cog
         body_start, body_end = skel_hierarchy.get_chain('body', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                        body_start,
                                                        body_start,
                                                        'center',
@@ -756,7 +756,7 @@ class ExplodingEyeTemplate(rig_templates.RigTemplates):
         cog_flag = cog_component.get_flags()[0]
 
         # Body
-        body_component = tek.FKComponent.create(tek_rig,
+        body_component = frag.FKComponent.create(frag_rig,
                                                        body_start,
                                                        body_start,
                                                        'center',
@@ -766,7 +766,7 @@ class ExplodingEyeTemplate(rig_templates.RigTemplates):
 
         # util warp
         util_warp_joint = skel_hierarchy.get_start('utility_warp', 'center')
-        util_warp_component = tek.FKComponent.create(tek_rig,
+        util_warp_component = frag.FKComponent.create(frag_rig,
                                                             util_warp_joint,
                                                             util_warp_joint,
                                                             side='center',
@@ -779,7 +779,7 @@ class ExplodingEyeTemplate(rig_templates.RigTemplates):
         for side in ['left', 'right']:
             shield_joint = skel_hierarchy.get_start('shield', side)
             if shield_joint:
-                jaw_component = tek.FKComponent.create(tek_rig,
+                jaw_component = frag.FKComponent.create(frag_rig,
                                                               shield_joint,
                                                               shield_joint,
                                                               side=side,
@@ -788,10 +788,10 @@ class ExplodingEyeTemplate(rig_templates.RigTemplates):
                 jaw_component.attach_component(body_component, body_start)
 
         if finalize:
-            tek_rig.rigTemplate.set(ExplodingEyeTemplate.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(ExplodingEyeTemplate.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class HealingSkullTemplate(ExplodingEyeTemplate):
@@ -804,15 +804,15 @@ class HealingSkullTemplate(ExplodingEyeTemplate):
 
     # We would not normally create the root and skel mesh here.
     def build(self, finalize=True):
-        tek_rig = super().build(finalize=False)
-        tek_root = tek_rig.get_root()
-        tek_root.asset_id = self.ASSET_ID
-        tek_root.assetName.set(self.ASSET_ID)
+        frag_rig = super().build(finalize=False)
+        frag_root = frag_rig.get_root()
+        frag_root.asset_id = self.ASSET_ID
+        frag_root.assetName.set(self.ASSET_ID)
 
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
-        body_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.FKComponent,
+        body_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.FKComponent,
                                                                             side='center',
                                                                             region='body'))
         body_flag = body_component.get_flags()[0]
@@ -823,7 +823,7 @@ class HealingSkullTemplate(ExplodingEyeTemplate):
                          'exhaust_07']:
                 veil_start, veil_end = skel_hierarchy.get_chain(veil, side)
                 if veil_start:
-                    veil_component = tek.FKComponent.create(tek_rig,
+                    veil_component = frag.FKComponent.create(frag_rig,
                                                             veil_start,
                                                             veil_end,
                                                             side=side,
@@ -833,10 +833,10 @@ class HealingSkullTemplate(ExplodingEyeTemplate):
                     veil_component.attach_component(body_component, body_flag.node)
 
         if finalize:
-            tek_rig.rigTemplate.set(HealingSkullTemplate.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(HealingSkullTemplate.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 class ShieldingSkullTemplate(ExplodingEyeTemplate):
     VERSION = 1
@@ -848,13 +848,13 @@ class ShieldingSkullTemplate(ExplodingEyeTemplate):
 
     # We would not normally create the root and skel mesh here.
     def build(self, finalize=True):
-        tek_rig = super().build(finalize=False)
-        tek_root = tek_rig.get_root()
-        tek_root.asset_id = self.ASSET_ID
-        tek_root.assetName.set(self.ASSET_ID)
+        frag_rig = super().build(finalize=False)
+        frag_root = frag_rig.get_root()
+        frag_root.asset_id = self.ASSET_ID
+        frag_root.assetName.set(self.ASSET_ID)
 
         if finalize:
-            tek_rig.rigTemplate.set(ShieldingSkullTemplate.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(ShieldingSkullTemplate.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig

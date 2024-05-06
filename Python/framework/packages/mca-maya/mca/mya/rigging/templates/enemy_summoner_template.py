@@ -8,7 +8,7 @@ Template for human players and npcs
 import pymel.core as pm
 
 # mca python imports
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.mya.rigging.templates import rig_templates
 from mca.mya.rigging import chain_markup
 from mca.common import log
@@ -32,15 +32,15 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 		# import Skeletal Mesh using ASSET_ID into the namespace
 		world_root = pm.PyNode('root')
 
-		tek_root = tek.TEKRoot.create(world_root, self.asset_type, self.asset_id)
-		tek.SkeletalMesh.create(tek_root)
-		tek_rig = tek.TEKRig.create(tek_root)
+		frag_root = frag.FRAGRoot.create(world_root, self.asset_type, self.asset_id)
+		frag.SkeletalMesh.create(frag_root)
+		frag_rig = frag.FRAGRig.create(frag_root)
 
 		root = pm.PyNode('root')
 		chain = chain_markup.ChainMarkup(root)
 		# world
 
-		world_component = tek.WorldComponent.create(tek_rig,
+		world_component = frag.WorldComponent.create(frag_rig,
 														   root,
 														   'center',
 														   'world',
@@ -51,7 +51,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 		offset_flag = world_component.offset_flag
 		offset_flag.set_as_detail()
 		# Root Multiconstraint
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 									side='center',
 									region='root',
 									source_object=root_flag,
@@ -59,7 +59,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 												 offset_flag])
 		# Cog
 		pelvis_joint = chain.get_start('pelvis', 'center')
-		cog_component = tek.CogComponent.create(tek_rig,
+		cog_component = frag.CogComponent.create(frag_rig,
 													   pelvis_joint,
 													   pelvis_joint,
 													   'center',
@@ -71,7 +71,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 		# Pelvis
 		start_joint = pm.PyNode('pelvis')
 		end_joint = pm.PyNode('spine_01')
-		pelvis_component = tek.PelvisComponent.create(tek_rig,
+		pelvis_component = frag.PelvisComponent.create(frag_rig,
 															 start_joint,
 															 end_joint,
 															 'center',
@@ -82,7 +82,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# Spine
 		spine_chain = chain.get_chain('spine', 'center')
-		spine_component = tek.RFKComponent.create(tek_rig,
+		spine_component = frag.RFKComponent.create(frag_rig,
 														 spine_chain[0],
 														 spine_chain[1],
 														 'center',
@@ -93,7 +93,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# Neck
 		neck_chain = chain.get_chain('neck', 'center')
-		neck_component = tek.RFKComponent.create(tek_rig,
+		neck_component = frag.RFKComponent.create(frag_rig,
 														neck_chain[0],
 														neck_chain[1],
 														'center',
@@ -109,7 +109,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# Left Clavicle
 		l_clav_chain = chain.get_chain('clav', 'left')
-		l_clav_component = tek.FKComponent.create(tek_rig,
+		l_clav_component = frag.FKComponent.create(frag_rig,
 														 l_clav_chain[0],
 														 l_clav_chain[1],
 														 side='left',
@@ -120,7 +120,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# Right Clavicle
 		r_clav_chain = chain.get_chain('clav', 'right')
-		r_clav_component = tek.FKComponent.create(tek_rig,
+		r_clav_component = frag.FKComponent.create(frag_rig,
 														 r_clav_chain[0],
 														 r_clav_chain[1],
 														 side='right',
@@ -131,7 +131,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# IKFK Right arm
 		r_arm_chain = chain.get_chain('arm', 'right')
-		r_arm_component = tek.IKFKComponent.create(tek_rig,
+		r_arm_component = frag.IKFKComponent.create(frag_rig,
 														  r_arm_chain[0],
 														  r_arm_chain[1],
 														  side='right',
@@ -146,7 +146,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# IKFK Left arm
 		l_arm_chain = chain.get_chain('arm', 'left')
-		l_arm_component = tek.IKFKComponent.create(tek_rig,
+		l_arm_component = frag.IKFKComponent.create(frag_rig,
 														  l_arm_chain[0],
 														  l_arm_chain[1],
 														  side='left',
@@ -161,7 +161,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# Left Hand prop
 		l_hand_contact = chain.get_start('hand_contact', 'left')
-		l_prop_component = tek.FKComponent.create(tek_rig,
+		l_prop_component = frag.FKComponent.create(frag_rig,
 														 l_hand_contact,
 														 l_hand_contact,
 														 side='left',
@@ -174,7 +174,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# Right Hand prop
 		r_hand_contact = chain.get_start('hand_contact', 'right')
-		r_prop_component = tek.FKComponent.create(tek_rig,
+		r_prop_component = frag.FKComponent.create(frag_rig,
 														 r_hand_contact,
 														 r_hand_contact,
 														 side='right',
@@ -187,7 +187,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# Left Hand weapon
 		l_weapon = chain.get_start('hand_prop', 'left')
-		l_weapon_component = tek.FKComponent.create(tek_rig,
+		l_weapon_component = frag.FKComponent.create(frag_rig,
 														   l_weapon,
 														   l_weapon,
 														   side='left',
@@ -200,7 +200,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# Right Hand weapon
 		r_weapon = chain.get_start('hand_prop', 'right')
-		r_weapon_component = tek.FKComponent.create(tek_rig,
+		r_weapon_component = frag.FKComponent.create(frag_rig,
 														   r_weapon,
 														   r_weapon,
 														   side='right',
@@ -214,7 +214,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 		####  Left Fingers #######
 		# left Index Finger
 		l_index_chain = chain.get_chain('index_finger', 'left')
-		l_index_component = tek.FKComponent.create(tek_rig,
+		l_index_component = frag.FKComponent.create(frag_rig,
 														  l_index_chain[0],
 														  l_index_chain[1],
 														  side='left',
@@ -224,7 +224,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# left middle Finger
 		l_middle_chain = chain.get_chain('middle_finger', 'left')
-		l_middle_component = tek.FKComponent.create(tek_rig,
+		l_middle_component = frag.FKComponent.create(frag_rig,
 														   l_middle_chain[0],
 														   l_middle_chain[1],
 														   side='left',
@@ -234,7 +234,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# left ring Finger
 		l_ring_chain = chain.get_chain('ring_finger', 'left')
-		l_ring_component = tek.FKComponent.create(tek_rig,
+		l_ring_component = frag.FKComponent.create(frag_rig,
 														 l_ring_chain[0],
 														 l_ring_chain[1],
 														 side='left',
@@ -244,7 +244,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# left Pinky Finger
 		l_pinky_chain = chain.get_chain('pinky_finger', 'left')
-		l_pinky_component = tek.FKComponent.create(tek_rig,
+		l_pinky_component = frag.FKComponent.create(frag_rig,
 														  l_pinky_chain[0],
 														  l_pinky_chain[1],
 														  side='left',
@@ -256,7 +256,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 		start_joint = pm.PyNode('thumb_01_l')
 		end_joint = pm.PyNode('thumb_03_l')
 		l_thumb_chain = chain.get_chain('thumb', 'left')
-		l_thumb_component = tek.FKComponent.create(tek_rig,
+		l_thumb_component = frag.FKComponent.create(frag_rig,
 														  l_thumb_chain[0],
 														  l_thumb_chain[1],
 														  side='left',
@@ -267,7 +267,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 		####  Right Fingers #######
 		# left Index Finger
 		r_index_chain = chain.get_chain('index_finger', 'right')
-		r_index_component = tek.FKComponent.create(tek_rig,
+		r_index_component = frag.FKComponent.create(frag_rig,
 														  r_index_chain[0],
 														  r_index_chain[1],
 														  side='right',
@@ -277,7 +277,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# left middle Finger
 		r_middle_chain = chain.get_chain('middle_finger', 'right')
-		r_middle_component = tek.FKComponent.create(tek_rig,
+		r_middle_component = frag.FKComponent.create(frag_rig,
 														   r_middle_chain[0],
 														   r_middle_chain[1],
 														   side='right',
@@ -287,7 +287,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# left ring Finger
 		r_ring_chain = chain.get_chain('ring_finger', 'right')
-		r_ring_component = tek.FKComponent.create(tek_rig,
+		r_ring_component = frag.FKComponent.create(frag_rig,
 														 r_ring_chain[0],
 														 r_ring_chain[1],
 														 side='right',
@@ -297,7 +297,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# left Pinky Finger
 		r_pinky_chain = chain.get_chain('pinky_finger', 'right')
-		r_pinky_component = tek.FKComponent.create(tek_rig,
+		r_pinky_component = frag.FKComponent.create(frag_rig,
 														  r_pinky_chain[0],
 														  r_pinky_chain[1],
 														  side='right',
@@ -307,7 +307,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# Right Thumb Finger
 		r_thumb_chain = chain.get_chain('thumb', 'right')
-		r_thumb_component = tek.FKComponent.create(tek_rig,
+		r_thumb_component = frag.FKComponent.create(frag_rig,
 														  r_thumb_chain[0],
 														  r_thumb_chain[1],
 														  side='right',
@@ -318,7 +318,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 		# Utilities
 		# # util
 		# util_joint = chain.get_start('utility', 'center')
-		# util_component = tek.FKComponent.create(tek_rig,
+		# util_component = frag.FKComponent.create(frag_rig,
 		#                                                util_joint,
 		#                                                util_joint,
 		#                                                side='center',
@@ -330,7 +330,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# util warp
 		util_warp_joint = chain.get_start('utility_warp', 'center')
-		util_warp_component = tek.FKComponent.create(tek_rig,
+		util_warp_component = frag.FKComponent.create(frag_rig,
 															util_warp_joint,
 															util_warp_joint,
 															side='center',
@@ -343,7 +343,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 		# Floor constraints
 		# Pelvis
 		contact_joint = chain.get_start('pelvis_contact', 'center')
-		pelvis_contact_component = tek.FKComponent.create(tek_rig,
+		pelvis_contact_component = frag.FKComponent.create(frag_rig,
 																 contact_joint,
 																 contact_joint,
 																 side='center',
@@ -355,7 +355,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		# Center
 		floor_joint = chain.get_start('floor', 'center')
-		floor_component = tek.FKComponent.create(tek_rig,
+		floor_component = frag.FKComponent.create(frag_rig,
 														floor_joint,
 														floor_joint,
 														side='center',
@@ -368,7 +368,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 
 		### Multi Constraints ###############
 		# floor
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='center',
 										  region='floor_contact',
 										  source_object=floor_flag,
@@ -376,7 +376,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 													   offset_flag],
 										  switch_attr='follow')
 		# Pelvis Contact
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='center',
 										  region='pelvis_contact',
 										  source_object=pelvis_contact_flag,
@@ -385,7 +385,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  switch_attr='follow')
 
 		# Left IK Arm Multi
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='left',
 										  region='arm',
 										  source_object=l_arm_ik_flag,
@@ -398,7 +398,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  switch_obj=l_arm_switch_flag,
 										  switch_attr='follow')
 		# Right IK Arm Multi
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='right',
 										  region='arm',
 										  source_object=r_arm_ik_flag,
@@ -411,7 +411,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  switch_obj=r_arm_switch_flag)
 
 		# Left FK Arm Multi
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='left',
 										  region='fk_arm',
 										  source_object=l_arm_fk_flag[0],
@@ -422,7 +422,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  t=False,
 										  switch_attr='rotateFollow')
 		# Right FK Arm Multi
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='right',
 										  region='fk_arm',
 										  source_object=r_arm_fk_flag[0],
@@ -434,7 +434,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  switch_attr='rotateFollow')
 
 		# Head
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='center',
 										  region='head',
 										  source_object=head_flag,
@@ -446,14 +446,14 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  translate=False,
 										  switch_attr='rotateFollow')
 		# PV Left Arm
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='left',
 										  region='arm_pv',
 										  source_object=l_arm_component.pv_flag,
 										  target_list=[offset_flag, l_clav_flag, spine_sub_flags[1], cog_flag],
 										  switch_obj=None)
 		# PV Right Arm
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='right',
 										  region='arm_pv',
 										  source_object=r_arm_component.pv_flag,
@@ -461,7 +461,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  switch_obj=None)
 
 		# Spine Top
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='center',
 										  region='spine_top',
 										  source_object=spine_sub_flags[1],
@@ -473,7 +473,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  switch_attr='rotateFollow',
 										  default_name='default')
 
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='center',
 										  region='spine_mid_top',
 										  source_object=spine_component.mid_flags[1],
@@ -485,7 +485,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  switch_attr='rotateFollow',
 										  default_name='default')
 
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='center',
 										  region='spine_mid_bottom',
 										  source_object=spine_component.mid_flags[0],
@@ -498,7 +498,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  default_name='default')
 
 		# Left Hand Contact
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='left',
 										  region='hand_prop',
 										  source_object=l_prop_flag,
@@ -511,7 +511,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  default_name='l_weapon')
 
 		# Right Hand Contact
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='right',
 										  region='hand_prop',
 										  source_object=r_prop_flag,
@@ -524,7 +524,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  default_name='r_weapon')
 
 		# Right Weapon
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='right',
 										  region='weapon',
 										  source_object=r_weapon_flag,
@@ -540,7 +540,7 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  default_name='r_hand')
 
 		# Left Weapon
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='left',
 										  region='weapon',
 										  source_object=l_weapon_flag,
@@ -556,10 +556,10 @@ class BaseSummonerTemplate(rig_templates.RigTemplates):
 										  default_name='l_hand')
 
 		if finalize:
-			tek_rig.rigTemplate.set(BaseSummonerTemplate.__name__)
-			tek_rig.finalize_rig(self.get_flags_path())
+			frag_rig.rigTemplate.set(BaseSummonerTemplate.__name__)
+			frag_rig.finalize_rig(self.get_flags_path())
 
-		return tek_rig
+		return frag_rig
 
 
 
@@ -576,16 +576,16 @@ class DemonicSummonerTemplate(BaseSummonerTemplate):
 
 		pm.namespace(set=':')
 
-		tek_rig = super(DemonicSummonerTemplate, self).build(finalize=False)
-		root_component = tek_rig.get_tek_parent()
-		neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')
-		spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='spine')
+		frag_rig = super(DemonicSummonerTemplate, self).build(finalize=False)
+		root_component = frag_rig.get_frag_parent()
+		neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')
+		spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='spine')
 
 		if not neck_component:
 			logger.warning('No Right Clavicle Component found!')
 			return
 		if len(neck_component) > 1:
-			neck_component = [x for x in neck_component if tek.TEKNode(x).region == 'neck']
+			neck_component = [x for x in neck_component if frag.FRAGNode(x).region == 'neck']
 
 		root = root_component.root_joint
 		chain = chain_markup.ChainMarkup(root)
@@ -594,7 +594,7 @@ class DemonicSummonerTemplate(BaseSummonerTemplate):
 		start_helper_joint = chain.get_chain('tongue_start', 'center')[0]
 		mid_helper_joint = chain.get_chain('tongue_helper', 'center')[0]
 		end_helper_joint = chain.get_chain('tongue_end', 'center')[0]
-		tongue_component = tek.SplineIKComponent.create(tek_rig,
+		tongue_component = frag.SplineIKComponent.create(frag_rig,
 																   tongue_start,
 																   tongue_end,
 																   end_helper_joint,
@@ -609,7 +609,7 @@ class DemonicSummonerTemplate(BaseSummonerTemplate):
 
 
 		coat_l = chain.get_chain('coat', 'left')
-		coat_l_component = tek.FKComponent.create(tek_rig,
+		coat_l_component = frag.FKComponent.create(frag_rig,
 														 coat_l[0],
 														 coat_l[1],
 														 side='left',
@@ -621,7 +621,7 @@ class DemonicSummonerTemplate(BaseSummonerTemplate):
 		coat_l_flag = coat_l_component.get_flags()[0]
 
 		coat_r = chain.get_chain('coat', 'right')
-		coat_r_component = tek.FKComponent.create(tek_rig,
+		coat_r_component = frag.FKComponent.create(frag_rig,
 														 coat_r[0],
 														 coat_r[1],
 														 side='right',
@@ -633,7 +633,7 @@ class DemonicSummonerTemplate(BaseSummonerTemplate):
 		coat_r_flag = coat_r_component.get_flags()[0]
 
 		coat_back = chain.get_chain('coat', 'center')
-		coat_back_component = tek.FKComponent.create(tek_rig,
+		coat_back_component = frag.FKComponent.create(frag_rig,
 															coat_back[0],
 															coat_back[1],
 															side='center',
@@ -645,7 +645,7 @@ class DemonicSummonerTemplate(BaseSummonerTemplate):
 		coat_back_flag = coat_back_component.get_flags()[0]
 
 		coat_inner_r = chain.get_chain('coat_inner', 'right')
-		coat_inner_r_component = tek.FKComponent.create(tek_rig,
+		coat_inner_r_component = frag.FKComponent.create(frag_rig,
 															   coat_inner_r[0],
 															   coat_inner_r[1],
 															   side='right',
@@ -657,7 +657,7 @@ class DemonicSummonerTemplate(BaseSummonerTemplate):
 		coat_inner_r_flag = coat_inner_r_component.get_flags()[0]
 
 		coat_inner_l = chain.get_chain('coat_inner', 'left')
-		coat_inner_l_component = tek.FKComponent.create(tek_rig,
+		coat_inner_l_component = frag.FKComponent.create(frag_rig,
 															   coat_inner_l[0],
 															   coat_inner_l[1],
 															   side='left',
@@ -669,9 +669,9 @@ class DemonicSummonerTemplate(BaseSummonerTemplate):
 		coat_inner_l_flag = coat_inner_l_component.get_flags()[0]
 
 
-		tek_rig.rigTemplate.set(DemonicSummonerTemplate.__name__)
-		tek_rig.finalize_rig(self.get_flags_path())
-		return tek_rig
+		frag_rig.rigTemplate.set(DemonicSummonerTemplate.__name__)
+		frag_rig.finalize_rig(self.get_flags_path())
+		return frag_rig
 
 
 class ProtectingSummonerTemplate(BaseSummonerTemplate):
@@ -686,18 +686,18 @@ class ProtectingSummonerTemplate(BaseSummonerTemplate):
 	def build(self):
 		pm.namespace(set=':')
 
-		tek_rig = super(ProtectingSummonerTemplate, self).build(finalize=False)
-		root_component = tek_rig.get_tek_parent()
-		neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')
-		spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='spine')
-		r_clav_component = tek_rig.get_tek_children(of_type=tek.FKComponent, region='clav', side='right')
-		l_clav_component = tek_rig.get_tek_children(of_type=tek.FKComponent, region='clav', side='left')
+		frag_rig = super(ProtectingSummonerTemplate, self).build(finalize=False)
+		root_component = frag_rig.get_frag_parent()
+		neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')
+		spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='spine')
+		r_clav_component = frag_rig.get_frag_children(of_type=frag.FKComponent, region='clav', side='right')
+		l_clav_component = frag_rig.get_frag_children(of_type=frag.FKComponent, region='clav', side='left')
 
 		root = root_component.root_joint
 		chain = chain_markup.ChainMarkup(root)
 
 		spine_04_prop_01_l = chain.get_start('spine_04_prop', 'left')
-		spine_04_prop_01_l_component = tek.FKComponent.create(tek_rig,
+		spine_04_prop_01_l_component = frag.FKComponent.create(frag_rig,
 		                                        spine_04_prop_01_l,
 		                                        spine_04_prop_01_l,
 		                                        side='left',
@@ -706,7 +706,7 @@ class ProtectingSummonerTemplate(BaseSummonerTemplate):
 		spine_04_prop_01_l_component.attach_component(spine_component, [pm.PyNode('spine_04')])
 
 		spine_04_prop_01_r = chain.get_start('spine_04_prop', 'right')
-		spine_04_prop_01_r_component = tek.FKComponent.create(tek_rig,
+		spine_04_prop_01_r_component = frag.FKComponent.create(frag_rig,
 		                                        spine_04_prop_01_r,
 		                                        spine_04_prop_01_r,
 		                                        side='right',
@@ -715,7 +715,7 @@ class ProtectingSummonerTemplate(BaseSummonerTemplate):
 		spine_04_prop_01_r_component.attach_component(spine_component, [pm.PyNode('spine_04')])
 
 		head_prop_01_l = chain.get_start('head_prop', 'left')
-		head_prop_01_l_component = tek.FKComponent.create(tek_rig,
+		head_prop_01_l_component = frag.FKComponent.create(frag_rig,
 		                                        head_prop_01_l,
 		                                        head_prop_01_l,
 		                                        side='left',
@@ -724,7 +724,7 @@ class ProtectingSummonerTemplate(BaseSummonerTemplate):
 		head_prop_01_l_component.attach_component(neck_component, [pm.PyNode('head')])
 
 		head_prop_01_r = chain.get_start('head_prop', 'right')
-		head_prop_01_r_component = tek.FKComponent.create(tek_rig,
+		head_prop_01_r_component = frag.FKComponent.create(frag_rig,
 		                                        head_prop_01_r,
 		                                        head_prop_01_r,
 		                                        side='right',
@@ -733,7 +733,7 @@ class ProtectingSummonerTemplate(BaseSummonerTemplate):
 		head_prop_01_r_component.attach_component(neck_component, [pm.PyNode('head')])
 
 		clavicle_deformer_r = chain.get_start('clavicle_deformer', 'right')
-		clavicle_deformer_r_component = tek.FKComponent.create(tek_rig,
+		clavicle_deformer_r_component = frag.FKComponent.create(frag_rig,
 		                                                        clavicle_deformer_r,
 		                                                        clavicle_deformer_r,
 		                                                        side='right',
@@ -742,7 +742,7 @@ class ProtectingSummonerTemplate(BaseSummonerTemplate):
 		clavicle_deformer_r_component.attach_component(r_clav_component, [pm.PyNode('clavicle_r')])
 
 		clavicle_deformer_l = chain.get_start('clavicle_deformer', 'left')
-		clavicle_deformer_l_component = tek.FKComponent.create(tek_rig,
+		clavicle_deformer_l_component = frag.FKComponent.create(frag_rig,
 		                                                        clavicle_deformer_l,
 		                                                        clavicle_deformer_l,
 		                                                        side='left',
@@ -752,7 +752,7 @@ class ProtectingSummonerTemplate(BaseSummonerTemplate):
 
 
 		coat_l = chain.get_chain('coat', 'left')
-		coat_l_component = tek.FKComponent.create(tek_rig,
+		coat_l_component = frag.FKComponent.create(frag_rig,
 														 coat_l[0],
 														 coat_l[1],
 														 side='left',
@@ -764,7 +764,7 @@ class ProtectingSummonerTemplate(BaseSummonerTemplate):
 		coat_l_flag = coat_l_component.get_flags()[0]
 
 		coat_r = chain.get_chain('coat', 'right')
-		coat_r_component = tek.FKComponent.create(tek_rig,
+		coat_r_component = frag.FKComponent.create(frag_rig,
 														 coat_r[0],
 														 coat_r[1],
 														 side='right',
@@ -776,7 +776,7 @@ class ProtectingSummonerTemplate(BaseSummonerTemplate):
 		coat_r_flag = coat_r_component.get_flags()[0]
 
 		coat_back = chain.get_chain('coat', 'center')
-		coat_back_component = tek.FKComponent.create(tek_rig,
+		coat_back_component = frag.FKComponent.create(frag_rig,
 															coat_back[0],
 															coat_back[1],
 															side='center',
@@ -788,7 +788,7 @@ class ProtectingSummonerTemplate(BaseSummonerTemplate):
 		coat_back_flag = coat_back_component.get_flags()[0]
 
 		coat_inner_r = chain.get_chain('coat_inner', 'right')
-		coat_inner_r_component = tek.FKComponent.create(tek_rig,
+		coat_inner_r_component = frag.FKComponent.create(frag_rig,
 															   coat_inner_r[0],
 															   coat_inner_r[1],
 															   side='right',
@@ -800,7 +800,7 @@ class ProtectingSummonerTemplate(BaseSummonerTemplate):
 		coat_inner_r_flag = coat_inner_r_component.get_flags()[0]
 
 		coat_inner_l = chain.get_chain('coat_inner', 'left')
-		coat_inner_l_component = tek.FKComponent.create(tek_rig,
+		coat_inner_l_component = frag.FKComponent.create(frag_rig,
 															   coat_inner_l[0],
 															   coat_inner_l[1],
 															   side='left',
@@ -812,9 +812,9 @@ class ProtectingSummonerTemplate(BaseSummonerTemplate):
 		coat_inner_l_flag = coat_inner_l_component.get_flags()[0]
 
 
-		tek_rig.rigTemplate.set(ProtectingSummonerTemplate.__name__)
-		tek_rig.finalize_rig(self.get_flags_path())
-		return tek_rig
+		frag_rig.rigTemplate.set(ProtectingSummonerTemplate.__name__)
+		frag_rig.finalize_rig(self.get_flags_path())
+		return frag_rig
 
 
 class AngraStageTwoTemplate(BaseSummonerTemplate):
@@ -828,17 +828,17 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 	def build(self):
 		pm.namespace(set=':')
 
-		tek_rig = super(AngraStageTwoTemplate, self).build(finalize=False)
-		root_component = tek_rig.get_tek_parent()
-		neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')
-		pelvis_component = tek_rig.get_tek_children(of_type=tek.CogComponent, region='pelvis')
-		spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='spine')
+		frag_rig = super(AngraStageTwoTemplate, self).build(finalize=False)
+		root_component = frag_rig.get_frag_parent()
+		neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')
+		pelvis_component = frag_rig.get_frag_children(of_type=frag.CogComponent, region='pelvis')
+		spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='spine')
 
 		root = root_component.root_joint
 		chain = chain_markup.ChainMarkup(root)
 
 		tentacle_shoulder_r = chain.get_chain('tentacle_shoulder', 'right')
-		tentacle_shoulder_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_shoulder_r_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_shoulder_r[0],
 		                                        tentacle_shoulder_r[1],
 		                                        side='right',
@@ -847,7 +847,7 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 		tentacle_shoulder_r_component.attach_component(pelvis_component, [pm.PyNode('pelvis')])
 
 		tentacle_shoulder_l = chain.get_chain('tentacle_shoulder', 'left')
-		tentacle_shoulder_l_component = tek.FKComponent.create(tek_rig,
+		tentacle_shoulder_l_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_shoulder_l[0],
 		                                        tentacle_shoulder_l[1],
 		                                        side='left',
@@ -856,7 +856,7 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 		tentacle_shoulder_l_component.attach_component(pelvis_component, [pm.PyNode('pelvis')])
 
 		tentacle_prime_r = chain.get_chain('tentacle_prime_center', 'right')
-		tentacle_prime_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_prime_r_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_prime_r[0],
 		                                        tentacle_prime_r[1],
 		                                        side='right',
@@ -865,7 +865,7 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 		tentacle_prime_r_component.attach_component(spine_component, [pm.PyNode('spine_04')])
 
 		tentacle_prime_l = chain.get_chain('tentacle_prime_center', 'left')
-		tentacle_prime_l_component = tek.FKComponent.create(tek_rig,
+		tentacle_prime_l_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_prime_l[0],
 		                                        tentacle_prime_l[1],
 		                                        side='left',
@@ -874,7 +874,7 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 		tentacle_prime_l_component.attach_component(spine_component, [pm.PyNode('spine_04')])
 
 		head_prop_01 = chain.get_start('head_prop', 'center')
-		head_prop_01_component = tek.FKComponent.create(tek_rig,
+		head_prop_01_component = frag.FKComponent.create(frag_rig,
 		                                        head_prop_01,
 		                                        head_prop_01,
 		                                        side='center',
@@ -884,7 +884,7 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 		head_prop_flag = head_prop_01_component.get_end_flag()
 
 		tentacle_front = chain.get_chain('tentacle_front', 'center')
-		tentacle_front_component = tek.FKComponent.create(tek_rig,
+		tentacle_front_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_front[0],
 		                                        tentacle_front[-1],
 		                                        side='center',
@@ -892,7 +892,7 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 		tentacle_front_component.attach_component(pelvis_component, [pm.PyNode('pelvis')])
 
 		tentacle_prime_lower_r = chain.get_chain('tentacle_prime_lower', 'right')
-		tentacle_prime_lower_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_prime_lower_r_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_prime_lower_r[0],
 		                                        tentacle_prime_lower_r[0],
 		                                        side='right',
@@ -900,7 +900,7 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 		tentacle_prime_lower_r_component.attach_component(spine_component, [pm.PyNode('spine_04')])
 
 		tentacle_prime_lower_l = chain.get_chain('tentacle_prime_lower', 'left')
-		tentacle_prime_lower_l_component = tek.FKComponent.create(tek_rig,
+		tentacle_prime_lower_l_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_prime_lower_l[0],
 		                                        tentacle_prime_lower_l[0],
 		                                        side='left',
@@ -908,7 +908,7 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 		tentacle_prime_lower_l_component.attach_component(spine_component, [pm.PyNode('spine_04')])
 
 		tentacle_front_r = chain.get_chain('tentacle_front', 'right')
-		tentacle_front_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_front_r_component = frag.FKComponent.create(frag_rig,
 		                                                     tentacle_front_r[0],
 		                                                     tentacle_front_r[-1],
 		                                                     side='right',
@@ -917,7 +917,7 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 		tentacle_front_r_component.attach_component([tentacle_front_component], [pm.PyNode('tentacle_front_02_l')])
 
 		tentacle_back_outer_l = chain.get_chain('tentacle_back_outer', 'left')
-		tentacle_back_outer_l_component = tek.FKComponent.create(tek_rig,
+		tentacle_back_outer_l_component = frag.FKComponent.create(frag_rig,
 		                                                          tentacle_back_outer_l[0],
 		                                                          tentacle_back_outer_l[-1],
 		                                                          side='left',
@@ -926,7 +926,7 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 		tentacle_back_outer_l_component.attach_component([tentacle_front_component], [pm.PyNode('tentacle_front_02_l')])
 
 		tentacle_back_l = chain.get_chain('tentacle_back', 'left')
-		tentacle_back_l_component = tek.FKComponent.create(tek_rig,
+		tentacle_back_l_component = frag.FKComponent.create(frag_rig,
 		                                                    tentacle_back_l[0],
 		                                                    tentacle_back_l[-1],
 		                                                    side='left',
@@ -935,7 +935,7 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 		tentacle_back_l_component.attach_component([tentacle_front_component], [pm.PyNode('tentacle_front_02_l')])
 
 		tentacle_back_r = chain.get_chain('tentacle_back', 'right')
-		tentacle_back_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_back_r_component = frag.FKComponent.create(frag_rig,
 		                                                    tentacle_back_r[0],
 		                                                    tentacle_back_r[-1],
 		                                                    side='right',
@@ -944,7 +944,7 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 		tentacle_back_r_component.attach_component([tentacle_front_component], [pm.PyNode('tentacle_front_02_l')])
 
 
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='center',
 										  region='head_prop',
 										  source_object=head_prop_flag,
@@ -954,9 +954,9 @@ class AngraStageTwoTemplate(BaseSummonerTemplate):
 													   pm.PyNode('spine_04')],
 										  switch_obj=None,
 										  default_name='default')
-		tek_rig.rigTemplate.set(AngraStageTwoTemplate.__name__)
-		tek_rig.finalize_rig(self.get_flags_path())
-		return tek_rig
+		frag_rig.rigTemplate.set(AngraStageTwoTemplate.__name__)
+		frag_rig.finalize_rig(self.get_flags_path())
+		return frag_rig
 
 
 
@@ -971,17 +971,17 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 	def build(self):
 		pm.namespace(set=':')
 
-		tek_rig = super(AngraStageTwoV2Template, self).build(finalize=False)
-		root_component = tek_rig.get_tek_parent()
-		neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')
-		pelvis_component = tek_rig.get_tek_children(of_type=tek.CogComponent, region='pelvis')
-		spine_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='spine')
+		frag_rig = super(AngraStageTwoV2Template, self).build(finalize=False)
+		root_component = frag_rig.get_frag_parent()
+		neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')
+		pelvis_component = frag_rig.get_frag_children(of_type=frag.CogComponent, region='pelvis')
+		spine_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='spine')
 
 		root = root_component.root_joint
 		chain = chain_markup.ChainMarkup(root)
 
 		tentacle_prime_r = chain.get_chain('tentacle_prime_center', 'right')
-		tentacle_prime_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_prime_r_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_prime_r[0],
 		                                        tentacle_prime_r[1],
 		                                        side='right',
@@ -990,7 +990,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		tentacle_prime_r_component.attach_component(spine_component, [pm.PyNode('spine_03')])
 
 		tentacle_prime_l = chain.get_chain('tentacle_prime_center', 'left')
-		tentacle_prime_l_component = tek.FKComponent.create(tek_rig,
+		tentacle_prime_l_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_prime_l[0],
 		                                        tentacle_prime_l[1],
 		                                        side='left',
@@ -999,7 +999,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		tentacle_prime_l_component.attach_component(spine_component, [pm.PyNode('spine_03')])
 
 		tentacle_shoulder_r = chain.get_chain('tentacle_shoulder', 'right')
-		tentacle_shoulder_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_shoulder_r_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_shoulder_r[0],
 		                                        tentacle_shoulder_r[1],
 		                                        side='right',
@@ -1008,7 +1008,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		tentacle_shoulder_r_component.attach_component(pelvis_component, [pm.PyNode('pelvis')])
 
 		tentacle_shoulder_l = chain.get_chain('tentacle_shoulder', 'left')
-		tentacle_shoulder_l_component = tek.FKComponent.create(tek_rig,
+		tentacle_shoulder_l_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_shoulder_l[0],
 		                                        tentacle_shoulder_l[1],
 		                                        side='left',
@@ -1017,7 +1017,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		tentacle_shoulder_l_component.attach_component(pelvis_component, [pm.PyNode('pelvis')])
 
 		head_prop_01 = chain.get_start('head_prop', 'center')
-		head_prop_01_component = tek.FKComponent.create(tek_rig,
+		head_prop_01_component = frag.FKComponent.create(frag_rig,
 		                                        head_prop_01,
 		                                        head_prop_01,
 		                                        side='center',
@@ -1027,7 +1027,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		head_prop_flag = head_prop_01_component.get_end_flag()
 
 		tentacle_front = chain.get_chain('tentacle_front', 'center')
-		tentacle_front_component = tek.FKComponent.create(tek_rig,
+		tentacle_front_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_front[0],
 		                                        tentacle_front[-1],
 		                                        side='center',
@@ -1035,7 +1035,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		tentacle_front_component.attach_component(pelvis_component, [pm.PyNode('pelvis')])
 
 		tentacle_prime_lower_r = chain.get_chain('tentacle_prime_lower', 'right')
-		tentacle_prime_lower_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_prime_lower_r_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_prime_lower_r[0],
 		                                        tentacle_prime_lower_r[0],
 		                                        side='right',
@@ -1043,7 +1043,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		tentacle_prime_lower_r_component.attach_component(spine_component, [pm.PyNode('spine_04')])
 
 		tentacle_prime_lower_l = chain.get_chain('tentacle_prime_lower', 'left')
-		tentacle_prime_lower_l_component = tek.FKComponent.create(tek_rig,
+		tentacle_prime_lower_l_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_prime_lower_l[0],
 		                                        tentacle_prime_lower_l[0],
 		                                        side='left',
@@ -1051,7 +1051,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		tentacle_prime_lower_l_component.attach_component(spine_component, [pm.PyNode('spine_04')])
 
 		spine_03_prop = chain.get_chain('spine_03_prop', 'center')
-		spine_03_prop_component = tek.FKComponent.create(tek_rig,
+		spine_03_prop_component = frag.FKComponent.create(frag_rig,
 		                                        spine_03_prop[0],
 		                                        spine_03_prop[-1],
 		                                        side='center',
@@ -1062,7 +1062,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 
 
 		spine_03_prop_03_c = chain.get_chain('spine_03_prop_03', 'center')
-		spine_03_prop_03_c_component = tek.FKComponent.create(tek_rig,
+		spine_03_prop_03_c_component = frag.FKComponent.create(frag_rig,
 		                                        spine_03_prop_03_c[0],
 		                                        spine_03_prop_03_c[-1],
 		                                        side='center',
@@ -1072,7 +1072,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 
 
 		tentacle_prime_upper_r = chain.get_chain('tentacle_prime_upper', 'right')
-		tentacle_prime_upper_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_prime_upper_r_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_prime_upper_r[0],
 		                                        tentacle_prime_upper_r[-1],
 		                                        side='right',
@@ -1083,7 +1083,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 
 
 		tentacle_prime_upper_l = chain.get_chain('tentacle_prime_upper', 'left')
-		tentacle_prime_upper_l_component = tek.FKComponent.create(tek_rig,
+		tentacle_prime_upper_l_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_prime_upper_l[0],
 		                                        tentacle_prime_upper_l[-1],
 		                                        side='left',
@@ -1094,7 +1094,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 
 
 		spine_02_prop_01 = chain.get_chain('spine_02_prop_01', 'right')
-		spine_02_prop_01_component = tek.FKComponent.create(tek_rig,
+		spine_02_prop_01_component = frag.FKComponent.create(frag_rig,
 		                                        spine_02_prop_01[0],
 		                                        spine_02_prop_01[-1],
 		                                        side='right',
@@ -1105,7 +1105,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 
 
 		tentacle_front_outer_01_r = chain.get_chain('tentacle_front_outer', 'right')
-		tentacle_front_outer_01_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_front_outer_01_r_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_front_outer_01_r[0],
 		                                        tentacle_front_outer_01_r[-1],
 		                                        side='right',
@@ -1116,7 +1116,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 
 
 		tentacle_front_outer_01_l = chain.get_chain('tentacle_front_outer', 'left')
-		tentacle_front_outer_01_l_component = tek.FKComponent.create(tek_rig,
+		tentacle_front_outer_01_l_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_front_outer_01_l[0],
 		                                        tentacle_front_outer_01_l[-1],
 		                                        side='left',
@@ -1127,7 +1127,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 
 
 		tentacle_front_r = chain.get_chain('tentacle_front', 'right')
-		tentacle_front_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_front_r_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_front_r[0],
 		                                        tentacle_front_r[-1],
 		                                        side='right',
@@ -1135,7 +1135,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		tentacle_front_r_component.attach_component([tentacle_front_component], [pm.PyNode('tentacle_front_02_l')])
 
 		tentacle_back_outer_l = chain.get_chain('tentacle_back_outer', 'left')
-		tentacle_back_outer_l_component = tek.FKComponent.create(tek_rig,
+		tentacle_back_outer_l_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_back_outer_l[0],
 		                                        tentacle_back_outer_l[-1],
 		                                        side='left',
@@ -1143,7 +1143,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		tentacle_back_outer_l_component.attach_component([tentacle_front_component], [pm.PyNode('tentacle_front_02_l')])
 
 		tentacle_back_outer_r = chain.get_chain('tentacle_back_outer', 'right')
-		tentacle_back_outer_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_back_outer_r_component = frag.FKComponent.create(frag_rig,
 		                                                          tentacle_back_outer_r[0],
 		                                                          tentacle_back_outer_r[-1],
 		                                                          side='right',
@@ -1155,7 +1155,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		                                                  pm.PyNode('pelvis')])
 
 		tentacle_back_l = chain.get_chain('tentacle_back', 'left')
-		tentacle_back_l_component = tek.FKComponent.create(tek_rig,
+		tentacle_back_l_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_back_l[0],
 		                                        tentacle_back_l[-1],
 		                                        side='left',
@@ -1163,7 +1163,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		tentacle_back_l_component.attach_component([tentacle_front_component], [pm.PyNode('tentacle_front_02_l')])
 
 		tentacle_back_r = chain.get_chain('tentacle_back', 'right')
-		tentacle_back_r_component = tek.FKComponent.create(tek_rig,
+		tentacle_back_r_component = frag.FKComponent.create(frag_rig,
 		                                        tentacle_back_r[0],
 		                                        tentacle_back_r[-1],
 		                                        side='right',
@@ -1171,7 +1171,7 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 		tentacle_back_r_component.attach_component([tentacle_front_component], [pm.PyNode('tentacle_front_02_l')])
 
 
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 										  side='center',
 										  region='head_prop',
 										  source_object=head_prop_flag,
@@ -1183,9 +1183,9 @@ class AngraStageTwoV2Template(BaseSummonerTemplate):
 										  default_name='default')
 
 
-		tek_rig.rigTemplate.set(AngraStageTwoV2Template.__name__)
-		tek_rig.finalize_rig(self.get_flags_path())
-		return tek_rig
+		frag_rig.rigTemplate.set(AngraStageTwoV2Template.__name__)
+		frag_rig.finalize_rig(self.get_flags_path())
+		return frag_rig
 
 
 

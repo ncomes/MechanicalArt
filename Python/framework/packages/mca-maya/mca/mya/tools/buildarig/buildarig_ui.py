@@ -26,8 +26,8 @@ from mca.common.utils import lists, pymaths
 
 from mca.mya.modifiers import ma_decorators
 from mca.mya.pyqt import mayawindows
-from mca.mya.rigging import chain_markup, tek, rig_utils, skel_utils
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging import chain_markup, frag, rig_utils, skel_utils
+from mca.mya.rigging.flags import frag_flag
 from mca.mya.utils import attr_utils, dag, naming
 
 from mca.mya.tools.buildarig import buildarig_data, buildarig_utils
@@ -102,7 +102,7 @@ class BuildARig(mayawindows.MCAMayaWindow):
                          version=BuildARig.VERSION)
 
         self.current_component = None
-        self.tek_rig = None
+        self.frag_rig = None
 
         self.vertical_spacer = None
         self.initialize_component_list()
@@ -203,29 +203,29 @@ class BuildARig(mayawindows.MCAMayaWindow):
         self.vertical_spacer = QSpacerItem(40, 20, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.ui.additional_ops_verticalLayout.addItem(self.vertical_spacer)
 
-    def get_tek_rig(self):
+    def get_frag_rig(self):
         """
-        From the selection or a list of the tek roots in the scene set the first found tek rig.
+        From the selection or a list of the frag roots in the scene set the first found frag rig.
 
         """
 
-        self.tek_rig = None
+        self.frag_rig = None
 
         selection = lists.get_first_in_list(pm.selected())
-        if not self.tek_rig and selection:
-            # Find tek rig by selection
-            self.tek_rig = tek.get_tek_rig(selection)
+        if not self.frag_rig and selection:
+            # Find frag rig by selection
+            self.frag_rig = frag.get_frag_rig(selection)
 
-        if not self.tek_rig:
-            # Find first tek rig in scene
-            tek_root = lists.get_first_in_list(tek.get_all_tek_roots())
-            self.tek_rig = None
-            if tek_root:
-                self.tek_rig = tek_root.get_rig()
+        if not self.frag_rig:
+            # Find first frag rig in scene
+            frag_root = lists.get_first_in_list(frag.get_all_frag_roots())
+            self.frag_rig = None
+            if frag_root:
+                self.frag_rig = frag_root.get_rig()
 
-        if not self.tek_rig:
-            # Couldn't find a tek rig so lets build a new one.
-            if messages.question_message('Unable to find FragRig', 'Would you like to create a new tek rig?') != 'Yes':
+        if not self.frag_rig:
+            # Couldn't find a frag rig so lets build a new one.
+            if messages.question_message('Unable to find FragRig', 'Would you like to create a new frag rig?') != 'Yes':
                 return
 
             asset_id = None
@@ -237,7 +237,7 @@ class BuildARig(mayawindows.MCAMayaWindow):
 
     def create_new_rig(self, asset_id=None):
         """
-        Build the combination TEKRoot/FragRig from a list of assets or from the skeleton's asset_id.
+        Build the combination FRAGRoot/FragRig from a list of assets or from the skeleton's asset_id.
 
         :param str asset_id: The asset id that represents an assetlist entry.
         """
@@ -263,12 +263,12 @@ class BuildARig(mayawindows.MCAMayaWindow):
             logger.error(f'Failed to import skeleton from id: {mca_asset.asset_name}')
             return
 
-        tek_root = tek.TEKRoot.create(skel_root, mca_asset.asset_type, mca_asset.asset_id)
-        tek.SkeletalMesh.create(tek_root)
-        self.tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(skel_root, mca_asset.asset_type, mca_asset.asset_id)
+        frag.SkeletalMesh.create(frag_root)
+        self.frag_rig = frag.FRAGRig.create(frag_root)
 
         # Auto Build world root component.
-        world_component = tek.WorldComponent.create(self.tek_rig,
+        world_component = frag.WorldComponent.create(self.frag_rig,
                                                      skel_root,
                                                      'center',
                                                      'world')
@@ -277,7 +277,7 @@ class BuildARig(mayawindows.MCAMayaWindow):
         offset_flag = world_component.offset_flag
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(self.tek_rig,
+        frag.MultiConstraint.create(self.frag_rig,
                                     side='center',
                                     region='root',
                                     source_object=root_flag,
@@ -285,14 +285,14 @@ class BuildARig(mayawindows.MCAMayaWindow):
                                                  offset_flag])
         flag_path = mca_asset.flags_path
         for my_flag in world_component.get_flags():
-            tek_flag.swap_flags([tek_flag.Flag(my_flag)], flag_path)
+            frag_flag.swap_flags([frag_flag.Flag(my_flag)], flag_path)
 
     @ma_decorators.undo_decorator
     @ma_decorators.keep_selection_decorator
     def build_component_clicked(self):
         """
 
-        From the selected rig component in the drop down build it on the selected joints for the active tek rig.
+        From the selected rig component in the drop down build it on the selected joints for the active frag rig.
         """
 
         selection = pm.selected()
@@ -300,25 +300,25 @@ class BuildARig(mayawindows.MCAMayaWindow):
             messages.error_message('Selection Error', 'Please select joints to continue.')
             return
 
-        self.get_tek_rig()
-        if not self.tek_rig:
+        self.get_frag_rig()
+        if not self.frag_rig:
             messages.error_message('Build Error', 'A Frag Rig must be established to add components.')
             return
 
-        asset_id = self.tek_rig.get_root().asset_id
+        asset_id = self.frag_rig.get_root().asset_id
         mca_asset = assetlist.get_asset_by_id(asset_id)
         flag_path = mca_asset.flags_path
 
         found_list = []
         skel_hierarchy = None
         for x in selection:
-            found_tek_rig = tek.get_tek_rig(x)
-            if not found_tek_rig:
-                logger.warning('Selection does not have a valid tek rig.')
+            found_frag_rig = frag.get_frag_rig(x)
+            if not found_frag_rig:
+                logger.warning('Selection does not have a valid frag rig.')
                 continue
 
-            if found_tek_rig != self.tek_rig:
-                self.tek_rig = found_tek_rig
+            if found_frag_rig != self.frag_rig:
+                self.frag_rig = found_frag_rig
 
             if not skel_hierarchy:
                 root_joint = dag.get_absolute_parent(x)
@@ -343,9 +343,9 @@ class BuildARig(mayawindows.MCAMayaWindow):
                     new_component = self.current_component.build_component(found_start)
                     if new_component:
                         for my_flag in new_component.get_flags():
-                            tek_flag.swap_flags([tek_flag.Flag(my_flag)], flag_path)
+                            frag_flag.swap_flags([frag_flag.Flag(my_flag)], flag_path)
 
-        self.tek_rig.color_flags()
+        self.frag_rig.color_flags()
 
     @ma_decorators.undo_decorator
     def remove_component_clicked(self):
@@ -357,9 +357,9 @@ class BuildARig(mayawindows.MCAMayaWindow):
         selection = pm.selected()
         component_list = []
         for x in selection:
-            if tek_flag.is_flag_node(x):
-                wrapped_flag = tek_flag.Flag(x)
-                component_list.append(tek.TEKNode(wrapped_flag.tekParent.get()))
+            if frag_flag.is_flag_node(x):
+                wrapped_flag = frag_flag.Flag(x)
+                component_list.append(frag.FRAGNode(wrapped_flag.fragParent.get()))
 
         for component in list(set(component_list)):
             component.remove()
@@ -383,25 +383,25 @@ class BuildARig(mayawindows.MCAMayaWindow):
         source_object_list = selection[:-1]
         attach_object = selection[-1]
 
-        if not tek_flag.is_flag_node(attach_object):
+        if not frag_flag.is_flag_node(attach_object):
             messages.error_message('Selection Error', 'The last selected object must be a component\'s flag.')
             return
 
-        tek_parent_list = []
+        frag_parent_list = []
         for x in source_object_list:
             try:
-                tek_node = tek.TEKNode(lists.get_first_in_list(x.listConnections(type=pm.nt.Network)))
-                tek_parent_list.append(tek_node)
+                frag_node = frag.FRAGNode(lists.get_first_in_list(x.listConnections(type=pm.nt.Network)))
+                frag_parent_list.append(frag_node)
             except:
                 pass
 
-        if not tek_parent_list:
-            tek_parent_list = tek.get_tek_rig(attach_object)
+        if not frag_parent_list:
+            frag_parent_list = frag.get_frag_rig(attach_object)
 
-        my_flag = tek_flag.Flag(attach_object)
-        rig_component = tek.TEKNode(my_flag.tekParent.get())
+        my_flag = frag_flag.Flag(attach_object)
+        rig_component = frag.FRAGNode(my_flag.fragParent.get())
 
-        rig_component.attach_component(tek_parent_list, source_object_list, self.ui.attach_translation_checkBox.isChecked(), self.ui.attach_rotation_checkBox.isChecked())
+        rig_component.attach_component(frag_parent_list, source_object_list, self.ui.attach_translation_checkBox.isChecked(), self.ui.attach_rotation_checkBox.isChecked())
 
     def save_rig_clicked(self):
         """
@@ -410,9 +410,9 @@ class BuildARig(mayawindows.MCAMayaWindow):
         """
         selection = pm.selected()
         if not selection:
-            tek_root_list = tek.get_all_tek_roots()
-            if len(tek_root_list) == 1:
-                selection = tek_root_list[0].get_rig().pynode
+            frag_root_list = frag.get_all_frag_roots()
+            if len(frag_root_list) == 1:
+                selection = frag_root_list[0].get_rig().pynode
                 pm.select(selection)
         if not selection:
             messages.error_message('Selection Error', 'Please select a rig to continue.')
@@ -423,14 +423,14 @@ class BuildARig(mayawindows.MCAMayaWindow):
     @ma_decorators.undo_decorator
     def load_rig_clicked(self):
         """
-        From a .rig file load the rig onto the current tek rig.
+        From a .rig file load the rig onto the current frag rig.
 
         """
 
-        if not self.tek_rig or not pm.objExists(self.tek_rig.pynode):
-            self.get_tek_rig()
-        if pm.objExists(self.tek_rig.pynode):
-            pm.select(self.tek_rig)
+        if not self.frag_rig or not pm.objExists(self.frag_rig.pynode):
+            self.get_frag_rig()
+        if pm.objExists(self.frag_rig.pynode):
+            pm.select(self.frag_rig)
             buildarig_utils.load_serialized_rig_cmd(None)
 
 
@@ -457,7 +457,7 @@ class BuildARig(mayawindows.MCAMayaWindow):
             attr_list += attr_utils.SCALE_ATTRS
 
         for x in selection:
-            if not tek_flag.is_flag_node(x):
+            if not frag_flag.is_flag_node(x):
                 continue
 
             attr_utils.set_attr_state(x, locked=False, attr_list=attr_utils.TRANSFORM_ATTRS, visibility=True)
@@ -483,7 +483,7 @@ class BuildARig(mayawindows.MCAMayaWindow):
 
         finalize_rig = False
         for x in selection:
-            if not tek_flag.is_flag_node(x):
+            if not frag_flag.is_flag_node(x):
                 continue
 
             for attr_name, val in zip(attr_list, val_list):
@@ -493,12 +493,12 @@ class BuildARig(mayawindows.MCAMayaWindow):
                     finalize_rig = True
                     pm.editDisplayLayerMembers("defaultLayer", x)
 
-        self.get_tek_rig()
-        if self.tek_rig and pm.objExists(self.tek_rig.get_root().pynode):
+        self.get_frag_rig()
+        if self.frag_rig and pm.objExists(self.frag_rig.get_root().pynode):
             if finalize_rig:
-                self.tek_rig.finalize_rig()
+                self.frag_rig.finalize_rig()
             else:
-                self.tek_rig.color_flags()
+                self.frag_rig.color_flags()
 
     @ma_decorators.undo_decorator
     @ma_decorators.keep_selection_decorator
@@ -515,37 +515,37 @@ class BuildARig(mayawindows.MCAMayaWindow):
         constraint_list = selection[:-1]
         prime_object = selection[-1]
 
-        if not tek_flag.is_flag_node(prime_object):
+        if not frag_flag.is_flag_node(prime_object):
             messages.info_message('Selection Error', 'The final selection object must be a flag, and will be the constrained object.', icon='error')
             return
 
         if prime_object.hasAttr('sourceMultiConstraint'):
             multiconstraint_node = prime_object.getAttr('sourceMultiConstraint')
             if multiconstraint_node:
-                multiconstraint_node = tek.TEKNode(multiconstraint_node)
+                multiconstraint_node = frag.FRAGNode(multiconstraint_node)
             if multiconstraint_node:
                 multiconstraint_node.remove()
 
-        my_flag = tek_flag.Flag(prime_object)
-        rig_component = tek.TEKNode(my_flag.tekParent.get())
+        my_flag = frag_flag.Flag(prime_object)
+        rig_component = frag.FRAGNode(my_flag.fragParent.get())
         switch_object = None
-        if isinstance(rig_component, tek.IKFKComponent) and my_flag.node == rig_component.ik_flag.node:
+        if isinstance(rig_component, frag.IKFKComponent) and my_flag.node == rig_component.ik_flag.node:
             switch_object = rig_component.switch_flag
-        tek_rig = rig_component.get_tek_parent()
-        tek_root = tek_rig.get_tek_parent()
-        skel_hierarchy = pm.listRelatives(tek_root.root_joint, ad=True, type=pm.nt.Joint)
+        frag_rig = rig_component.get_frag_parent()
+        frag_root = frag_rig.get_frag_parent()
+        skel_hierarchy = pm.listRelatives(frag_root.root_joint, ad=True, type=pm.nt.Joint)
 
-        flag_list = tek_rig.get_flags()
+        flag_list = frag_rig.get_flags()
         filtered_list = []
         for constraint_object in constraint_list:
-            if not tek_flag.is_flag_node(constraint_object) and constraint_object not in skel_hierarchy:
+            if not frag_flag.is_flag_node(constraint_object) and constraint_object not in skel_hierarchy:
                 logger.error(f'{constraint_object}: Is not a valid flag object, or is not part of the rig\'s skeleton hierarchy.')
                 continue
 
-            if tek_flag.is_flag_node(constraint_object):
-                wrapped_flag = tek_flag.Flag(constraint_object)
+            if frag_flag.is_flag_node(constraint_object):
+                wrapped_flag = frag_flag.Flag(constraint_object)
                 if wrapped_flag not in flag_list:
-                    logger.error(f'{constraint_object}: Is not part of the same tek rig as the source object.')
+                    logger.error(f'{constraint_object}: Is not part of the same frag rig as the source object.')
                     continue
 
             filtered_list.append(constraint_object)
@@ -554,7 +554,7 @@ class BuildARig(mayawindows.MCAMayaWindow):
             messages.error_message('Selection Error', 'Choose flags from the same rig as the final flag selection. All constraint targets were invalid selections.')
 
         base_name = naming.get_basename(prime_object)[2:]
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     rig_component.side,
                                     base_name,
                                     prime_object,
@@ -575,14 +575,14 @@ class BuildARig(mayawindows.MCAMayaWindow):
             return
 
         for node in selection:
-            if not tek_flag.is_flag_node(node):
+            if not frag_flag.is_flag_node(node):
                 # Filter out non flags.
                 continue
 
             if node.hasAttr('sourceMultiConstraint'):
                 multiconstraint_node = node.getAttr('sourceMultiConstraint')
                 if multiconstraint_node:
-                    multiconstraint_node = tek.TEKNode(multiconstraint_node)
+                    multiconstraint_node = frag.FRAGNode(multiconstraint_node)
                 if multiconstraint_node:
                     multiconstraint_node.remove()
                     continue
@@ -604,7 +604,7 @@ class BuildARig(mayawindows.MCAMayaWindow):
         if not flag_name or flag_name == 'Cancel':
             return
 
-        tek_flag.export_flag(selection[0], os.path.join(FLAG_SHAPE_DIR, f'{flag_name.lower()}.flag'))
+        frag_flag.export_flag(selection[0], os.path.join(FLAG_SHAPE_DIR, f'{flag_name.lower()}.flag'))
         self.initialize_component_list()
 
     def delete_flag_shape_clicked(self):
@@ -637,7 +637,7 @@ class BuildARig(mayawindows.MCAMayaWindow):
         current_flag_shape = self.ui.import_flag_comboBox.currentText()
 
         flag_path = os.path.join(FLAG_SHAPE_DIR, f'{current_flag_shape}.flag')
-        new_shape = tek_flag.import_flag(flag_path)
+        new_shape = frag_flag.import_flag(flag_path)
 
         if not new_shape:
             messages.error_message('Import Error', f'Could not import the "{current_flag_shape}" flag shape.')
@@ -645,7 +645,7 @@ class BuildARig(mayawindows.MCAMayaWindow):
 
         new_shape_list = []
         for flag_node in selection:
-            if not tek_flag.is_flag_node(flag_node):
+            if not frag_flag.is_flag_node(flag_node):
                 continue
 
             duplicate_shape = pm.duplicate(new_shape)[0]
@@ -675,19 +675,19 @@ class BuildARig(mayawindows.MCAMayaWindow):
             return
 
         flags_to_select = []
-        tek_rig = None
+        frag_rig = None
         for new_shape in selection:
             shape_parent = new_shape.getParent()
-            if not tek_flag.is_flag_node(shape_parent):
+            if not frag_flag.is_flag_node(shape_parent):
                 continue
 
             if not isinstance(new_shape.getShape(), pm.nt.NurbsCurve):
                 continue
 
-            if not tek_rig:
-                wrapped_flag = tek_flag.Flag(shape_parent)
-                rig_component = tek.TEKNode(wrapped_flag.tekParent.get())
-                tek_rig = rig_component.get_tek_parent()
+            if not frag_rig:
+                wrapped_flag = frag_flag.Flag(shape_parent)
+                rig_component = frag.FRAGNode(wrapped_flag.fragParent.get())
+                frag_rig = rig_component.get_frag_parent()
 
             flags_to_select.append(shape_parent)
 
@@ -696,7 +696,7 @@ class BuildARig(mayawindows.MCAMayaWindow):
             pm.makeIdentity(new_shape, t=True, r=True, s=True, n=False, pn=True, apply=True)
             pm.refresh()
             dag.parent_shape_node(new_shape, shape_parent, maintain_offset=True)
-        tek_rig.color_flags()
+        frag_rig.color_flags()
         pm.select(flags_to_select)
 
     @ma_decorators.not_undoable_decorator
@@ -713,13 +713,13 @@ class BuildARig(mayawindows.MCAMayaWindow):
 
         mirror_list = []
         identifier_dict = {}
-        tek_rig = None
+        frag_rig = None
         for selected_node in selection:
-            if tek_flag.is_flag_node(selected_node):
-                if not tek_rig:
-                    wrapped_flag = tek_flag.Flag(selected_node)
-                    rig_component = tek.TEKNode(wrapped_flag.tekParent.get())
-                    tek_rig = rig_component.get_tek_parent()
+            if frag_flag.is_flag_node(selected_node):
+                if not frag_rig:
+                    wrapped_flag = frag_flag.Flag(selected_node)
+                    rig_component = frag.FRAGNode(wrapped_flag.fragParent.get())
+                    frag_rig = rig_component.get_frag_parent()
 
                 object_identifiers = buildarig_utils.get_object_identifier(selected_node)
                 object_side = object_identifiers.get('side')
@@ -731,7 +731,7 @@ class BuildARig(mayawindows.MCAMayaWindow):
                     # Skip all center flags or non directional flags.
                     continue
 
-                found_flag = buildarig_utils.get_object_from_identifiers(tek_rig, object_identifiers)
+                found_flag = buildarig_utils.get_object_from_identifiers(frag_rig, object_identifiers)
                 if not found_flag:
                     # Skip mirrors if there isn't a mirrored flag to copy to.
                     continue
@@ -761,19 +761,19 @@ class BuildARig(mayawindows.MCAMayaWindow):
                     pm.makeIdentity(mirror_node, t=True, r=True, s=True, n=False, pn=True, apply=True)
                     pm.refresh()
                     dag.parent_shape_node(mirror_node, found_flag, maintain_offset=True)
-            tek_rig.color_flags()
+            frag_rig.color_flags()
             pm.delete(mirror_grp)
 
     def export_rig_flags_clicked(self):
         """
-        From selection export each tek rig's flags to its local flags directory.
+        From selection export each frag rig's flags to its local flags directory.
 
         """
         rig_utils.export_flag_shapes_cmd()
 
     def refresh_rig_flags_clicked(self):
         """
-        From selection refresh each tek rig's flags.
+        From selection refresh each frag rig's flags.
 
         """
         selection = pm.selected()
@@ -784,13 +784,13 @@ class BuildARig(mayawindows.MCAMayaWindow):
 
         refreshed_rig_list = []
         for x in selection:
-            tek_rig = tek.get_tek_rig(x)
-            if tek_rig not in refreshed_rig_list:
-                refreshed_rig_list.append(tek_rig)
+            frag_rig = frag.get_frag_rig(x)
+            if frag_rig not in refreshed_rig_list:
+                refreshed_rig_list.append(frag_rig)
 
-                tek_root = tek_rig.get_root()
-                asset_id = tek_root.asset_id
+                frag_root = frag_rig.get_root()
+                asset_id = frag_root.asset_id
                 mca_asset = assetlist.get_asset_by_id(asset_id)
-                for wrapped_flag in tek_rig.get_flags():
-                    tek_flag.swap_flags([wrapped_flag], mca_asset.flags_path)
-                tek_rig.color_flags()
+                for wrapped_flag in frag_rig.get_flags():
+                    frag_flag.swap_flags([wrapped_flag], mca_asset.flags_path)
+                frag_rig.color_flags()

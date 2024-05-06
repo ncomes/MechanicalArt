@@ -12,7 +12,7 @@ import pymel.core as pm
 import maya.mel as mel
 # mca python imports
 from mca.common.paths import paths
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.mya.pyqt import dialogs
 from mca.mya.utils import display_layers, attr_utils
 from mca.mya.modeling import vert_utils, blendshape_model, blendshape_node, face_model
@@ -31,42 +31,42 @@ class FacePoseEdit:
 		self.dsp_lyrs = self.get_display_layers()
 	
 	@classmethod
-	def create(cls, mesh, main_pose=None, tek_node=None):
+	def create(cls, mesh, main_pose=None, frag_node=None):
 		"""
 		This extends the face edit component and allows the user to edit face meshes.
 		
 		:param str/None main_pose: The pose that will be edited
 		:param str mesh: Name of the blend shape mesh.  The one that has all the blend shapes attached.
-		:param TEKRig tek_node: The TEKRig node
+		:param FRAGRig frag_node: The FRAGRig node
 		:return: Returns an instance of FacePoseEdit.
 		:rtype: FacePoseEdit
 		"""
 		
-		if tek_node:
-			tek_rig = tek.get_tek_rig(tek_node)
+		if frag_node:
+			frag_rig = frag.get_frag_rig(frag_node)
 		else:
-			all_tek_roots = tek.get_all_tek_roots()
-			if not all_tek_roots:
+			all_frag_roots = frag.get_all_frag_roots()
+			if not all_frag_roots:
 				return
-			tek_root = all_tek_roots[0]
-			tek_rig = tek_root.get_rig()
+			frag_root = all_frag_roots[0]
+			frag_rig = frag_root.get_rig()
 		
 		# Make sure the mesh is an instance of the FaceModel Module
 		if not isinstance(mesh, face_model.FaceModel):
 			mesh = face_model.FaceModel(mesh)
 		
 		# Check to see if the edit node exists.  If it does, bail.
-		face_edit_component = tek_rig.get_tek_children(of_type=tek.FaceEditComponent)
+		face_edit_component = frag_rig.get_frag_children(of_type=frag.FaceEditComponent)
 		if face_edit_component:
 			logger.warning(f'{face_edit_component} already exists.')
 			return
 		# Create the Face Edit Node
-		edit_inst = tek.FaceEditComponent.create(tek_rig)
+		edit_inst = frag.FaceEditComponent.create(frag_rig)
 		# Create compound attributes with all of the poses activated, except the main pose.
 		edit_inst.set_flags_info(main_pose=main_pose)
 		edit_inst.set_main_flag_info(main_pose=main_pose)
 		
-		asset_id = tek_rig.get_asset_id(tek_rig)
+		asset_id = frag_rig.get_asset_id(frag_rig)
 		# get the parameter data so we can get the actual pose name from the mesh.
 		# The parameter connection will give us the name.
 		parameter_inst = face_util.get_parameters_region_instance(asset_id, mesh.region)
@@ -166,7 +166,7 @@ class FacePoseEdit:
 		
 		self.show_display_layers()
 		if show_skel:
-			self.hide_display_layers(skip_layers=[tek.SKEL_LYR])
+			self.hide_display_layers(skip_layers=[frag.SKEL_LYR])
 		else:
 			self.hide_display_layers()
 		if transfer_jnts:
@@ -192,9 +192,9 @@ class FacePoseEdit:
 		parallel_blendnode = self.edit_inst.pynode.parallelBlendnode.get()
 		old_pose_mesh = pm.PyNode(self.edit_inst.pynode.poseName.get())
 		mesh = face_model.FaceModel(self.edit_inst.pynode.mesh.get())
-		parameter_node = tek.FragFaceParameters(self.edit_inst.pynode.parameterNode.get())
-		tek_root = tek.get_tek_root(parameter_node)
-		asset_id = tek_root.asset_id
+		parameter_node = frag.FragFaceParameters(self.edit_inst.pynode.parameterNode.get())
+		frag_root = frag.get_frag_root(parameter_node)
+		asset_id = frag_root.asset_id
 		if transfer_jnts:
 			mesh.connect_joints(asset_id=asset_id)
 		# delete the extra head mesh
@@ -271,7 +271,7 @@ class FacePoseEdit:
 			pm.delete(pose_mesh)
 		vert_utils.set_vertex_symmetry(symmetry=False)
 		self.hide_display_layers()
-		self.show_display_layers([tek.FLAGS_CONTACT_LYR, tek.SKEL_LYR, tek.FLAGS_DETAIL_LYR])
+		self.show_display_layers([frag.FLAGS_CONTACT_LYR, frag.SKEL_LYR, frag.FLAGS_DETAIL_LYR])
 		
 		# Set the rig settings - put it back to the original flag settings before editing
 		self.edit_inst.set_main_flag()
@@ -303,7 +303,7 @@ class FacePoseEdit:
 		pm.delete(pose_mesh)
 		
 		self.hide_display_layers()
-		self.show_display_layers([tek.FLAGS_CONTACT_LYR, tek.SKEL_LYR, tek.FLAGS_DETAIL_LYR])
+		self.show_display_layers([frag.FLAGS_CONTACT_LYR, frag.SKEL_LYR, frag.FLAGS_DETAIL_LYR])
 		
 		# Set the rig settings - put it back to the original flag settings before editing
 		self.edit_inst.set_main_flag()
@@ -474,10 +474,10 @@ class FacePoseEdit:
 		
 		if show_skel:
 			self.hide_display_layers()
-			self.show_display_layers(skip_layers=[tek.FLAGS_CONTACT_LYR, tek.FLAGS_DETAIL_LYR])
+			self.show_display_layers(skip_layers=[frag.FLAGS_CONTACT_LYR, frag.FLAGS_DETAIL_LYR])
 		else:
 			self.hide_display_layers()
-			self.show_display_layers(skip_layers=[tek.FLAGS_CONTACT_LYR, tek.SKEL_LYR, tek.FLAGS_DETAIL_LYR])
+			self.show_display_layers(skip_layers=[frag.FLAGS_CONTACT_LYR, frag.SKEL_LYR, frag.FLAGS_DETAIL_LYR])
 		
 		vert_utils.set_vertex_symmetry(side='center', symmetry=symmetry)
 	
@@ -489,13 +489,13 @@ class FacePoseEdit:
 		"""
 		
 		mesh = face_model.FaceModel(self.edit_inst.pynode.mesh.get())
-		parameter_node = tek.FragFaceParameters(self.edit_inst.pynode.parameterNode.get())
-		face_component = tek.get_face_mesh_component(parameter_node.pynode)
-		tek_root = tek.get_tek_root(parameter_node)
-		asset_id = tek_root.asset_id
+		parameter_node = frag.FragFaceParameters(self.edit_inst.pynode.parameterNode.get())
+		face_component = frag.get_face_mesh_component(parameter_node.pynode)
+		frag_root = frag.get_frag_root(parameter_node)
+		asset_id = frag_root.asset_id
 		parameter_inst = face_util.get_parameters_region_instance(asset_id=asset_id, region_name=mesh.region)
 		
-		skin_mesh = face_component.get_mesh(mesh.type_name, tek.FACE_SKINNED_CATEGORY)
+		skin_mesh = face_component.get_mesh(mesh.type_name, frag.FACE_SKINNED_CATEGORY)
 		skin_mesh = face_model.FaceModel(skin_mesh)
 		
 		# Disconnect all blend shape from the rig.
@@ -552,7 +552,7 @@ class FacePoseEdit:
 		pm.delete(pose_mesh)
 		
 		self.hide_display_layers()
-		self.show_display_layers([tek.FLAGS_CONTACT_LYR, tek.SKEL_LYR, tek.FLAGS_DETAIL_LYR])
+		self.show_display_layers([frag.FLAGS_CONTACT_LYR, frag.SKEL_LYR, frag.FLAGS_DETAIL_LYR])
 		
 		# Set the rig settings - put it back to the original flag settings before editing
 		if set_block_values:
@@ -569,9 +569,9 @@ class FacePoseEdit:
 		:rtype: pm.nt.Transform
 		"""
 		
-		parameter_node = tek.FragFaceParameters(self.edit_inst.pynode.parameterNode.get())
-		face_component = tek.get_face_mesh_component(parameter_node.pynode)
-		head_mesh = face_component.get_mesh('head_mesh', tek.FACE_BLENDSHAPE_CATEGORY)
+		parameter_node = frag.FragFaceParameters(self.edit_inst.pynode.parameterNode.get())
+		face_component = frag.get_face_mesh_component(parameter_node.pynode)
+		head_mesh = face_component.get_mesh('head_mesh', frag.FACE_BLENDSHAPE_CATEGORY)
 		
 		dup_mesh = blendshape_model.duplicate_mesh(mesh=head_mesh, label='DELETE_ME_DUP_MESH', remove_user_attrs=True)
 		dup_mesh.addAttr('dupPosesMesh', at='message')
@@ -654,12 +654,12 @@ class FacePoseEdit:
 	
 	def get_display_layers(self):
 		"""
-		Gets all the display layers from tek.DisplayLayers
+		Gets all the display layers from frag.DisplayLayers
 		"""
 		
 		# Hide the Display Layers
-		tek_rig = tek.get_tek_rig(self.edit_inst.pynode)
-		dsp_lyrs = tek_rig.get_tek_children(of_type=tek.DisplayLayers)
+		frag_rig = frag.get_frag_rig(self.edit_inst.pynode)
+		dsp_lyrs = frag_rig.get_frag_children(of_type=frag.DisplayLayers)
 		if not dsp_lyrs:
 			return
 		self.dsp_lyrs = dsp_lyrs[0]
@@ -718,7 +718,7 @@ class FacePoseEdit:
 		"""
 
 		new_mesh_model = face_model.FaceModel(new_mesh)
-		tek_rig_node = self.edit_inst.pynode.tekParent.listConnections()[0]
-		tek_root = tek.get_tek_root(tek_rig_node)
-		asset_id = tek_root.asset_id
+		frag_rig_node = self.edit_inst.pynode.fragParent.listConnections()[0]
+		frag_root = frag.get_frag_root(frag_rig_node)
+		asset_id = frag_root.asset_id
 		new_mesh_model.connect_joints(asset_id=asset_id)

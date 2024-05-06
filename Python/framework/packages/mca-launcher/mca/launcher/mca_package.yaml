@@ -1,0 +1,14 @@
+description: 'Framework for Rigging Assets for Games (launcher)'
+displayName: 'Launcher'
+projectName: 'Cryptid'
+environment:
+  PYTHONPATH:
+    - '{self}'
+  MAT_BASE_PATHS: '{self}'
+name: 'mca-launcher'
+commands:
+  - '{self}/launcher/boot.py'
+version: '1.0.0'
+dcc_versions:
+  'maya': ['2024']
+  'mobu': ['2024']

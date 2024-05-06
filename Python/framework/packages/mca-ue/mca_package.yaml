@@ -1,0 +1,14 @@
+description: 'Unreal package for MAT DCC Tools framework'
+displayName: 'MAT Unreal'
+environment:
+  MCA_MAYA_BASE_PATH: '{self}'
+  MCA_MAYA_CONFIGS_PATH: '{self}/mca/ue/configs'
+  MCA_MAYA_TOOLS_PATH: '{self}/mca/ue/tools'
+  MCA_MAYA_PATHS:
+    - '{self}/mca/ue/pyqt'
+    - '{self}/mca/ue/utils'
+    - '{self}/mca/ue/tools'
+name: 'mca-unreal'
+depotName: 'ue'
+required: True
+version: '1.0.0'

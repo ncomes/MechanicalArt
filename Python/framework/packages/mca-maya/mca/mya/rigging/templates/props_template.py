@@ -10,7 +10,7 @@ Templates for random props used in Dark Winter
 # Software specific imports
 import pymel.core as pm
 # mca python imports
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.mya.rigging.templates import rig_templates
 from mca.mya.rigging import chain_markup
 from mca.common.utils import lists
@@ -34,16 +34,16 @@ class PropTemplate(rig_templates.RigTemplates):
         # import Skeletal Mesh using ASSET_ID into the namespace
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, self.asset_type, self.asset_id)
-        tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, self.asset_type, self.asset_id)
+        frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        root = tek_root.root_joint
-        flags_all = tek_rig.flagsAll.get()
-        do_not_touch = tek_rig.do_not_touch
+        root = frag_root.root_joint
+        flags_all = frag_rig.flagsAll.get()
+        do_not_touch = frag_rig.do_not_touch
         hierarchy_markup = chain_markup.ChainMarkup(root)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                            root,
                                                            'center',
                                                            'world',
@@ -55,7 +55,7 @@ class PropTemplate(rig_templates.RigTemplates):
 
         # Cog
         base_joint = hierarchy_markup.get_start('base', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                        base_joint,
                                                        base_joint,
                                                        'center',
@@ -65,7 +65,7 @@ class PropTemplate(rig_templates.RigTemplates):
 
         # Center
         floor_joint = hierarchy_markup.get_start('floor', 'center')
-        floor_component = tek.FKComponent.create(tek_rig,
+        floor_component = frag.FKComponent.create(frag_rig,
                                                   floor_joint,
                                                   floor_joint,
                                                   side='center',
@@ -76,10 +76,10 @@ class PropTemplate(rig_templates.RigTemplates):
         floor_flag.set_as_contact()
 
         if finalize:
-            tek_rig.rigTemplate.set(PropTemplate.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(PropTemplate.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class TailorTweezersTemplate(rig_templates.RigTemplates):
@@ -98,16 +98,16 @@ class TailorTweezersTemplate(rig_templates.RigTemplates):
         # import Skeletal Mesh using ASSET_ID into the namespace
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, self.asset_type, self.asset_id)
-        tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, self.asset_type, self.asset_id)
+        frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        root = tek_root.root_joint
-        flags_all = tek_rig.flagsAll.get()
-        do_not_touch = tek_rig.do_not_touch
+        root = frag_root.root_joint
+        flags_all = frag_rig.flagsAll.get()
+        do_not_touch = frag_rig.do_not_touch
         hierarchy_markup = chain_markup.ChainMarkup(root)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                            root,
                                                            'center',
                                                            'world',
@@ -119,7 +119,7 @@ class TailorTweezersTemplate(rig_templates.RigTemplates):
 
         # Cog
         base_joint = hierarchy_markup.get_start('base', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                        base_joint,
                                                        base_joint,
                                                        'center',
@@ -129,7 +129,7 @@ class TailorTweezersTemplate(rig_templates.RigTemplates):
 
         for side in ['left', 'right']:
             arm_joint = hierarchy_markup.get_start('arm', side)
-            arm_component = tek.FKComponent.create(tek_rig,
+            arm_component = frag.FKComponent.create(frag_rig,
                                                           arm_joint,
                                                           arm_joint,
                                                           side,
@@ -149,15 +149,15 @@ class HealingTotemTemplate(rig_templates.RigTemplates):
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, 'prop', self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, 'prop', self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        # Core tek
+        # Core frag
         # world
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                            root_joint,
                                                            'center',
                                                            'world')
@@ -168,7 +168,7 @@ class HealingTotemTemplate(rig_templates.RigTemplates):
         offset_flag.set_as_detail()
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='root',
                                           source_object=root_flag,
@@ -177,7 +177,7 @@ class HealingTotemTemplate(rig_templates.RigTemplates):
 
         # Cog
         body_start, body_end = skel_hierarchy.get_chain('body', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                        body_start,
                                                        body_start,
                                                        'center',
@@ -187,7 +187,7 @@ class HealingTotemTemplate(rig_templates.RigTemplates):
         cog_flag = cog_component.get_flags()[0]
 
         # Body
-        body_component = tek.FKComponent.create(tek_rig,
+        body_component = frag.FKComponent.create(frag_rig,
                                                        body_start,
                                                        body_start,
                                                        'center',
@@ -197,7 +197,7 @@ class HealingTotemTemplate(rig_templates.RigTemplates):
 
         # Center
         floor_joint = skel_hierarchy.get_start('floor', 'center')
-        floor_component = tek.FKComponent.create(tek_rig,
+        floor_component = frag.FKComponent.create(frag_rig,
                                                         floor_joint,
                                                         floor_joint,
                                                         side='center',
@@ -207,7 +207,7 @@ class HealingTotemTemplate(rig_templates.RigTemplates):
         floor_flag = floor_component.get_end_flag()
         floor_flag.set_as_contact()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='floor_contact',
                                           source_object=floor_flag,
@@ -216,7 +216,7 @@ class HealingTotemTemplate(rig_templates.RigTemplates):
 
         # util
         util_joint = skel_hierarchy.get_start('utility', 'center')
-        util_component = tek.FKComponent.create(tek_rig,
+        util_component = frag.FKComponent.create(frag_rig,
                                                        util_joint,
                                                        util_joint,
                                                        side='center',
@@ -228,7 +228,7 @@ class HealingTotemTemplate(rig_templates.RigTemplates):
 
         # util warp
         util_warp_joint = skel_hierarchy.get_start('utility_warp', 'center')
-        util_warp_component = tek.FKComponent.create(tek_rig,
+        util_warp_component = frag.FKComponent.create(frag_rig,
                                                             util_warp_joint,
                                                             util_warp_joint,
                                                             side='center',
@@ -241,7 +241,7 @@ class HealingTotemTemplate(rig_templates.RigTemplates):
         for part in ['lower_ring', 'mid_ring', 'upper_ring', 'bob']:
             part_joint = skel_hierarchy.get_start(part, 'center')
             if part_joint:
-                part_component = tek.FKComponent.create(tek_rig,
+                part_component = frag.FKComponent.create(frag_rig,
                                                                part_joint,
                                                                part_joint,
                                                                'center',
@@ -250,10 +250,10 @@ class HealingTotemTemplate(rig_templates.RigTemplates):
                 part_component.attach_component(body_component, body_start)
 
         if finalize:
-            tek_rig.rigTemplate.set(HealingTotemTemplate.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(HealingTotemTemplate.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 class ProtectingTotemTemplate(HealingTotemTemplate):
     VERSION = 1
@@ -265,16 +265,16 @@ class ProtectingTotemTemplate(HealingTotemTemplate):
 
     # We would not normally create the root and skel mesh here.
     def build(self, finalize=True):
-        tek_rig = super().build(finalize=False)
-        tek_root = tek_rig.get_root()
-        tek_root.asset_id = self.ASSET_ID
-        tek_root.assetName.set(self.ASSET_ID)
+        frag_rig = super().build(finalize=False)
+        frag_root = frag_rig.get_root()
+        frag_root.asset_id = self.ASSET_ID
+        frag_root.assetName.set(self.ASSET_ID)
 
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        lowerring_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.FKComponent,
+        lowerring_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.FKComponent,
                                                          side='center',
                                                          region='lower_ring'))
 
@@ -283,7 +283,7 @@ class ProtectingTotemTemplate(HealingTotemTemplate):
         for sc_part in ['shield_front', 'shield_back']:
             sc_start = skel_hierarchy.get_start(sc_part, 'center')
             if sc_start:
-                sc_component = tek.FKComponent.create(tek_rig,
+                sc_component = frag.FKComponent.create(frag_rig,
                                                                sc_start,
                                                                sc_start,
                                                                'center',
@@ -295,7 +295,7 @@ class ProtectingTotemTemplate(HealingTotemTemplate):
         for side in ['left', 'right']:
             shield_start, shield_end = skel_hierarchy.get_chain('shield', side)
             if shield_start:
-                shield_component = tek.FKComponent.create(tek_rig,
+                shield_component = frag.FKComponent.create(frag_rig,
                                                            shield_start,
                                                            shield_end,
                                                            side=side,
@@ -305,10 +305,10 @@ class ProtectingTotemTemplate(HealingTotemTemplate):
                 shield_component.attach_component(lowerring_component, lowerring_flag.node)
 
         if finalize:
-            tek_rig.rigTemplate.set(ProtectingTotemTemplate.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(ProtectingTotemTemplate.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 class ArmatusStoreTemplate(rig_templates.RigTemplates):
     VERSION = 1
@@ -323,15 +323,15 @@ class ArmatusStoreTemplate(rig_templates.RigTemplates):
         pm.namespace(set=':')
 
         root_joint = pm.PyNode('root')
-        tek_root = tek.TEKRoot.create(root_joint, 'prop', self.ASSET_ID)
-        tek_root.asset_id = self.ASSET_ID
-        tek_root.assetName.set(self.ASSET_ID)
-        tek_rig = tek.TEKRig.create(tek_root)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, 'prop', self.ASSET_ID)
+        frag_root.asset_id = self.ASSET_ID
+        frag_root.assetName.set(self.ASSET_ID)
+        frag_rig = frag.FRAGRig.create(frag_root)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
 
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                      root_joint,
                                                      'center',
                                                      'world')
@@ -342,7 +342,7 @@ class ArmatusStoreTemplate(rig_templates.RigTemplates):
         offset_flag.set_as_detail()
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='root',
                                     source_object=root_flag,
@@ -351,7 +351,7 @@ class ArmatusStoreTemplate(rig_templates.RigTemplates):
 
         # Cog
         body_start, body_end = skel_hierarchy.get_chain('base', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                  body_start,
                                                  body_start,
                                                  'center',
@@ -363,7 +363,7 @@ class ArmatusStoreTemplate(rig_templates.RigTemplates):
         # Arm components
         for side in ['left', 'right']:
             arm_joint = skel_hierarchy.get_start('arm', side)
-            arm_component = tek.FKComponent.create(tek_rig,
+            arm_component = frag.FKComponent.create(frag_rig,
                                                     arm_joint,
                                                     arm_joint,
                                                     side,
@@ -374,7 +374,7 @@ class ArmatusStoreTemplate(rig_templates.RigTemplates):
         # Shield components
         for side in ['left', 'right']:
             shield_joint = skel_hierarchy.get_start('shield', side)
-            shield_component = tek.FKComponent.create(tek_rig,
+            shield_component = frag.FKComponent.create(frag_rig,
                                                     shield_joint,
                                                     shield_joint,
                                                     side,
@@ -384,7 +384,7 @@ class ArmatusStoreTemplate(rig_templates.RigTemplates):
 
         # Ring 01
         ring_01_joint = skel_hierarchy.get_start('ring_01', 'center')
-        ring_01_component = tek.FKComponent.create(tek_rig,
+        ring_01_component = frag.FKComponent.create(frag_rig,
                                                 ring_01_joint,
                                                 ring_01_joint,
                                                 'center',
@@ -394,7 +394,7 @@ class ArmatusStoreTemplate(rig_templates.RigTemplates):
 
         # Ring 02
         ring_02_joint = skel_hierarchy.get_start('ring_02', 'center')
-        ring_02_component = tek.FKComponent.create(tek_rig,
+        ring_02_component = frag.FKComponent.create(frag_rig,
                                                     ring_02_joint,
                                                     ring_02_joint,
                                                     'center',
@@ -404,7 +404,7 @@ class ArmatusStoreTemplate(rig_templates.RigTemplates):
 
         # Ring 03
         ring_03_joint = skel_hierarchy.get_start('ring_03', 'center')
-        ring_03_component = tek.FKComponent.create(tek_rig,
+        ring_03_component = frag.FKComponent.create(frag_rig,
                                                     ring_03_joint,
                                                     ring_03_joint,
                                                     'center',
@@ -413,10 +413,10 @@ class ArmatusStoreTemplate(rig_templates.RigTemplates):
         ring_03_component.attach_component(ring_03_component, cog_flag.node)
 
         if finalize:
-            tek_rig.rigTemplate.set(ArmatusStoreTemplate.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(ArmatusStoreTemplate.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 class CrawlerArmTemplate(rig_templates.RigTemplates):
     VERSION = 1
@@ -431,15 +431,15 @@ class CrawlerArmTemplate(rig_templates.RigTemplates):
         pm.namespace(set=':')
 
         root_joint = pm.PyNode('root')
-        tek_root = tek.TEKRoot.create(root_joint, 'prop', self.ASSET_ID)
-        tek_root.asset_id = self.ASSET_ID
-        tek_root.assetName.set(self.ASSET_ID)
-        tek_rig = tek.TEKRig.create(tek_root)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, 'prop', self.ASSET_ID)
+        frag_root.asset_id = self.ASSET_ID
+        frag_root.assetName.set(self.ASSET_ID)
+        frag_rig = frag.FRAGRig.create(frag_root)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
 
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                      root_joint,
                                                      'center',
                                                      'world')
@@ -450,7 +450,7 @@ class CrawlerArmTemplate(rig_templates.RigTemplates):
         offset_flag.set_as_detail()
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='root',
                                     source_object=root_flag,
@@ -458,7 +458,7 @@ class CrawlerArmTemplate(rig_templates.RigTemplates):
                                                  offset_flag])
 
         # Cog
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                  root_joint,
                                                  root_joint,
                                                  'center',
@@ -474,7 +474,7 @@ class CrawlerArmTemplate(rig_templates.RigTemplates):
         end_helper = skel_hierarchy.get_chain('arm_end', 'left')[0]
         mid_helper = skel_hierarchy.get_chain('arm_mid', 'left')[0]
         start_helper = skel_hierarchy.get_chain('arm_start', 'left')[0]
-        arm_component = tek.SplineIKComponent.create(tek_rig,
+        arm_component = frag.SplineIKComponent.create(frag_rig,
                                                       arm_joint[0],
                                                       arm_joint[-1],
                                                       leaf_joint_list,
@@ -492,7 +492,7 @@ class CrawlerArmTemplate(rig_templates.RigTemplates):
         for x in range(1,7):
             manual_twist_joint = pm.PyNode(f'arm_tentacle_leaf_0{x}_l')
 
-            manual_twist_component = tek.FKComponent.create(tek_rig,
+            manual_twist_component = frag.FKComponent.create(frag_rig,
                                                              manual_twist_joint,
                                                              manual_twist_joint,
                                                              'left',
@@ -507,7 +507,7 @@ class CrawlerArmTemplate(rig_templates.RigTemplates):
             elif x == 6:
                 twist_flag.set_as_detail()
                 hand_joint = skel_hierarchy.get_start('hand', 'left')
-                hand_component = tek.FKComponent.create(tek_rig,
+                hand_component = frag.FKComponent.create(frag_rig,
                                                          hand_joint,
                                                          hand_joint,
                                                          'left',
@@ -517,7 +517,7 @@ class CrawlerArmTemplate(rig_templates.RigTemplates):
                 # Shield components
                 for finger in ['thumb', 'index_finger', 'pinky_finger', 'ring_finger', 'middle_finger']:
                     finger_joint = skel_hierarchy.get_chain(finger, 'left')
-                    finger_component = tek.FKComponent.create(tek_rig,
+                    finger_component = frag.FKComponent.create(frag_rig,
                                                                finger_joint[0],
                                                                finger_joint[-1],
                                                                'left',
@@ -525,10 +525,10 @@ class CrawlerArmTemplate(rig_templates.RigTemplates):
                     finger_component.attach_component([hand_component], [hand_joint])
 
         if finalize:
-            tek_rig.rigTemplate.set(CrawlerArmTemplate.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(CrawlerArmTemplate.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class ShieldGoliathTotemTemplate(rig_templates.RigTemplates):
@@ -543,15 +543,15 @@ class ShieldGoliathTotemTemplate(rig_templates.RigTemplates):
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, 'prop', self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, 'prop', self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        # Core tek
+        # Core frag
         # world
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                            root_joint,
                                                            'center',
                                                            'world')
@@ -562,7 +562,7 @@ class ShieldGoliathTotemTemplate(rig_templates.RigTemplates):
         offset_flag.set_as_detail()
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='root',
                                           source_object=root_flag,
@@ -571,7 +571,7 @@ class ShieldGoliathTotemTemplate(rig_templates.RigTemplates):
 
         # Cog
         body_start, body_end = skel_hierarchy.get_chain('body', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                        body_start,
                                                        body_start,
                                                        'center',
@@ -581,7 +581,7 @@ class ShieldGoliathTotemTemplate(rig_templates.RigTemplates):
         cog_flag = cog_component.get_flags()[0]
 
         # Body
-        body_component = tek.FKComponent.create(tek_rig,
+        body_component = frag.FKComponent.create(frag_rig,
                                                        body_start,
                                                        body_start,
                                                        'center',
@@ -591,7 +591,7 @@ class ShieldGoliathTotemTemplate(rig_templates.RigTemplates):
 
         # Center
         floor_joint = skel_hierarchy.get_start('floor', 'center')
-        floor_component = tek.FKComponent.create(tek_rig,
+        floor_component = frag.FKComponent.create(frag_rig,
                                                         floor_joint,
                                                         floor_joint,
                                                         side='center',
@@ -601,7 +601,7 @@ class ShieldGoliathTotemTemplate(rig_templates.RigTemplates):
         floor_flag = floor_component.get_end_flag()
         floor_flag.set_as_contact()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                           side='center',
                                           region='floor_contact',
                                           source_object=floor_flag,
@@ -610,7 +610,7 @@ class ShieldGoliathTotemTemplate(rig_templates.RigTemplates):
 
         # util
         util_joint = skel_hierarchy.get_start('utility', 'center')
-        util_component = tek.FKComponent.create(tek_rig,
+        util_component = frag.FKComponent.create(frag_rig,
                                                        util_joint,
                                                        util_joint,
                                                        side='center',
@@ -622,7 +622,7 @@ class ShieldGoliathTotemTemplate(rig_templates.RigTemplates):
 
         # util warp
         util_warp_joint = skel_hierarchy.get_start('utility_warp', 'center')
-        util_warp_component = tek.FKComponent.create(tek_rig,
+        util_warp_component = frag.FKComponent.create(frag_rig,
                                                             util_warp_joint,
                                                             util_warp_joint,
                                                             side='center',
@@ -635,7 +635,7 @@ class ShieldGoliathTotemTemplate(rig_templates.RigTemplates):
         for part in ['base_ring', 'lower_ring', 'mid_ring', 'upper_ring', 'end_ring']:
             part_joint = skel_hierarchy.get_start(part, 'center')
             if part_joint:
-                part_component = tek.FKComponent.create(tek_rig,
+                part_component = frag.FKComponent.create(frag_rig,
                                                                part_joint,
                                                                part_joint,
                                                                'center',
@@ -644,7 +644,7 @@ class ShieldGoliathTotemTemplate(rig_templates.RigTemplates):
                 part_component.attach_component(body_component, body_start)
 
         if finalize:
-            tek_rig.rigTemplate.set(HealingTotemTemplate.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(HealingTotemTemplate.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig

@@ -9,7 +9,7 @@ Template for human players and npcs
 # Software specific imports
 import pymel.core as pm
 # mca python imports
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.mya.rigging.templates import rig_templates
 from mca.mya.rigging import chain_markup
 
@@ -34,15 +34,15 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		# import Skeletal Mesh using ASSET_ID into the namespace
 		world_root = pm.PyNode('root')
 		
-		tek_root = tek.TEKRoot.create(world_root, self.asset_type, self.asset_id)
-		tek.SkeletalMesh.create(tek_root)
-		tek_rig = tek.TEKRig.create(tek_root)
+		frag_root = frag.FRAGRoot.create(world_root, self.asset_type, self.asset_id)
+		frag.SkeletalMesh.create(frag_root)
+		frag_rig = frag.FRAGRig.create(frag_root)
 		
 		root = pm.PyNode('root')
 		chain = chain_markup.ChainMarkup(root)
 		# world
 		
-		world_component = tek.WorldComponent.create(tek_rig,
+		world_component = frag.WorldComponent.create(frag_rig,
 														   root,
 														   'center',
 														   'world',
@@ -55,7 +55,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		
 		# Cog
 		pelvis_joint = chain.get_start('pelvis', 'center')
-		cog_component = tek.CogComponent.create(tek_rig,
+		cog_component = frag.CogComponent.create(frag_rig,
 													   pelvis_joint,
 													   pelvis_joint,
 													   'center',
@@ -67,7 +67,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		# Pelvis
 		start_joint = pm.PyNode('pelvis')
 		head_chain = chain.get_start('head', 'center')
-		pelvis_component = tek.PelvisComponent.create(tek_rig,
+		pelvis_component = frag.PelvisComponent.create(frag_rig,
 															 start_joint,
 															 head_chain,
 															 'center',
@@ -77,7 +77,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		pelvis_flag = pelvis_component.get_flags()[0]
 		
 		# head
-		head_component = tek.FKComponent.create(tek_rig,
+		head_component = frag.FKComponent.create(frag_rig,
 													   head_chain,
 													   head_chain,
 													   side='center',
@@ -89,7 +89,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		
 		# Left gun
 		l_gun_chain = chain.get_chain('gun', 'left')
-		l_gun_component = tek.FKComponent.create(tek_rig,
+		l_gun_component = frag.FKComponent.create(frag_rig,
 														l_gun_chain[0],
 														l_gun_chain[1],
 														side='left',
@@ -101,7 +101,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		
 		# Right gun
 		r_gun_chain = chain.get_chain('gun', 'right')
-		r_gun_component = tek.FKComponent.create(tek_rig,
+		r_gun_component = frag.FKComponent.create(frag_rig,
 														r_gun_chain[0],
 														r_gun_chain[1],
 														side='right',
@@ -113,7 +113,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		
 		# left leg ball
 		l_leg_ball_chain = chain.get_start('leg_ball', 'left')
-		l_leg_ball_component = tek.FKComponent.create(tek_rig,
+		l_leg_ball_component = frag.FKComponent.create(frag_rig,
 															 l_leg_ball_chain,
 															 l_leg_ball_chain,
 															 side='left',
@@ -125,7 +125,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		
 		# right leg ball
 		r_leg_ball_chain = chain.get_start('leg_ball', 'right')
-		r_leg_ball_component = tek.FKComponent.create(tek_rig,
+		r_leg_ball_component = frag.FKComponent.create(frag_rig,
 															 r_leg_ball_chain,
 															 r_leg_ball_chain,
 															 side='right',
@@ -137,7 +137,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		
 		# left leg
 		l_leg_chain = chain.get_chain('leg', 'left')
-		l_leg_component = tek.IKFKComponent.create(tek_rig,
+		l_leg_component = frag.IKFKComponent.create(frag_rig,
 														  l_leg_chain[0],
 														  l_leg_chain[1],
 														  side='left',
@@ -151,7 +151,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		
 		# right leg
 		r_leg_chain = chain.get_chain('leg', 'right')
-		r_leg_component = tek.IKFKComponent.create(tek_rig,
+		r_leg_component = frag.IKFKComponent.create(frag_rig,
 														  r_leg_chain[0],
 														  r_leg_chain[1],
 														  side='right',
@@ -165,7 +165,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		
 		# left foot
 		l_foot_chain = chain.get_start('foot', 'left')
-		l_foot_component = tek.FKComponent.create(tek_rig,
+		l_foot_component = frag.FKComponent.create(frag_rig,
 														 l_foot_chain,
 														 l_foot_chain,
 														 side='left',
@@ -177,7 +177,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		
 		# right foot
 		r_foot_chain = chain.get_start('foot', 'right')
-		r_foot_component = tek.FKComponent.create(tek_rig,
+		r_foot_component = frag.FKComponent.create(frag_rig,
 														 r_foot_chain,
 														 r_foot_chain,
 														 side='right',
@@ -192,7 +192,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		####
 		# Left
 		l_toe_outer_chain = chain.get_chain('outer_toe', 'left')
-		l_toe_outer_component = tek.FKComponent.create(tek_rig,
+		l_toe_outer_component = frag.FKComponent.create(frag_rig,
 															  l_toe_outer_chain[0],
 															  l_toe_outer_chain[1],
 															  side='left',
@@ -202,7 +202,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		l_toe_outer_flags = l_toe_outer_component.get_flags()
 		
 		l_toe_mid_chain = chain.get_chain('mid_toe', 'left')
-		l_toe_mid_component = tek.FKComponent.create(tek_rig,
+		l_toe_mid_component = frag.FKComponent.create(frag_rig,
 															l_toe_mid_chain[0],
 															l_toe_mid_chain[1],
 															side='left',
@@ -213,7 +213,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		l_toe_mid_flags = l_toe_mid_component.get_flags()
 		
 		l_toe_inner_chain = chain.get_chain('inner_toe', 'left')
-		l_toe_inner_component = tek.FKComponent.create(tek_rig,
+		l_toe_inner_component = frag.FKComponent.create(frag_rig,
 															  l_toe_inner_chain[0],
 															  l_toe_inner_chain[1],
 															  side='left',
@@ -225,7 +225,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		
 		# Right
 		r_toe_outer_chain = chain.get_chain('outer_toe', 'right')
-		r_toe_outer_component = tek.FKComponent.create(tek_rig,
+		r_toe_outer_component = frag.FKComponent.create(frag_rig,
 															  r_toe_outer_chain[0],
 															  r_toe_outer_chain[1],
 															  side='right',
@@ -236,7 +236,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		r_toe_outer_flags = r_toe_outer_component.get_flags()
 		
 		r_toe_mid_chain = chain.get_chain('mid_toe', 'right')
-		r_toe_mid_component = tek.FKComponent.create(tek_rig,
+		r_toe_mid_component = frag.FKComponent.create(frag_rig,
 															r_toe_mid_chain[0],
 															r_toe_mid_chain[1],
 															side='right',
@@ -247,7 +247,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		r_toe_mid_flags = r_toe_mid_component.get_flags()
 		
 		r_toe_inner_chain = chain.get_chain('inner_toe', 'right')
-		r_toe_inner_component = tek.FKComponent.create(tek_rig,
+		r_toe_inner_component = frag.FKComponent.create(frag_rig,
 															  r_toe_inner_chain[0],
 															  r_toe_inner_chain[1],
 															  side='right',
@@ -258,7 +258,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		r_toe_inner_flags = r_toe_mid_component.get_flags()
 		
 		dog_chain = chain.get_chain('dog', 'center')
-		dog_component = tek.FKComponent.create(tek_rig,
+		dog_component = frag.FKComponent.create(frag_rig,
 															  dog_chain[0],
 															  dog_chain[1],
 															  side='center',
@@ -270,7 +270,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 		
 		# Multi Constraint
 		# Head
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 											side='center',
 											region='head',
 											source_object=head_flag,
@@ -282,21 +282,21 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 											switch_attr='rotateFollow')
 		
 		# IKFK Right Foot
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 											side='right',
 											region='leg',
 											source_object=r_leg_ik_flag,
 											target_list=[offset_flag, pelvis_flag, cog_flag],
 											switch_obj=r_leg_switch_flag)
 		
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 											side='left',
 											region='leg',
 											source_object=l_leg_ik_flag,
 											target_list=[offset_flag, pelvis_flag, cog_flag],
 											switch_obj=l_leg_switch_flag)
 		# IKFK Left Foot PV
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 											side='left',
 											region='leg_pv',
 											source_object=l_leg_component.pv_flag,
@@ -304,14 +304,14 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 											switch_obj=None)
 		
 		# Right Leg PV
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 											side='right',
 											region='leg_pv',
 											source_object=r_leg_component.pv_flag,
 											target_list=[offset_flag, r_leg_ik_flag, cog_flag],
 											switch_obj=None)
 		
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 											side='left',
 											region='gun',
 											source_object=l_gun_flags[0],
@@ -323,7 +323,7 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 											translate=False,
 											switch_attr='rotateFollow')
 		
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 											side='right',
 											region='gun',
 											source_object=r_gun_flags[0],
@@ -336,10 +336,10 @@ class PlayerMaleTemplate(rig_templates.RigTemplates):
 											switch_attr='rotateFollow')
 		
 		if finalize:
-			tek_rig.rigTemplate.set(PlayerMaleTemplate.__name__)
-			tek_rig.finalize_rig(self.get_flags_path())
+			frag_rig.rigTemplate.set(PlayerMaleTemplate.__name__)
+			frag_rig.finalize_rig(self.get_flags_path())
 		
-		return tek_rig
+		return frag_rig
 
 
 class SuperHeroTemplate(rig_templates.RigTemplates):
@@ -356,15 +356,15 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 		# import Skeletal Mesh using ASSET_ID into the namespace
 		world_root = pm.PyNode('root')
 
-		tek_root = tek.TEKRoot.create(world_root, self.asset_type, self.asset_id)
-		tek.SkeletalMesh.create(tek_root)
-		tek_rig = tek.TEKRig.create(tek_root)
+		frag_root = frag.FRAGRoot.create(world_root, self.asset_type, self.asset_id)
+		frag.SkeletalMesh.create(frag_root)
+		frag_rig = frag.FRAGRig.create(frag_root)
 
 		root = pm.PyNode('root')
 		chain = chain_markup.ChainMarkup(root)
 		# world
 
-		world_component = tek.WorldComponent.create(tek_rig,
+		world_component = frag.WorldComponent.create(frag_rig,
 													 root,
 													 'center',
 													 'world',
@@ -377,7 +377,7 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 
 		# Cog
 		pelvis_joint = chain.get_start('pelvis', 'center')
-		cog_component = tek.CogComponent.create(tek_rig,
+		cog_component = frag.CogComponent.create(frag_rig,
 												 pelvis_joint,
 												 pelvis_joint,
 												 'center',
@@ -389,7 +389,7 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 		# Pelvis
 		start_joint = pm.PyNode('pelvis')
 		spine_01_chain =  pm.PyNode('spine_01')
-		pelvis_component = tek.PelvisComponent.create(tek_rig,
+		pelvis_component = frag.PelvisComponent.create(frag_rig,
 													   start_joint,
 													   spine_01_chain,
 													   'center',
@@ -401,7 +401,7 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 		# Spine
 		spine_start = pm.PyNode('spine_02')
 		spine_end = pm.PyNode('spine_03')
-		spine_component = tek.FKComponent.create(tek_rig,
+		spine_component = frag.FKComponent.create(frag_rig,
 													spine_start,
 													spine_end,
 													'center',
@@ -412,7 +412,7 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 
 		# head
 		head_chain = pm.PyNode('head')
-		head_component = tek.FKComponent.create(tek_rig,
+		head_component = frag.FKComponent.create(frag_rig,
 												 head_chain,
 												 head_chain,
 												 side='center',
@@ -424,7 +424,7 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 
 		# Left arm
 		l_arm_chain = pm.PyNode('upperarm_l')
-		l_arm_component = tek.FKComponent.create(tek_rig,
+		l_arm_component = frag.FKComponent.create(frag_rig,
 												  l_arm_chain,
 												  l_arm_chain,
 												  side='left',
@@ -436,7 +436,7 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 
 		# right arm
 		r_arm_chain = pm.PyNode('upperarm_r')
-		r_arm_component = tek.FKComponent.create(tek_rig,
+		r_arm_component = frag.FKComponent.create(frag_rig,
 												  r_arm_chain,
 												  r_arm_chain,
 												  side='right',
@@ -448,7 +448,7 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 
 		# Left leg
 		l_thigh_chain = pm.PyNode('thigh_l')
-		l_thigh_component = tek.FKComponent.create(tek_rig,
+		l_thigh_component = frag.FKComponent.create(frag_rig,
 												  l_thigh_chain,
 												  l_thigh_chain,
 												  side='left',
@@ -460,7 +460,7 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 
 		# Left knee
 		l_knee_chain = pm.PyNode('knee_l')
-		l_knee_component = tek.FKComponent.create(tek_rig,
+		l_knee_component = frag.FKComponent.create(frag_rig,
 													l_knee_chain,
 													l_knee_chain,
 													side='left',
@@ -472,7 +472,7 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 
 		# right leg
 		r_thigh_chain = pm.PyNode('thigh_r')
-		r_thigh_component = tek.FKComponent.create(tek_rig,
+		r_thigh_component = frag.FKComponent.create(frag_rig,
 												  r_thigh_chain,
 												  r_thigh_chain,
 												  side='right',
@@ -484,7 +484,7 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 
 		# right knee
 		r_knee_chain = pm.PyNode('knee_r')
-		r_knee_component = tek.FKComponent.create(tek_rig,
+		r_knee_component = frag.FKComponent.create(frag_rig,
 													r_knee_chain,
 													r_knee_chain,
 													side='right',
@@ -497,7 +497,7 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 
 		# Cape
 		cape_chain = pm.PyNode('cape')
-		cape_component = tek.FKComponent.create(tek_rig,
+		cape_component = frag.FKComponent.create(frag_rig,
 												  cape_chain,
 												  cape_chain,
 												  side='center',
@@ -509,7 +509,7 @@ class SuperHeroTemplate(rig_templates.RigTemplates):
 		cape_flags[0].set_as_sub()
 
 		if finalize:
-			tek_rig.rigTemplate.set(SuperHeroTemplate.__name__)
-			tek_rig.finalize_rig(self.get_flags_path())
+			frag_rig.rigTemplate.set(SuperHeroTemplate.__name__)
+			frag_rig.finalize_rig(self.get_flags_path())
 
-		return tek_rig
+		return frag_rig

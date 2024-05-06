@@ -10,7 +10,7 @@ Template for human players and npcs
 import pymel.core as pm
 
 # mca python imports
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.mya.rigging.templates import rig_templates
 from mca.mya.rigging import chain_markup
 
@@ -33,15 +33,15 @@ class GrappleHook03(rig_templates.RigTemplates):
 		# import Skeletal Mesh using ASSET_ID into the namespace
 		world_root = pm.PyNode('root')
 		
-		tek_root = tek.TEKRoot.create(world_root, self.asset_type, self.asset_id)
-		tek.SkeletalMesh.create(tek_root)
-		tek_rig = tek.TEKRig.create(tek_root)
+		frag_root = frag.FRAGRoot.create(world_root, self.asset_type, self.asset_id)
+		frag.SkeletalMesh.create(frag_root)
+		frag_rig = frag.FRAGRig.create(frag_root)
 		
 		root = pm.PyNode('root')
 		chain = chain_markup.ChainMarkup(root)
 		# world
 		
-		world_component = tek.WorldComponent.create(tek_rig,
+		world_component = frag.WorldComponent.create(frag_rig,
 															root,
 															'center',
 															'world',
@@ -54,7 +54,7 @@ class GrappleHook03(rig_templates.RigTemplates):
 		
 		# Base
 		base_chain = chain.get_start('base', 'center')
-		base_component = tek.FKComponent.create(tek_rig,
+		base_component = frag.FKComponent.create(frag_rig,
 															base_chain,
 															base_chain,
 															side='center',
@@ -66,7 +66,7 @@ class GrappleHook03(rig_templates.RigTemplates):
 		
 		# Left Hook
 		l_hook_chain = chain.get_chain('left_grap', 'left')
-		l_hook_component = tek.FKComponent.create(tek_rig,
+		l_hook_component = frag.FKComponent.create(frag_rig,
 															l_hook_chain[0],
 															l_hook_chain[1],
 															side='left',
@@ -78,7 +78,7 @@ class GrappleHook03(rig_templates.RigTemplates):
 		
 		# Right Hook
 		r_hook_chain = chain.get_chain('right_grap', 'right')
-		r_hook_component = tek.FKComponent.create(tek_rig,
+		r_hook_component = frag.FKComponent.create(frag_rig,
 														r_hook_chain[0],
 														r_hook_chain[1],
 														side='right',
@@ -90,7 +90,7 @@ class GrappleHook03(rig_templates.RigTemplates):
 		
 		# Back Hook
 		b_hook_chain = chain.get_chain('back_grap', 'back')
-		b_hook_component = tek.FKComponent.create(tek_rig,
+		b_hook_component = frag.FKComponent.create(frag_rig,
 															b_hook_chain[0],
 															b_hook_chain[1],
 															side='back',
@@ -102,7 +102,7 @@ class GrappleHook03(rig_templates.RigTemplates):
 		
 		# Front Hook
 		f_hook_chain = chain.get_chain('front_grap', 'front')
-		f_hook_component = tek.FKComponent.create(tek_rig,
+		f_hook_component = frag.FKComponent.create(frag_rig,
 															f_hook_chain[0],
 															f_hook_chain[1],
 															side='front',
@@ -113,10 +113,10 @@ class GrappleHook03(rig_templates.RigTemplates):
 		f_hook_flag = f_hook_component.get_flags()[0]
 		
 		if finalize:
-			tek_rig.rigTemplate.set(GrappleHook03.__name__)
-			tek_rig.finalize_rig(self.get_flags_path())
+			frag_rig.rigTemplate.set(GrappleHook03.__name__)
+			frag_rig.finalize_rig(self.get_flags_path())
 		
-		return tek_rig
+		return frag_rig
 
 
 class GrappleHook02(rig_templates.RigTemplates):
@@ -133,15 +133,15 @@ class GrappleHook02(rig_templates.RigTemplates):
 		# import Skeletal Mesh using ASSET_ID into the namespace
 		world_root = pm.PyNode('root')
 		
-		tek_root = tek.TEKRoot.create(world_root, self.asset_type, self.asset_id)
-		tek.SkeletalMesh.create(tek_root)
-		tek_rig = tek.TEKRig.create(tek_root)
+		frag_root = frag.FRAGRoot.create(world_root, self.asset_type, self.asset_id)
+		frag.SkeletalMesh.create(frag_root)
+		frag_rig = frag.FRAGRig.create(frag_root)
 		
 		root = pm.PyNode('root')
 		chain = chain_markup.ChainMarkup(root)
 		# world
 		
-		world_component = tek.WorldComponent.create(tek_rig,
+		world_component = frag.WorldComponent.create(frag_rig,
 															root,
 															'center',
 															'world',
@@ -154,7 +154,7 @@ class GrappleHook02(rig_templates.RigTemplates):
 		
 		# Base
 		base_chain = chain.get_start('base', 'center')
-		base_component = tek.FKComponent.create(tek_rig,
+		base_component = frag.FKComponent.create(frag_rig,
 														base_chain,
 														base_chain,
 														side='center',
@@ -167,7 +167,7 @@ class GrappleHook02(rig_templates.RigTemplates):
 		
 		# Left Hook
 		l_hook_chain = chain.get_start('top_frap', 'left')
-		l_hook_component = tek.FKComponent.create(tek_rig,
+		l_hook_component = frag.FKComponent.create(frag_rig,
 															l_hook_chain,
 															l_hook_chain,
 															side='left',
@@ -180,7 +180,7 @@ class GrappleHook02(rig_templates.RigTemplates):
 		
 		# Right Hook
 		r_hook_chain = chain.get_start('top_frap', 'right')
-		r_hook_component = tek.FKComponent.create(tek_rig,
+		r_hook_component = frag.FKComponent.create(frag_rig,
 															r_hook_chain,
 															r_hook_chain,
 															side='right',
@@ -193,7 +193,7 @@ class GrappleHook02(rig_templates.RigTemplates):
 		
 		# Back Hook
 		b_hook_chain = chain.get_start('top_frap', 'back')
-		b_hook_component = tek.FKComponent.create(tek_rig,
+		b_hook_component = frag.FKComponent.create(frag_rig,
 															b_hook_chain,
 															b_hook_chain,
 															side='back',
@@ -206,7 +206,7 @@ class GrappleHook02(rig_templates.RigTemplates):
 		
 		# Front Hook
 		f_hook_chain = chain.get_start('top_frap', 'front')
-		f_hook_component = tek.FKComponent.create(tek_rig,
+		f_hook_component = frag.FKComponent.create(frag_rig,
 															f_hook_chain,
 															f_hook_chain,
 															side='front',
@@ -219,7 +219,7 @@ class GrappleHook02(rig_templates.RigTemplates):
 		
 		# Front Small Hook
 		f_small_hook_chain = chain.get_start('small_frap', 'front')
-		f_small_hook_component = tek.FKComponent.create(tek_rig,
+		f_small_hook_component = frag.FKComponent.create(frag_rig,
 															f_small_hook_chain,
 															f_small_hook_chain,
 															side='front',
@@ -232,7 +232,7 @@ class GrappleHook02(rig_templates.RigTemplates):
 		
 		# Front Small Hook
 		b_small_hook_chain = chain.get_start('small_frap', 'back')
-		b_small_hook_component = tek.FKComponent.create(tek_rig,
+		b_small_hook_component = frag.FKComponent.create(frag_rig,
 																b_small_hook_chain,
 																b_small_hook_chain,
 																side='back',
@@ -245,7 +245,7 @@ class GrappleHook02(rig_templates.RigTemplates):
 		
 		# Front Small Hook
 		l_small_hook_chain = chain.get_start('small_frap', 'left')
-		l_small_hook_component = tek.FKComponent.create(tek_rig,
+		l_small_hook_component = frag.FKComponent.create(frag_rig,
 																l_small_hook_chain,
 																l_small_hook_chain,
 																side='left',
@@ -258,7 +258,7 @@ class GrappleHook02(rig_templates.RigTemplates):
 		
 		# Front Small Hook
 		r_small_hook_chain = chain.get_start('small_frap', 'right')
-		r_small_hook_component = tek.FKComponent.create(tek_rig,
+		r_small_hook_component = frag.FKComponent.create(frag_rig,
 																r_small_hook_chain,
 																r_small_hook_chain,
 																side='right',
@@ -270,8 +270,8 @@ class GrappleHook02(rig_templates.RigTemplates):
 		r_small_hook_flag = r_small_hook_component.get_flags()[0]
 		
 		if finalize:
-			tek_rig.rigTemplate.set(GrappleHook02.__name__)
-			tek_rig.finalize_rig(self.get_flags_path())
+			frag_rig.rigTemplate.set(GrappleHook02.__name__)
+			frag_rig.finalize_rig(self.get_flags_path())
 		
-		return tek_rig
+		return frag_rig
 

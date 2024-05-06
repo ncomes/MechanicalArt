@@ -77,7 +77,7 @@ def menu_mca_tools(maya_window):
     menu_tools_inst = qt_menus.MainWindowsMenus.create(MENU_MCA_TOOLBOX, maya_window)
     menu_tools_inst.add_action('Toolbox Editor',
                              lambda sacrificial=False, maya_window=maya_window: ma_toolbox_ui.MayaToolboxEditor(),
-                             icon=resources.icon(r'logos\jkg.png'))
+                             icon=resources.icon(r'logos\mca.png'))
     menu_toolbars = qt_menus.MainWindowsMenus(menu_tools_inst.menu, maya_window)
     menu_toolbars.add_menu('ToolBox')
     for toolbox_name, toolbox_class in toolbox_data.ToolboxRegistry().TOOLBOX_NAME_DICT.items():

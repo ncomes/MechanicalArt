@@ -15,8 +15,8 @@ from mca.common.tools.dcctracking import dcc_tracking
 
 from mca.mya.modifiers import ma_decorators
 from mca.mya.pyqt import mayawindows
-from mca.mya.rigging import tek
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging import frag
+from mca.mya.rigging.flags import frag_flag
 from mca.mya.utils import naming
 from mca.mya.rigging import rig_utils
 
@@ -54,7 +54,7 @@ class MulticonstraintSwitch(mayawindows.MCAMayaWindow):
         if not selection:
             return
         print(selection)
-        flag_filter_list = [x for x in selection if tek_flag.is_flag_node(x) and x.hasAttr('sourceMultiConstraint')]
+        flag_filter_list = [x for x in selection if frag_flag.is_flag_node(x) and x.hasAttr('sourceMultiConstraint')]
 
         self.ui.switch_comboBox.clear()
         self._target_dict = {}
@@ -71,17 +71,17 @@ class MulticonstraintSwitch(mayawindows.MCAMayaWindow):
         first_rig_multi_dict = {}
         for index, flag_node in enumerate(flag_filter_list):
             # filter flags to only those with a multiconstraint.
-            multi_constraint = tek.TEKNode(flag_node.getAttr('sourceMultiConstraint'))
-            tek_root = tek.get_tek_root(multi_constraint)
-            tek_rig = tek_root.get_rig()
-            if tek_rig not in rig_multi_dict:
-                rig_multi_dict[tek_rig] = []
-            rig_multi_dict[tek_rig].append(multi_constraint)
+            multi_constraint = frag.FRAGNode(flag_node.getAttr('sourceMultiConstraint'))
+            frag_root = frag.get_frag_root(multi_constraint)
+            frag_rig = frag_root.get_rig()
+            if frag_rig not in rig_multi_dict:
+                rig_multi_dict[frag_rig] = []
+            rig_multi_dict[frag_rig].append(multi_constraint)
             target_list = multi_constraint.get_targets()
             if not index:
                 # if we don't find any matches use this list for the valid switch list
                 first_target_list = target_list
-                first_rig_multi_dict = {tek_rig: [multi_constraint]}
+                first_rig_multi_dict = {frag_rig: [multi_constraint]}
                 if target_count == 1:
                     # if we only have one multiconstraint source just bail here we'll use the first target list.
                     break

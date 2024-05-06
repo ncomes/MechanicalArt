@@ -11,9 +11,7 @@ import inspect
 import time
 # software specific imports
 # PySide2 imports
-from PySide2 import QtCore
-from PySide2.QtCore import Qt, QObject,  QEvent
-from PySide2.QtWidgets import QApplication, QMainWindow, QFrame, QSizePolicy, QVBoxLayout, QWidget
+from PySide2.QtWidgets import QApplication, QMainWindow, QFrame, QSizePolicy, QVBoxLayout
 # mca python imports
 from mca.common.pyqt.qt_utils import uiloaders
 from mca.common.pyqt import common_windows

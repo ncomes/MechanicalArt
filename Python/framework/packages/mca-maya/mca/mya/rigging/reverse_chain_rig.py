@@ -10,7 +10,7 @@ Purpose: Creates an cog rig
 import pymel.core as pm
 #  python imports
 from mca.mya.utils import dag
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 
 
 def reverse_chain(start_joint, end_joint, suffix='', scale=1.0, orientation=(-90, 0, 0)):
@@ -40,7 +40,7 @@ def reverse_chain(start_joint, end_joint, suffix='', scale=1.0, orientation=(-90
 	
 	# create flags
 	label = start_joint.nodeName().replace('_' + suffix, '')
-	rotate_flag = tek_flag.Flag.create(rotate_joint, label=label, scale=scale, orientation=orientation)
+	rotate_flag = frag_flag.Flag.create(rotate_joint, label=label, scale=scale, orientation=orientation)
 	pm.parentConstraint(rotate_flag, rotate_joint, w=1, mo=True)
 	pm.parentConstraint(end_rotate_joint, start_joint, w=1, mo=True)
 	

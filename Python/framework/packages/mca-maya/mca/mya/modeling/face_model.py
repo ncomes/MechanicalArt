@@ -11,7 +11,7 @@ import pymel.core as pm
 import maya.cmds as cmds
 
 # mca python imports
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.common.utils import lists
 from mca.mya.rigging import mesh_markup_rig
 from mca.mya.face.face_utils import face_util, face_import_export
@@ -200,17 +200,17 @@ class FaceModel:
 		"""
 		
 		if not asset_id:
-			tek_rig = tek.get_tek_rig(self.mesh)
-			tek_root = tek_rig.get_tek_parent()
-			asset_id = tek_root.assetID.get()
+			frag_rig = frag.get_frag_rig(self.mesh)
+			frag_root = frag_rig.get_frag_parent()
+			asset_id = frag_root.assetID.get()
 		
-		all_roots = tek.get_all_tek_roots()
-		tek_root = [x for x in all_roots if x.asset_id == asset_id]
-		if not tek_root:
+		all_roots = frag.get_all_frag_roots()
+		frag_root = [x for x in all_roots if x.asset_id == asset_id]
+		if not frag_root:
 			return
-		tek_root = tek_root[0]
-		skeletal_mesh = tek_root.get_skeletal_mesh()
-		face_components = skeletal_mesh.get_tek_children(of_type=tek.FaceMeshComponent)
+		frag_root = frag_root[0]
+		skeletal_mesh = frag_root.get_skeletal_mesh()
+		face_components = skeletal_mesh.get_frag_children(of_type=frag.FaceMeshComponent)
 		if not face_components:
 			return
 		face_component = face_components[0]
@@ -221,16 +221,16 @@ class FaceModel:
 		Reconnects blend shapes back to the rig.
 
 		:param str asset_id: ID of the asset we want to retrieve path of.
-		:param tek.FragFaceParameters parameter_node: The node that connects the blend shapes to the rig.
+		:param frag.FragFaceParameters parameter_node: The node that connects the blend shapes to the rig.
 		:return: If True, The shapes were successfully connected.
 		:rtype: Bool
 		"""
 		
 		if not parameter_node:
-			tek_rig = tek.get_tek_rig(self.mesh)
-			if not tek_rig:
+			frag_rig = frag.get_frag_rig(self.mesh)
+			if not frag_rig:
 				return False
-			parameter_node = tek_rig.get_tek_children(of_type=tek.FragFaceParameters)
+			parameter_node = frag_rig.get_frag_children(of_type=frag.FragFaceParameters)
 			if not parameter_node:
 				return False
 			parameter_node = parameter_node[0]
@@ -259,11 +259,11 @@ class FaceModel:
 		"""
 		
 		comp_list = [x for x in self.mesh.message.listConnections() if
-		             x.hasAttr('tekType') and x.tekType.get() == 'FaceMeshComponent']
+		             x.hasAttr('fragType') and x.fragType.get() == 'FaceMeshComponent']
 		if not comp_list:
 			return
 		face_component = comp_list[0]
-		return tek.TEKNode(face_component)
+		return frag.FRAGNode(face_component)
 	
 	def get_parameters(self, asset_id=None):
 		"""
@@ -275,11 +275,11 @@ class FaceModel:
 		"""
 		
 		if not asset_id:
-			tek_rig = tek.get_tek_rig(self.mesh)
-			tek_root = tek_rig.get_tek_parent()
-			asset_id = tek_root.assetID.get()
+			frag_rig = frag.get_frag_rig(self.mesh)
+			frag_root = frag_rig.get_frag_parent()
+			asset_id = frag_root.assetID.get()
 		
-		# returns the tek.face_parameters.ParameterData instance
+		# returns the frag.face_parameters.ParameterData instance
 		parameters = face_util.get_parameters_region_instance(asset_id=asset_id, region_name=self.region)
 		return parameters
 	
@@ -293,9 +293,9 @@ class FaceModel:
 		"""
 		
 		if not asset_id:
-			tek_rig = tek.get_tek_rig(self.mesh)
-			tek_root = tek_rig.get_tek_parent()
-			asset_id = tek_root.assetID.get()
+			frag_rig = frag.get_frag_rig(self.mesh)
+			frag_root = frag_rig.get_frag_parent()
+			asset_id = frag_root.assetID.get()
 		mesh_data = face_util.get_face_region_data(asset_id=asset_id, region_name=self.region)
 		return mesh_data
 	
@@ -304,9 +304,9 @@ class FaceModel:
 		Unlocks the skins layer so all the head meshes can be edited.
 		"""
 		
-		control_rig = tek.get_tek_rig(self.mesh)
+		control_rig = frag.get_frag_rig(self.mesh)
 		if control_rig:
-			world_root = tek.get_root_joint(control_rig)
+			world_root = frag.get_root_joint(control_rig)
 			joint = lists.get_first_in_list(world_root.listRelatives(c=True))
 			display_layer = lists.get_first_in_list(display_layers.get_display_layers([joint]))
 			if display_layer:
@@ -367,9 +367,9 @@ class FaceModel:
 		"""
 		
 		if not asset_id:
-			tek_rig = tek.get_tek_rig(self.mesh)
-			tek_root = tek_rig.get_tek_parent()
-			asset_id = tek_root.assetID.get()
+			frag_rig = frag.get_frag_rig(self.mesh)
+			frag_root = frag_rig.get_frag_parent()
+			asset_id = frag_root.assetID.get()
 		shape_result = face_import_export.import_all_blendshapes(asset_id=asset_id,
 		                                                         region=self.region,
 		                                                         ext=ext,

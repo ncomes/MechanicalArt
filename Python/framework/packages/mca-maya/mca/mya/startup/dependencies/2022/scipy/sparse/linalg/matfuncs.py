@@ -673,7 +673,7 @@ def _expm(A, use_exact_onenorm):
     X = _solve_P_Q(U, V, structure=structure)
     if structure == UPPER_TRIANGULAR:
         # Invoke Code Fragment 2.1.
-        X = _tekment_2_1(X, h.A, s)
+        X = _fragment_2_1(X, h.A, s)
     else:
         # X = r_13(A)^(2^s) by repeated squaring.
         for i in range(s):
@@ -750,7 +750,7 @@ def _eq_10_42(lam_1, lam_2, t_12):
 
     Notes
     -----
-    This is a helper function for _tekment_2_1 of expm_2009.
+    This is a helper function for _fragment_2_1 of expm_2009.
     Equation (10.42) is on page 251 in the section on Schur algorithms.
     In particular, section 10.4.3 explains the Schur-Parlett algorithm.
     expm([[lam_1, t_12], [0, lam_1])
@@ -768,7 +768,7 @@ def _eq_10_42(lam_1, lam_2, t_12):
     return t_12 * _exp_sinch(a, b)
 
 
-def _tekment_2_1(X, T, s):
+def _fragment_2_1(X, T, s):
     """
     A helper function for expm_2009.
 

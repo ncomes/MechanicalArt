@@ -11,7 +11,7 @@ import pymel.core as pm
 #  python imports
 from mca.mya.utils import constraint, naming
 from mca.mya.rigging import joint_utils
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 
 
 def reverse_foot_chain(start_joint,
@@ -71,8 +71,8 @@ def reverse_foot_chain(start_joint,
         foot_joint.v.set(False)
 
         if not ik_foot_flag:
-            ik_foot_flag = tek_flag.Flag.create(start_joint, scale=scale, label=f'{side}_{region}', add_align_transform=True)
-        ik_toe_flag = tek_flag.Flag.create(toe_joint, scale=scale, label=f'{side_prefix}_{region}_toe_ik', add_align_transform=True)
+            ik_foot_flag = frag_flag.Flag.create(start_joint, scale=scale, label=f'{side}_{region}', add_align_transform=True)
+        ik_toe_flag = frag_flag.Flag.create(toe_joint, scale=scale, label=f'{side_prefix}_{region}_toe_ik', add_align_transform=True)
         ik_foot_flag.v >> ik_toe_flag.v
         ik_toe_flag.lock_and_hide_attrs(['tx', 'ty', 'tz', 'sx', 'sy', 'sz', 'v'])
 

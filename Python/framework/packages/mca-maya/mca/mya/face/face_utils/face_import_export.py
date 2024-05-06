@@ -10,7 +10,7 @@ import pymel.core as pm
 import maya.cmds as cmds
 import os
 # mca python imports
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.mya.face.face_utils import face_util
 from mca.common.paths import paths
 from mca.common.tools.progressbar import progressbar_ui
@@ -118,13 +118,13 @@ def import_all_blendshapes(asset_id, region, ext='.fbx', exist_check=False):
     ui = progressbar_ui.ProgressBarStandard()
     ui.update_status(0, 'Starting Up')
 
-    all_roots = tek.get_all_tek_roots()
-    tek_root = [x for x in all_roots if x.asset_id == asset_id]
-    if not tek_root:
+    all_roots = frag.get_all_frag_roots()
+    frag_root = [x for x in all_roots if x.asset_id == asset_id]
+    if not frag_root:
         logging.warning(f'Cannot import blend shapes.  No rig will in the scene with the asset id {asset_id}.')
         return
 
-    tek_root = tek_root[0]
+    frag_root = frag_root[0]
 
     pose_grp = [x.node() for x in pm.ls('*.isPoseGrp', r=True, o=True, type=pm.nt.Transform)]
     if not pose_grp:
@@ -133,7 +133,7 @@ def import_all_blendshapes(asset_id, region, ext='.fbx', exist_check=False):
     else:
         pose_grp = pose_grp[0]
 
-    tek_root.get_rig().connect_node(pose_grp, 'facePoseGrp', 'facePoseGrp')
+    frag_root.get_rig().connect_node(pose_grp, 'facePoseGrp', 'facePoseGrp')
 
     parameters = face_util.get_parameters_region_instance(asset_id, region)
     pose_list = parameters.get_pose_list()

@@ -11,7 +11,7 @@ import pymel.core as pm
 # mca python imports
 from mca.common.utils import lists
 
-from mca.mya.rigging import chain_markup, tek
+from mca.mya.rigging import chain_markup, frag
 from mca.mya.utils import attr_utils
 
 from mca.mya.rigging.templates import rig_templates
@@ -30,17 +30,17 @@ class TriadTwinRig(rig_templates.RigTemplates):
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, 'combatant', self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, 'combatant', self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        flags_all = tek_rig.flagsAll.get()
+        flags_all = frag_rig.flagsAll.get()
 
         # Core Components
         # world
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                      root_joint,
                                                      'center',
                                                      'world')
@@ -49,7 +49,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
         offset_flag = world_component.offset_flag
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='root',
                                     source_object=root_flag,
@@ -58,7 +58,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
 
         # Cog
         pelvis_start, pelvis_end = skel_hierarchy.get_chain('pelvis', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                  pelvis_start,
                                                  pelvis_start,
                                                  'center',
@@ -71,7 +71,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
         # Center Components
         ###
         # Pelvis
-        pelvis_component = tek.PelvisComponent.create(tek_rig,
+        pelvis_component = frag.PelvisComponent.create(frag_rig,
                                                        pelvis_start,
                                                        pelvis_end,
                                                        'center',
@@ -82,7 +82,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
 
         # Spine
         spine_start, spine_end = skel_hierarchy.get_chain('spine', 'center')
-        spine_component = tek.RFKComponent.create(tek_rig,
+        spine_component = frag.RFKComponent.create(frag_rig,
                                                    spine_start,
                                                    spine_end,
                                                    'center',
@@ -90,7 +90,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
         spine_component.attach_component(cog_component, pm.PyNode(cog_flag))
         spine_sub_flags = spine_component.sub_flags
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='spine_top',
                                     source_object=spine_sub_flags[1],
@@ -100,7 +100,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
                                     translate=False,
                                     default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='spine_mid_top',
                                     source_object=spine_component.mid_flags[1],
@@ -110,7 +110,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
                                     translate=False,
                                     default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='spine_mid_bottom',
                                     source_object=spine_component.mid_flags[0],
@@ -122,7 +122,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
 
         # Neck
         neck_start, neck_end = skel_hierarchy.get_chain('neck', 'center')
-        neck_component = tek.RFKComponent.create(tek_rig,
+        neck_component = frag.RFKComponent.create(frag_rig,
                                                   neck_start,
                                                   neck_end,
                                                   'center',
@@ -135,7 +135,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
         mid_neck_flag = neck_component.mid_flags[0]
         mid_neck_flag.set_as_detail()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='head',
                                     source_object=head_flag,
@@ -148,7 +148,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
         # Jaw
         jaw_joint = skel_hierarchy.get_start('jaw', 'center')
         if jaw_joint:
-            jaw_component = tek.FKComponent.create(tek_rig,
+            jaw_component = frag.FKComponent.create(frag_rig,
                                                     jaw_joint,
                                                     jaw_joint,
                                                     side='center',
@@ -158,7 +158,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
 
         # Center
         floor_joint = skel_hierarchy.get_start('floor', 'center')
-        floor_component = tek.FKComponent.create(tek_rig,
+        floor_component = frag.FKComponent.create(frag_rig,
                                                   floor_joint,
                                                   floor_joint,
                                                   side='center',
@@ -168,7 +168,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
         floor_flag = floor_component.get_end_flag()
         floor_flag.set_as_contact()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='floor_contact',
                                     source_object=floor_flag,
@@ -184,7 +184,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
 
             # Clav
             clav_start, clav_end = skel_hierarchy.get_chain('clav', side)
-            clav_component = tek.FKComponent.create(tek_rig,
+            clav_component = frag.FKComponent.create(frag_rig,
                                                      clav_start,
                                                      clav_end,
                                                      side=side,
@@ -195,7 +195,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
 
             # IKFK arm
             arm_start, arm_end = skel_hierarchy.get_chain('arm', side)
-            arm_component = tek.IKFKComponent.create(tek_rig,
+            arm_component = frag.IKFKComponent.create(frag_rig,
                                                       arm_start,
                                                       arm_end,
                                                       side=side,
@@ -203,7 +203,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
                                                       ik_flag_pv_orient=[-90, 0, 0])
             arm_component.attach_component(clav_component, clav_start)
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='arm_pv',
                                         source_object=arm_component.pv_flag,
@@ -214,7 +214,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
                 finger_start, finger_end = skel_hierarchy.get_chain(finger, side)
                 if not finger_start:
                     continue
-                finger_component = tek.FKComponent.create(tek_rig,
+                finger_component = frag.FKComponent.create(frag_rig,
                                                            finger_start,
                                                            finger_end,
                                                            side=side,
@@ -228,7 +228,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
 
             # Hand contact
             hand_contact = skel_hierarchy.get_start('hand_contact', side)
-            prop_component = tek.FKComponent.create(tek_rig,
+            prop_component = frag.FKComponent.create(frag_rig,
                                                      hand_contact,
                                                      hand_contact,
                                                      side=side,
@@ -241,7 +241,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
 
             # Hand weapon
             weapon_start = skel_hierarchy.get_start('hand_prop', side)
-            weapon_component = tek.FKComponent.create(tek_rig,
+            weapon_component = frag.FKComponent.create(frag_rig,
                                                        weapon_start,
                                                        weapon_start,
                                                        side=side,
@@ -260,7 +260,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
 
         # util
         util_joint = skel_hierarchy.get_start('utility', 'center')
-        util_component = tek.FKComponent.create(tek_rig,
+        util_component = frag.FKComponent.create(frag_rig,
                                                  util_joint,
                                                  util_joint,
                                                  side='center',
@@ -272,7 +272,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
 
         # util warp
         util_warp_joint = skel_hierarchy.get_start('utility_warp', 'center')
-        util_warp_component = tek.FKComponent.create(tek_rig,
+        util_warp_component = frag.FKComponent.create(frag_rig,
                                                       util_warp_joint,
                                                       util_warp_joint,
                                                       side='center',
@@ -284,7 +284,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
 
         # Pelvis
         contact_joint = skel_hierarchy.get_start('pelvis_contact', 'center')
-        pelvis_contact_component = tek.FKComponent.create(tek_rig,
+        pelvis_contact_component = frag.FKComponent.create(frag_rig,
                                                            contact_joint,
                                                            contact_joint,
                                                            side='center',
@@ -295,7 +295,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
         pelvis_contact_flag = pelvis_contact_component.get_end_flag()
         pelvis_contact_flag.set_as_contact()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='pelvis_contact',
                                     source_object=pelvis_contact_flag,
@@ -303,21 +303,21 @@ class TriadTwinRig(rig_templates.RigTemplates):
                                                  offset_flag])
 
         start_tentacle, end_tentacle = skel_hierarchy.get_chain('tail', 'center')
-        tentacle_component = tek.SplineIKRibbonComponent.create(tek_rig,
+        tentacle_component = frag.SplineIKRibbonComponent.create(frag_rig,
                                                                  start_tentacle,
                                                                  end_tentacle,
                                                                  side='center',
                                                                  region='tail')
         tentacle_component.attach_component(pelvis_component, pelvis_start)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side=side,
                                     region='tail_mid',
                                     source_object=tentacle_component.primary_flags[1],
                                     target_list=[root_flag,
                                                  pelvis_flag])
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side=side,
                                     region='tail_end',
                                     source_object=tentacle_component.primary_flags[-1],
@@ -343,7 +343,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
             prop_flag = prop_component.get_flags()[0]
             inv_prop_flag = side_component_dict[inv_side][3].get_flags()[0]
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='ik_arm',
                                         source_object=arm_ik_flag,
@@ -355,7 +355,7 @@ class TriadTwinRig(rig_templates.RigTemplates):
                                                      floor_flag],
                                         switch_obj=arm_switch_flag, )
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='fk_arm',
                                         source_object=arm_fk_flag,
@@ -372,14 +372,14 @@ class TriadTwinRig(rig_templates.RigTemplates):
                            cog_flag,
                            arm_component.bindJoints.get()[-1]]
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='hand_prop',
                                         source_object=prop_flag,
                                         target_list=target_list,
                                         default_name=f'{side[0]}_weapon')
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='weapon',
                                         source_object=weapon_flag,
@@ -393,10 +393,10 @@ class TriadTwinRig(rig_templates.RigTemplates):
                                                      floor_flag],
                                         default_name=f'{side[0]}_hand')
         if finalize:
-            tek_rig.rigTemplate.set(TriadTwinRig.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(TriadTwinRig.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class MangledRusherRig(base_biped_template.BipedBaseRig):
@@ -407,25 +407,25 @@ class MangledRusherRig(base_biped_template.BipedBaseRig):
         super().__init__(asset_id)
 
     def build(self, finalize=True):
-        tek_rig = super().build(finalize=False)
+        frag_rig = super().build(finalize=False)
 
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
 
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        neck_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.RFKComponent, side='center', region='neck'))
+        neck_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.RFKComponent, side='center', region='neck'))
         neck_end = skel_hierarchy.get_end('neck', 'center')
 
         if not neck_component:
-            return tek_rig
+            return frag_rig
 
-        pelvis_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.PelvisComponent, side='center', region='pelvis'))
+        pelvis_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.PelvisComponent, side='center', region='pelvis'))
         pelvis_start = skel_hierarchy.get_start('pelvis', 'center')
 
         jaw_start = skel_hierarchy.get_start('jaw', 'center')
         if jaw_start:
-            jaw_component = tek.FKComponent.create(tek_rig,
+            jaw_component = frag.FKComponent.create(frag_rig,
                                                     jaw_start,
                                                     jaw_start,
                                                     side='center',
@@ -434,7 +434,7 @@ class MangledRusherRig(base_biped_template.BipedBaseRig):
 
         tail_start, tail_end = skel_hierarchy.get_chain('tail', 'center')
         if tail_start:
-            tail_component = tek.FKComponent.create(tek_rig,
+            tail_component = frag.FKComponent.create(frag_rig,
                                                       tail_start,
                                                       tail_end,
                                                       side='center',
@@ -449,35 +449,35 @@ class TriadRig(base_biped_template.BipedBaseRig):
         super().__init__(asset_id)
 
     def build(self, finalize=True):
-        tek_rig = super().build(finalize=False)
+        frag_rig = super().build(finalize=False)
 
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
 
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        spine_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.RFKComponent, side='center', region='spine'))
+        spine_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.RFKComponent, side='center', region='spine'))
         if not spine_component:
-            return tek_rig
+            return frag_rig
 
-        world_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.WorldComponent, side='center', region='world'))
+        world_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.WorldComponent, side='center', region='world'))
         offset_flag = world_component.offset_flag
 
-        floor_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.FKComponent, side='center', region='floor_contact'))
+        floor_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.FKComponent, side='center', region='floor_contact'))
         floor_flag = floor_component.get_end_flag()
 
         spine_start, spine_end = skel_hierarchy.get_chain('spine', 'center')
 
-        pelvis_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.PelvisComponent, side='center', region='pelvis'))
+        pelvis_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.PelvisComponent, side='center', region='pelvis'))
         pelvis_start = skel_hierarchy.get_start('pelvis', 'center')
 
-        neck_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.RFKComponent, side='center', region='neck'))
+        neck_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.RFKComponent, side='center', region='neck'))
         neck_end = skel_hierarchy.get_end('neck', 'center')
 
         # Triad Mid Joints
         cloth_start, cloth_end = skel_hierarchy.get_chain('cloth', 'center')
         if cloth_start:
-            cloth_component = tek.FKComponent.create(tek_rig,
+            cloth_component = frag.FKComponent.create(frag_rig,
                                                       cloth_start,
                                                       cloth_end,
                                                       side='center',
@@ -486,7 +486,7 @@ class TriadRig(base_biped_template.BipedBaseRig):
 
         front_cloth_start = skel_hierarchy.get_start('front_cloth', 'center')
         if front_cloth_start:
-            front_cloth_component = tek.FKComponent.create(tek_rig,
+            front_cloth_component = frag.FKComponent.create(frag_rig,
                                                             front_cloth_start,
                                                             front_cloth_start,
                                                             side='center',
@@ -495,7 +495,7 @@ class TriadRig(base_biped_template.BipedBaseRig):
             front_cloth_flag = front_cloth_component.get_flags()[0]
 
             loin_spine_start = skel_hierarchy.get_start('loin_spine', 'center')
-            loin_spine_component = tek.FKComponent.create(tek_rig,
+            loin_spine_component = frag.FKComponent.create(frag_rig,
                                                            loin_spine_start,
                                                            loin_spine_start,
                                                            side='center',
@@ -503,7 +503,7 @@ class TriadRig(base_biped_template.BipedBaseRig):
             loin_spine_component.attach_component(front_cloth_component, front_cloth_start)
 
             loin_skull_start = skel_hierarchy.get_start('loin_skull', 'center')
-            loin_skull_component = tek.FKComponent.create(tek_rig,
+            loin_skull_component = frag.FKComponent.create(frag_rig,
                                                            loin_skull_start,
                                                            loin_skull_start,
                                                            side='center',
@@ -512,7 +512,7 @@ class TriadRig(base_biped_template.BipedBaseRig):
 
         for region in ['jaw', 'jaw_upper', 'jaw_inner']:
             jaw_start = skel_hierarchy.get_start(region, 'center')
-            jaw_component = tek.FKComponent.create(tek_rig,
+            jaw_component = frag.FKComponent.create(frag_rig,
                                                     jaw_start,
                                                     jaw_start,
                                                     side='center',
@@ -525,7 +525,7 @@ class TriadRig(base_biped_template.BipedBaseRig):
         for side in ['left', 'right']:
             # Anchors
             spine_attachment = skel_hierarchy.get_start('anchor', side)
-            spine_attachment_component = tek.FKComponent.create(tek_rig,
+            spine_attachment_component = frag.FKComponent.create(frag_rig,
                                                                  spine_attachment,
                                                                  spine_attachment,
                                                                  side=side,
@@ -535,7 +535,7 @@ class TriadRig(base_biped_template.BipedBaseRig):
             # Groin Goblin
             if front_cloth_start:
                 loin_arm_start, loin_arm_end = skel_hierarchy.get_chain('loin_arm', side)
-                loin_arm_component = tek.IKFKComponent.create(tek_rig,
+                loin_arm_component = frag.IKFKComponent.create(frag_rig,
                                                                loin_arm_start,
                                                                loin_arm_end,
                                                                side=side,
@@ -546,21 +546,21 @@ class TriadRig(base_biped_template.BipedBaseRig):
                 ik_switch_flag = loin_arm_component.switch_flag
                 pv_flag = loin_arm_component.pv_flag
 
-                tek.MultiConstraint.create(tek_rig,
+                frag.MultiConstraint.create(frag_rig,
                                             side=side,
                                             region='loin_arm',
                                             source_object=ik_flag,
                                             switch_obj=ik_switch_flag,
                                             target_list=[front_cloth_flag, offset_flag])
 
-                tek.MultiConstraint.create(tek_rig,
+                frag.MultiConstraint.create(frag_rig,
                                             side=side,
                                             region='loin_arm_pv',
                                             source_object=pv_flag,
                                             target_list=[front_cloth_flag, offset_flag])
 
                 loin_arm_contact_start = skel_hierarchy.get_start('loin_arm_contact', side)
-                loin_arm_contact_component = tek.FKComponent.create(tek_rig,
+                loin_arm_contact_component = frag.FKComponent.create(frag_rig,
                                                                      loin_arm_contact_start,
                                                                      loin_arm_contact_start,
                                                                      side=side,
@@ -568,7 +568,7 @@ class TriadRig(base_biped_template.BipedBaseRig):
                 loin_arm_contact_component.attach_component(loin_arm_component, loin_arm_end)
                 contact_flag = loin_arm_contact_component.get_flags()[0]
 
-                tek.MultiConstraint.create(tek_rig,
+                frag.MultiConstraint.create(frag_rig,
                                             side=side,
                                             region='loin_arm_contact',
                                             source_object=contact_flag,

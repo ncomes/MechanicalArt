@@ -21,8 +21,8 @@ from mca.mya.cinematics import cine_sequence_nodes
 from mca.mya.utils import scene_utils, namespace, fbx_utils, constraint, camera_utils
 from mca.mya.animation import time_utils, baking
 from mca.mya.rigging import rig_utils
-from mca.mya.rigging import tek
-from mca.mya.rigging.tek import tek_rig, cine_sequence_component
+from mca.mya.rigging import frag
+from mca.mya.rigging.frag import frag_rig, cine_sequence_component
 from mca.mya.tools.animationexporter import animationexporter_utils as ae_utils
 
 logger = log.MCA_LOGGER
@@ -708,11 +708,11 @@ def export_cine_shot(seq_name, shot_number):
 							 start_frame=start_frame,
 							 end_frame=end_frame+1)
 
-	all_rigs = tek_rig.get_tek_rigs()
+	all_rigs = frag_rig.get_frag_rigs()
 	for rig in all_rigs:
-		tek_children = rig.get_tek_children()
-		for tek_child in tek_children:
-			if isinstance(tek_child, tek.CameraComponent):
+		frag_children = rig.get_frag_children()
+		for frag_child in frag_children:
+			if isinstance(frag_child, frag.CameraComponent):
 				all_rigs.pop(all_rigs.index(rig))
 
 	for char in all_rigs:
@@ -771,7 +771,7 @@ def export_face_anim_cmd():
 	audio_offset = audio_node.offset.get()
 	start_time = round(audio_node.sourceStart.get()) + audio_offset
 	end_time = math.ceil(audio_node.sourceEnd.get()) + audio_offset
-	head_rig = tek_rig.get_tek_rigs()
+	head_rig = frag_rig.get_frag_rigs()
 	if not head_rig:
 		logger.warning('No head rig found.')
 		return

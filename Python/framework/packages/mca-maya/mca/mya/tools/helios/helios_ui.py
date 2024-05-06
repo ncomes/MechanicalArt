@@ -24,7 +24,7 @@ from mca.common.tools.dcctracking import dcc_tracking
 from mca.mya.tools.helios import helios_registry, helios_utils
 from mca.mya.utils import dag as dag_utils
 from mca.mya.rigging import skel_utils
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 from mca.mya.pyqt import mayawindows
 
 logger = log.MCA_LOGGER
@@ -272,7 +272,7 @@ class Helios(mayawindows.MCAMayaWindow):
         bind_dict = {}
         if self.ui.to_selected_checkBox.isChecked():
             selection = pm.selected()
-            selected_joints = [x for x in pm.ls(selection, type=pm.nt.Joint) if not tek_flag.is_flag_node(x)]
+            selected_joints = [x for x in pm.ls(selection, type=pm.nt.Joint) if not frag_flag.is_flag_node(x)]
             bind_root_list = []
             for joint_node in selected_joints:
                 bind_root = dag_utils.get_absolute_parent(joint_node, node_type=pm.nt.Joint)

@@ -16,7 +16,7 @@ from mca.common.utils import process
 from mca.common.modifiers import decorators
 from mca.mya.pyqt import mayawindows
 from mca.mya.animation import time_utils, baking
-from mca.mya.rigging.tek import tek_rig
+from mca.mya.rigging.frag import frag_rig
 from mca.mya.cinematics import cine_file_utils, shot_utils
 from mca.mya.utils import optionvars
 
@@ -236,7 +236,7 @@ class FacialMocapProcessor(mayawindows.MCAMayaWindow):
 
 		"""
 
-		head_rig = tek_rig.get_tek_rigs()
+		head_rig = frag_rig.get_frag_rigs()
 		if head_rig:
 			head_rig = head_rig[0]
 			head_flags = head_rig.get_flags()

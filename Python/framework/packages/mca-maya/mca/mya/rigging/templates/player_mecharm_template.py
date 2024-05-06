@@ -9,7 +9,7 @@ Rig Template for Mech Arms
 # mca python imports
 import pymel.core as pm
 # mca python imports
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.mya.rigging.templates import rig_templates
 from mca.mya.utils import attr_utils
 from mca.mya.rigging import chain_markup
@@ -27,13 +27,13 @@ class MechArm(rig_templates.RigTemplates):
         root_joint = pm.PyNode('root')
         skel_markup = chain_markup.ChainMarkup(root_joint)
 
-        tek_root = tek.TEKRoot.create(root_joint, asset_type, self.asset_id)
-        tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, asset_type, self.asset_id)
+        frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
         # world
         start_joint = pm.PyNode('root')
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                             start_joint,
                                                             'center',
                                                             'world',
@@ -47,7 +47,7 @@ class MechArm(rig_templates.RigTemplates):
         # Right Clavicle
         start_joint = pm.PyNode('clavicle_r')
         end_joint = pm.PyNode('clavicle_r')
-        r_clav_component = tek.FKComponent.create(tek_rig,
+        r_clav_component = frag.FKComponent.create(frag_rig,
                                                         start_joint,
                                                         end_joint,
                                                         side='right',
@@ -59,7 +59,7 @@ class MechArm(rig_templates.RigTemplates):
         # IKFK Right arm
         start_joint = pm.PyNode('upperarm_r')
         end_joint = pm.PyNode('hand_r')
-        r_arm_component = tek.IKFKComponent.create(tek_rig,
+        r_arm_component = frag.IKFKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -70,7 +70,7 @@ class MechArm(rig_templates.RigTemplates):
         # wrist trans door
         start_joint = pm.PyNode('wrist_door_trans_r')
         end_joint = pm.PyNode('wrist_door_trans_r')
-        wrist_door_trans_component = tek.FKComponent.create(tek_rig,
+        wrist_door_trans_component = frag.FKComponent.create(frag_rig,
                                                              start_joint,
                                                              end_joint,
                                                              side='right',
@@ -87,7 +87,7 @@ class MechArm(rig_templates.RigTemplates):
         # wrist door
         start_joint = pm.PyNode('wrist_mecharm_door_01_r')
         end_joint = pm.PyNode('wrist_mecharm_door_02_r')
-        wrist_door_component = tek.FKComponent.create(tek_rig,
+        wrist_door_component = frag.FKComponent.create(frag_rig,
                                                        start_joint,
                                                        end_joint,
                                                        side='right',
@@ -104,38 +104,38 @@ class MechArm(rig_templates.RigTemplates):
         # left Index Finger
         start_joint = pm.PyNode('index_metacarpal_r')
         end_joint = pm.PyNode('index_03_r')
-        r_index_component = tek.FKComponent.create(tek_rig, start_joint, end_joint, side='right', region='index_finger', scale=0.2)
+        r_index_component = frag.FKComponent.create(frag_rig, start_joint, end_joint, side='right', region='index_finger', scale=0.2)
         r_index_component.attach_component(r_arm_component, pm.PyNode('hand_r'))
 
         # left middle Finger
         start_joint = pm.PyNode('middle_metacarpal_r')
         end_joint = pm.PyNode('middle_03_r')
-        r_middle_component = tek.FKComponent.create(tek_rig, start_joint, end_joint, side='right', region='middle_finger', scale=0.2)
+        r_middle_component = frag.FKComponent.create(frag_rig, start_joint, end_joint, side='right', region='middle_finger', scale=0.2)
         r_middle_component.attach_component(r_arm_component, pm.PyNode('hand_r'))
 
         # left ring Finger
         start_joint = pm.PyNode('ring_metacarpal_r')
         end_joint = pm.PyNode('ring_03_r')
-        r_ring_component = tek.FKComponent.create(tek_rig, start_joint, end_joint, side='right', region='ring_finger', scale=0.2)
+        r_ring_component = frag.FKComponent.create(frag_rig, start_joint, end_joint, side='right', region='ring_finger', scale=0.2)
         r_ring_component.attach_component(r_arm_component, pm.PyNode('hand_r'))
 
         # left Pinky Finger
         start_joint = pm.PyNode('pinky_metacarpal_r')
         end_joint = pm.PyNode('pinky_03_r')
-        r_pinky_component = tek.FKComponent.create(tek_rig, start_joint, end_joint, side='right', region='pinky_finger', scale=0.2)
+        r_pinky_component = frag.FKComponent.create(frag_rig, start_joint, end_joint, side='right', region='pinky_finger', scale=0.2)
         r_pinky_component.attach_component(r_arm_component, pm.PyNode('hand_r'))
 
 
         # left Thumb Finger
         start_joint = pm.PyNode('thumb_01_r')
         end_joint = pm.PyNode('thumb_03_r')
-        r_thumb_component = tek.FKComponent.create(tek_rig, start_joint, end_joint, side='right', region='thumb', scale=0.2)
+        r_thumb_component = frag.FKComponent.create(frag_rig, start_joint, end_joint, side='right', region='thumb', scale=0.2)
         r_thumb_component.attach_component(r_arm_component, pm.PyNode('hand_r'))
 
 
         start_joint = pm.PyNode('front_shoulder_plate')
         end_joint = pm.PyNode('front_shoulder_plate')
-        front_plate_component = tek.FKComponent.create(tek_rig,
+        front_plate_component = frag.FKComponent.create(frag_rig,
                                                                     start_joint,
                                                                     end_joint,
                                                                     side='right',
@@ -147,7 +147,7 @@ class MechArm(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('back_shoulder_plate')
         end_joint = pm.PyNode('back_shoulder_plate')
-        back_plate_component = tek.FKComponent.create(tek_rig,
+        back_plate_component = frag.FKComponent.create(frag_rig,
                                                                     start_joint,
                                                                     end_joint,
                                                                     side='right',
@@ -170,7 +170,7 @@ class MechArm(rig_templates.RigTemplates):
         driven_attrs['end']['ty'] = 8.093
         driven_attrs['end']['tz'] = 2.566
 
-        bicep_sdk_component = tek.SingleSDKComponent.create(tek_rig,
+        bicep_sdk_component = frag.SingleSDKComponent.create(frag_rig,
                                                             drive_attr,
                                                             driven_obj,
                                                             side='right',
@@ -190,7 +190,7 @@ class MechArm(rig_templates.RigTemplates):
         driven_attrs['end']['ty'] = -0.396
         driven_attrs['end']['tz'] = -0.445
 
-        wrist_sdk_component = tek.SingleSDKComponent.create(tek_rig,
+        wrist_sdk_component = frag.SingleSDKComponent.create(frag_rig,
                                                                 drive_attr,
                                                                 driven_obj,
                                                                 side='right',
@@ -208,7 +208,7 @@ class MechArm(rig_templates.RigTemplates):
 
         driven_attrs['end']['rx'] = -15
 
-        front_shoulder_plate_sdk_component = tek.SingleSDKComponent.create(tek_rig,
+        front_shoulder_plate_sdk_component = frag.SingleSDKComponent.create(frag_rig,
                                                                    drive_attr,
                                                                    driven_obj,
                                                                    side='right',
@@ -224,7 +224,7 @@ class MechArm(rig_templates.RigTemplates):
         driven_attrs['start']['rx'] = driven_obj.rx.get()
 
         driven_attrs['end']['rx'] = 5
-        back_shoulder_plate_sdk_component = tek.SingleSDKComponent.create(tek_rig,
+        back_shoulder_plate_sdk_component = frag.SingleSDKComponent.create(frag_rig,
                                                                    drive_attr,
                                                                    driven_obj,
                                                                    side='right',
@@ -238,7 +238,7 @@ class MechArm(rig_templates.RigTemplates):
         # Tri Arm
         start_joint = pm.PyNode('upperarm_mecharm_tri_r')
         end_joint = pm.PyNode('upperarm_mecharm_tri_r')
-        mecharm_tri_component = tek.FKComponent.create(tek_rig,
+        mecharm_tri_component = frag.FKComponent.create(frag_rig,
                                                         start_joint,
                                                         end_joint,
                                                         side='right',
@@ -263,7 +263,7 @@ class MechArm(rig_templates.RigTemplates):
         driven_attrs['end']['ty'] = 0
         driven_attrs['end']['tz'] = 0
 
-        tri_sdk_component = tek.SingleSDKComponent.create(tek_rig,
+        tri_sdk_component = frag.SingleSDKComponent.create(frag_rig,
                                                                  drive_attr,
                                                                  driven_obj,
                                                                  side='right',
@@ -271,10 +271,10 @@ class MechArm(rig_templates.RigTemplates):
                                                                  driven_attrs=driven_attrs,
                                                                  drive_attr_values=(-30, 20))
 
-        tek_rig.rigTemplate.set(MechArm.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(MechArm.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class MechArmJetTri(rig_templates.RigTemplates):
@@ -287,13 +287,13 @@ class MechArmJetTri(rig_templates.RigTemplates):
     def build(self, asset_type='prop'):
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, asset_type, self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, asset_type, self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
         # world
         start_joint = pm.PyNode('root')
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                             start_joint,
                                                             'center',
                                                             'world',
@@ -302,7 +302,7 @@ class MechArmJetTri(rig_templates.RigTemplates):
         # base
         start_joint = pm.PyNode('base_triceps_r')
         end_joint = pm.PyNode('base_triceps_r')
-        tri_base_component = tek.FKComponent.create(tek_rig,
+        tri_base_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -312,7 +312,7 @@ class MechArmJetTri(rig_templates.RigTemplates):
         # hinges
         start_joint = pm.PyNode('hinge_triceps_01_r')
         end_joint = pm.PyNode('hinge_triceps_01_r')
-        upper_tri_hinge_component = tek.FKComponent.create(tek_rig,
+        upper_tri_hinge_component = frag.FKComponent.create(frag_rig,
                                                                     start_joint,
                                                                     end_joint,
                                                                     side='right',
@@ -322,7 +322,7 @@ class MechArmJetTri(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('hinge_triceps_02_r')
         end_joint = pm.PyNode('hinge_triceps_02_r')
-        lower_tri_hinge_component = tek.FKComponent.create(tek_rig,
+        lower_tri_hinge_component = frag.FKComponent.create(frag_rig,
                                                                     start_joint,
                                                                     end_joint,
                                                                     side='right',
@@ -332,7 +332,7 @@ class MechArmJetTri(rig_templates.RigTemplates):
         # jets
         start_joint = pm.PyNode('jet_triceps_01_r')
         end_joint = pm.PyNode('jet_triceps_01_r')
-        upper_tri_jet_component = tek.FKComponent.create(tek_rig,
+        upper_tri_jet_component = frag.FKComponent.create(frag_rig,
                                                                     start_joint,
                                                                     end_joint,
                                                                     side='right',
@@ -341,16 +341,16 @@ class MechArmJetTri(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('jet_triceps_02_r')
         end_joint = pm.PyNode('jet_triceps_02_r')
-        lower_tri_jet_component = tek.FKComponent.create(tek_rig,
+        lower_tri_jet_component = frag.FKComponent.create(frag_rig,
                                                                     start_joint,
                                                                     end_joint,
                                                                     side='right',
                                                                     region='tri_lower_jet')
         lower_tri_jet_component.attach_component(upper_tri_hinge_component, pm.PyNode('base_triceps_r'))
 
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class MechArmJetTop(rig_templates.RigTemplates):
@@ -363,13 +363,13 @@ class MechArmJetTop(rig_templates.RigTemplates):
     def build(self, asset_type='prop'):
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, asset_type, self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, asset_type, self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
         # world
         start_joint = pm.PyNode('root')
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                             start_joint,
                                                             'center',
                                                             'world',
@@ -378,7 +378,7 @@ class MechArmJetTop(rig_templates.RigTemplates):
         # base
         start_joint = pm.PyNode('base_upper_forearm')
         end_joint = pm.PyNode('base_upper_forearm')
-        top_base_component = tek.FKComponent.create(tek_rig,
+        top_base_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -388,7 +388,7 @@ class MechArmJetTop(rig_templates.RigTemplates):
         # hinges
         start_joint = pm.PyNode('hinge_upper_forearm')
         end_joint = pm.PyNode('hinge_upper_forearm')
-        upper_top_hinge_component = tek.FKComponent.create(tek_rig,
+        upper_top_hinge_component = frag.FKComponent.create(frag_rig,
                                                                     start_joint,
                                                                     end_joint,
                                                                     side='right',
@@ -398,7 +398,7 @@ class MechArmJetTop(rig_templates.RigTemplates):
         # jets
         start_joint = pm.PyNode('jet_upper_forearm_01')
         end_joint = pm.PyNode('jet_upper_forearm_01')
-        upper_top_jet_component = tek.FKComponent.create(tek_rig,
+        upper_top_jet_component = frag.FKComponent.create(frag_rig,
                                                                 start_joint,
                                                                 end_joint,
                                                                 side='right',
@@ -407,17 +407,17 @@ class MechArmJetTop(rig_templates.RigTemplates):
 
         start_joint = pm.PyNode('jet_upper_forearm_02')
         end_joint = pm.PyNode('jet_upper_forearm_02')
-        lower_top_jet_component = tek.FKComponent.create(tek_rig,
+        lower_top_jet_component = frag.FKComponent.create(frag_rig,
                                                                 start_joint,
                                                                 end_joint,
                                                                 side='right',
                                                                 region='top_lower_jet')
         lower_top_jet_component.attach_component(top_base_component, pm.PyNode('base_upper_forearm'))
 
-        tek_rig.rigTemplate.set(MechArm.__name__)
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.rigTemplate.set(MechArm.__name__)
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class MechArmJetSide(rig_templates.RigTemplates):
@@ -430,13 +430,13 @@ class MechArmJetSide(rig_templates.RigTemplates):
     def build(self, asset_type='prop'):
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, asset_type, self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, asset_type, self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
         # world
         start_joint = pm.PyNode('root')
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                             start_joint,
                                                             'center',
                                                             'world',
@@ -445,7 +445,7 @@ class MechArmJetSide(rig_templates.RigTemplates):
         # base
         start_joint = pm.PyNode('base_side_forearm')
         end_joint = pm.PyNode('base_side_forearm')
-        side_base_component = tek.FKComponent.create(tek_rig,
+        side_base_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -455,7 +455,7 @@ class MechArmJetSide(rig_templates.RigTemplates):
         # hinges
         start_joint = pm.PyNode('hinge_side_forearm')
         end_joint = pm.PyNode('hinge_side_forearm')
-        side_hinge_component = tek.FKComponent.create(tek_rig,
+        side_hinge_component = frag.FKComponent.create(frag_rig,
                                                                     start_joint,
                                                                     end_joint,
                                                                     side='right',
@@ -465,16 +465,16 @@ class MechArmJetSide(rig_templates.RigTemplates):
         # jets
         start_joint = pm.PyNode('jet_side_forearm')
         end_joint = pm.PyNode('jet_side_forearm')
-        side_jet_component = tek.FKComponent.create(tek_rig,
+        side_jet_component = frag.FKComponent.create(frag_rig,
                                                                 start_joint,
                                                                 end_joint,
                                                                 side='right',
                                                                 region='side_jet')
         side_jet_component.attach_component(side_base_component, pm.PyNode('base_side_forearm'))
 
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class MechArmJetBottom(rig_templates.RigTemplates):
@@ -487,13 +487,13 @@ class MechArmJetBottom(rig_templates.RigTemplates):
     def build(self, asset_type='prop'):
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, asset_type, self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, asset_type, self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
         # world
         start_joint = pm.PyNode('root')
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                             start_joint,
                                                             'center',
                                                             'world',
@@ -502,7 +502,7 @@ class MechArmJetBottom(rig_templates.RigTemplates):
         # base
         start_joint = pm.PyNode('base_under_forearm')
         end_joint = pm.PyNode('base_under_forearm')
-        bottom_base_component = tek.FKComponent.create(tek_rig,
+        bottom_base_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -512,7 +512,7 @@ class MechArmJetBottom(rig_templates.RigTemplates):
         # hinges
         start_joint = pm.PyNode('hinge_under_forearm')
         end_joint = pm.PyNode('hinge_under_forearm')
-        bottom_hinge_component = tek.FKComponent.create(tek_rig,
+        bottom_hinge_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
@@ -522,14 +522,14 @@ class MechArmJetBottom(rig_templates.RigTemplates):
         # jets
         start_joint = pm.PyNode('jet_under_forearm')
         end_joint = pm.PyNode('jet_under_forearm')
-        bottom_jet_component = tek.FKComponent.create(tek_rig,
+        bottom_jet_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side='right',
                                                             region='bottom_jet')
         bottom_jet_component.attach_component(bottom_base_component, pm.PyNode('base_under_forearm'))
 
-        tek_rig.finalize_rig(self.get_flags_path())
+        frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 

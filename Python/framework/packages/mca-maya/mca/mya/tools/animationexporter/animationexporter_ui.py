@@ -33,7 +33,7 @@ from mca.common.utils import strings
 from mca.mya.animation import time_utils
 from mca.mya.modifiers import ma_decorators
 from mca.mya.pyqt import mayawindows
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.mya.tools.animationexporter import animationexporter_utils as ae_utils
 from mca.mya.utils import optionvars
 
@@ -71,8 +71,8 @@ class AnimationExporter(mayawindows.MCAMayaWindow):
 
     def initialize_tabs(self):
         """
-        This procedurally generates new tabs and fills them out from the found tek_rigs in the scene and all currently
-        registered sequences on the TEK Sequencer.
+        This procedurally generates new tabs and fills them out from the found frag_rigs in the scene and all currently
+        registered sequences on the FRAG Sequencer.
 
         """
         ae_utils.reconnect_orphaned_sequences()
@@ -92,14 +92,14 @@ class AnimationExporter(mayawindows.MCAMayaWindow):
                 pass
         SEQUENCE_PATH_DICT = {}
 
-        tek_root_list = tek.get_all_tek_roots()
-        for tek_root in tek_root_list:
+        frag_root_list = frag.get_all_frag_roots()
+        for frag_root in frag_root_list:
             # New tab for each rig in the scene.
-            tek_rig = tek_root.get_rig()
-            if not tek_rig:
+            frag_rig = frag_root.get_rig()
+            if not frag_rig:
                 continue
-            self._rig_dict[tek_rig] = {}
-            self._rig_list.append(tek_rig)
+            self._rig_dict[frag_rig] = {}
+            self._rig_list.append(frag_rig)
 
             # Tab widget and layout
             rig_tab_widget = QtWidgets.QWidget()
@@ -110,18 +110,18 @@ class AnimationExporter(mayawindows.MCAMayaWindow):
 
             toggle_export_checkbox = QtWidgets.QCheckBox('Toggle Rig Export')
             toggle_export_checkbox.setChecked(True)
-            self._rig_dict[tek_rig]['toggle_rig_export_checkbox'] = toggle_export_checkbox
+            self._rig_dict[frag_rig]['toggle_rig_export_checkbox'] = toggle_export_checkbox
             rig_horizontal_layout.addWidget(toggle_export_checkbox)
             add_sequence_button = QtWidgets.QPushButton('Add Sequence')
-            self._rig_dict[tek_rig]['add_sequence_button'] = add_sequence_button
+            self._rig_dict[frag_rig]['add_sequence_button'] = add_sequence_button
             rig_horizontal_layout.addWidget(add_sequence_button)
 
-            rig_tab_index = self.ui.tabWidget.addTab(rig_tab_widget, f'{tek_root.namespace().replace(":", "")}:{tek_root.assetName.get()}')
+            rig_tab_index = self.ui.tabWidget.addTab(rig_tab_widget, f'{frag_root.namespace().replace(":", "")}:{frag_root.assetName.get()}')
 
             # Sequence widget and v Layout
             rig_tab_sequence_widget = QtWidgets.QWidget()
             rig_sequence_vertical_layout = QtWidgets.QVBoxLayout()
-            self._rig_dict[tek_rig]['rig_sequence_vertical_layout'] = rig_sequence_vertical_layout
+            self._rig_dict[frag_rig]['rig_sequence_vertical_layout'] = rig_sequence_vertical_layout
             rig_tab_sequence_widget.setLayout(rig_sequence_vertical_layout)
 
             scroll_area = QtWidgets.QScrollArea()
@@ -134,13 +134,13 @@ class AnimationExporter(mayawindows.MCAMayaWindow):
             add_sequence_button.pressed.connect(self.add_sequence_cmd)
             toggle_export_checkbox.pressed.connect(self._toggle_local_export)
 
-        for tek_rig, sequence_wrapper_dict in ae_utils.get_sequences().items():
-            if not tek_rig:
+        for frag_rig, sequence_wrapper_dict in ae_utils.get_sequences().items():
+            if not frag_rig:
                 continue
-            # If we have preexisting sequences registered on the TEKSequencer load those into the GUI.
+            # If we have preexisting sequences registered on the FRAGSequencer load those into the GUI.
             # Order the entries based on the ui_index value for each entry.
             for index, (_, sequence_wrapper) in enumerate(sorted(sequence_wrapper_dict.items(), key=lambda sequence_tuple: sequence_tuple[1].ui_index)):
-                sequence_widget = self.add_sequence(tek_rig)
+                sequence_widget = self.add_sequence(frag_rig)
 
                 sequence_widget.ui.sequence_export_path_lineEdit.setText(sequence_wrapper.sequence_path)
                 sequence_widget.ui.sequence_start_frame_lineEdit.setText(str(sequence_wrapper.frame_range[0]))
@@ -150,21 +150,21 @@ class AnimationExporter(mayawindows.MCAMayaWindow):
                 sequence_widget.ui.start_to_zero_checkBox.setChecked(sequence_wrapper.start_at_zero)
                 sequence_widget.ui.sequence_name_lineEdit.setText(os.path.basename(sequence_wrapper.sequence_path).replace('.fbx', ''))
                 sequence_widget.set_sequence()
-            self._add_vertical_spacer(tek_rig)
+            self._add_vertical_spacer(frag_rig)
 
-    def _add_vertical_spacer(self, tek_rig):
+    def _add_vertical_spacer(self, frag_rig):
         """
                 This removes and then adds the vertical spacer to the end of the main v_layout.
 
                 """
         try:
             if self.vertical_spacer:
-                self._rig_dict[tek_rig]['rig_sequence_vertical_layout'].removeWidget(self.vertical_spacer.widget())
+                self._rig_dict[frag_rig]['rig_sequence_vertical_layout'].removeWidget(self.vertical_spacer.widget())
         except:
             pass
 
         self.vertical_spacer = QSpacerItem(40, 20, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        self._rig_dict[tek_rig]['rig_sequence_vertical_layout'].addItem(self.vertical_spacer)
+        self._rig_dict[frag_rig]['rig_sequence_vertical_layout'].addItem(self.vertical_spacer)
 
     def setup_signals(self):
         """
@@ -190,52 +190,52 @@ class AnimationExporter(mayawindows.MCAMayaWindow):
 
         """
         index = self.ui.tabWidget.currentIndex()
-        tek_rig = self._rig_list[index]
+        frag_rig = self._rig_list[index]
 
-        self.toggle_export([tek_rig], self._rig_dict[tek_rig]['toggle_rig_export_checkbox'])
+        self.toggle_export([frag_rig], self._rig_dict[frag_rig]['toggle_rig_export_checkbox'])
 
-    def toggle_export(self, tek_rig_list, toggle_checkbox):
+    def toggle_export(self, frag_rig_list, toggle_checkbox):
         """
-        For each sequence entry belonging to the list of TEK Rigs, toggle their export option to match the checkbox.
+        For each sequence entry belonging to the list of FRAG Rigs, toggle their export option to match the checkbox.
 
-        :param list[TEKRig] tek_rig_list:
+        :param list[FRAGRig] frag_rig_list:
         :param QtWidgets.QCheckbox toggle_checkbox: The checkbox that's currently being toggled.
         """
         global SEQUENCE_PATH_DICT
         check_val = toggle_checkbox.isChecked()
 
         for sequence_widget in SEQUENCE_PATH_DICT.values():
-            if sequence_widget.tek_rig in tek_rig_list:
+            if sequence_widget.frag_rig in frag_rig_list:
                 sequence_widget.ui.export_sequence_checkBox.setChecked(not check_val)
 
     def add_sequence_cmd(self):
         """
-        Finds the active UI tab and looks up the appropriate TEKRig by its index.
+        Finds the active UI tab and looks up the appropriate FRAGRig by its index.
 
         """
         index = self.ui.tabWidget.currentIndex()
-        tek_rig = self._rig_list[index]
+        frag_rig = self._rig_list[index]
 
-        self.add_sequence(tek_rig)
-        asset_id = tek_rig.get_asset_id(tek_rig)
+        self.add_sequence(frag_rig)
+        asset_id = frag_rig.get_asset_id(frag_rig)
         dcc_tracking.ddc_tool_entry_thead(self.add_sequence_cmd, asset_id=asset_id)
 
-    def add_sequence(self, tek_rig):
+    def add_sequence(self, frag_rig):
         """
         Add a new sequencer UI to the active tab.
 
-        :param TEKRig tek_rig:
+        :param FRAGRig frag_rig:
         :return: The widget that represents the new sequence that was added.
         :rtype: AnimationExporterSequence
         """
-        if not tek_rig.pynode.exists():
+        if not frag_rig.pynode.exists():
             self.initialize_tabs()
 
-        parent_layout = self._rig_dict[tek_rig]['rig_sequence_vertical_layout']
-        sequence_frame = SequenceFrameButton(tek_rig, parent=self, parent_layout=parent_layout)
+        parent_layout = self._rig_dict[frag_rig]['rig_sequence_vertical_layout']
+        sequence_frame = SequenceFrameButton(frag_rig, parent=self, parent_layout=parent_layout)
         sequence_widget = sequence_frame.sequence_widget
         parent_layout.addWidget(sequence_frame)
-        self._add_vertical_spacer(tek_rig)
+        self._add_vertical_spacer(frag_rig)
         return sequence_widget
 
     def export_sequences(self, all_rigs=False):
@@ -247,28 +247,28 @@ class AnimationExporter(mayawindows.MCAMayaWindow):
         global SEQUENCE_PATH_DICT
 
         sequences_to_skip = []
-        active_tek_rig = self._rig_list[self.ui.tabWidget.currentIndex()]
+        active_frag_rig = self._rig_list[self.ui.tabWidget.currentIndex()]
 
         # Collect all sequence paths which should be skipped.
         for sequence_path, sequencer_widget in SEQUENCE_PATH_DICT.items():
             if not sequencer_widget.ui.export_sequence_checkBox.isChecked():
                 if all_rigs:
                     sequences_to_skip.append(sequence_path)
-                elif sequencer_widget.tek_rig == active_tek_rig:
+                elif sequencer_widget.frag_rig == active_frag_rig:
                     sequences_to_skip.append(sequence_path)
 
-        ae_utils.export_tek_sequences_cmd(tek_rig_list=self._rig_list, sequences_to_skip=sequences_to_skip)
-        tek_list = list(set(self._rig_list))
-        for tek_rig in tek_list:
-            if not pm.objExists(tek_rig):
-                messages.info_message('Export Failure', 'One or more tek rigs were unable to be located in the scene. Please ensure that the rig exists in the scene.', icon='error')
+        ae_utils.export_frag_sequences_cmd(frag_rig_list=self._rig_list, sequences_to_skip=sequences_to_skip)
+        frag_list = list(set(self._rig_list))
+        for frag_rig in frag_list:
+            if not pm.objExists(frag_rig):
+                messages.info_message('Export Failure', 'One or more frag rigs were unable to be located in the scene. Please ensure that the rig exists in the scene.', icon='error')
                 return
-            asset_id = tek_rig.get_asset_id(tek_rig)
+            asset_id = frag_rig.get_asset_id(frag_rig)
             dcc_tracking.ddc_tool_entry_thead(self.export_sequences, asset_id=asset_id)
 
 
 class SequenceFrameButton(QFrame):
-    def __init__(self, tek_rig, parent=None, parent_layout=None):
+    def __init__(self, frag_rig, parent=None, parent_layout=None):
         super().__init__(parent=parent)
         self.main_ui = parent
         self.parent_layout = parent_layout
@@ -307,7 +307,7 @@ class SequenceFrameButton(QFrame):
         #self.sequence_layout.setContentsMargins(2, 0, 1, 0)
         self.sequence_layout.setObjectName(f'{guid}_layout')
 
-        self.sequence_widget = AnimationExporterSequence(tek_rig, parent, self)
+        self.sequence_widget = AnimationExporterSequence(frag_rig, parent, self)
         self.sequence_layout.addWidget(self.sequence_widget.ui)
 
         #############
@@ -354,13 +354,13 @@ class SequenceFrameButton(QFrame):
 
 
 class AnimationExporterSequence(common_windows.ParentableWidget):
-    def __init__(self, tek_rig, parent=None, parent_frame=None):
+    def __init__(self, frag_rig, parent=None, parent_frame=None):
         root_path = os.path.dirname(os.path.realpath(__file__))
         ui_path = os.path.join(root_path, 'ui', 'animationexporter_sequenceUI.ui')
         super().__init__(parent=parent,
                          ui_path=ui_path)
 
-        self.tek_rig = tek_rig
+        self.frag_rig = frag_rig
         self.parent_frame = parent_frame
         self.sequence_path = None
 
@@ -368,7 +368,7 @@ class AnimationExporterSequence(common_windows.ParentableWidget):
 
     def setup_signals(self):
         """
-        Connect most UI elements to the set_sequence function which handles updating the TEKSequencer node.
+        Connect most UI elements to the set_sequence function which handles updating the FRAGSequencer node.
 
         """
         self.ui.sequence_start_frame_lineEdit.editingFinished.connect(self.set_sequence)
@@ -408,13 +408,13 @@ class AnimationExporterSequence(common_windows.ParentableWidget):
         if self.ui.sequence_export_path_lineEdit.text() or not new_name:
             return
 
-        mca_asset = assetlist.get_asset_by_id(self.tek_rig.get_asset_id(self.tek_rig))
+        mca_asset = assetlist.get_asset_by_id(self.frag_rig.get_asset_id(self.frag_rig))
         animation_path = None
         if mca_asset:
             animation_path = path_utils.to_relative_path(mca_asset.animations_path)
 
         if animation_path:
-            # Only update the UI and TEK Sequencer if we had a valid path resolution.
+            # Only update the UI and FRAG Sequencer if we had a valid path resolution.
             self.set_sequence(os.path.join(animation_path, f'{new_name}.fbx'))
 
     def _find_file(self):
@@ -463,7 +463,7 @@ class AnimationExporterSequence(common_windows.ParentableWidget):
 
     def remove_sequence(self):
         """
-        Remove the sequence from the TEK Sequencer, the UI and close this instance of a sequence.
+        Remove the sequence from the FRAG Sequencer, the UI and close this instance of a sequence.
 
         """
         self.ui.close()
@@ -471,7 +471,7 @@ class AnimationExporterSequence(common_windows.ParentableWidget):
         self.parent_frame.remove_frame()
 
         sequence_path = self.ui.sequence_export_path_lineEdit.text()
-        ae_utils.remove_sequence(sequence_path, self.tek_rig)
+        ae_utils.remove_sequence(sequence_path, self.frag_rig)
 
         global SEQUENCE_PATH_DICT
         SEQUENCE_PATH_DICT.pop(self.sequence_path, None)
@@ -479,12 +479,12 @@ class AnimationExporterSequence(common_windows.ParentableWidget):
     @ma_decorators.keep_current_frame_decorator
     def set_sequence(self, found_sequence_path=None):
         """
-        Register an update to this sequence UI to the TEK Sequencer.
+        Register an update to this sequence UI to the FRAG Sequencer.
 
         :param str found_sequence_path: The relative path to a fbx file that this sequence represents.
         """
-        if not self.tek_rig.pynode.exists():
-            logger.warning('Refresh the main UI, The TEK Rig associated with this sequence has been lost.')
+        if not self.frag_rig.pynode.exists():
+            logger.warning('Refresh the main UI, The FRAG Rig associated with this sequence has been lost.')
             return
 
         found_sequence_path = found_sequence_path if isinstance(found_sequence_path, str) and found_sequence_path else path_utils.to_relative_path(self.ui.sequence_export_path_lineEdit.text())
@@ -507,11 +507,11 @@ class AnimationExporterSequence(common_windows.ParentableWidget):
         SEQUENCE_PATH_DICT[found_sequence_path] = self
 
         if self.sequence_path != found_sequence_path:
-            ae_utils.remove_sequence(self.sequence_path, self.tek_rig)
+            ae_utils.remove_sequence(self.sequence_path, self.frag_rig)
             SEQUENCE_PATH_DICT.pop(self.sequence_path, None)
 
         frame_range = self._get_frame_range()
-        ae_utils.set_sequence(found_sequence_path, self.tek_rig, frame_range=frame_range,
+        ae_utils.set_sequence(found_sequence_path, self.frag_rig, frame_range=frame_range,
                               start_at_zero=self.ui.start_to_zero_checkBox.isChecked(),
                               root_to_origin=self.ui.root_to_origin_checkBox.isChecked(),
                               sequence_notes=self.ui.sequence_notes_lineEdit.text())
@@ -542,11 +542,11 @@ class AnimationExporterSequence(common_windows.ParentableWidget):
         # Create a filter list of other animations assigned to this rig and exclude them before running an export for
         # this sequence.
         rig_sequences = ae_utils.get_sequences()
-        if not pm.objExists(self.tek_rig):
-            logger.warning('Refresh the main UI, The TEK Rig associated with this sequence has been lost.')
-            messages.info_message('Export Failure', 'One or more tek rigs were unable to be located in the scene. Please ensure that the rig exists in the scene.', icon='error')
+        if not pm.objExists(self.frag_rig):
+            logger.warning('Refresh the main UI, The FRAG Rig associated with this sequence has been lost.')
+            messages.info_message('Export Failure', 'One or more frag rigs were unable to be located in the scene. Please ensure that the rig exists in the scene.', icon='error')
             return
-        ae_utils.export_tek_sequences_cmd(tek_rig_list=[self.tek_rig], sequences_to_skip=[x for x in rig_sequences[self.tek_rig] if x != self.sequence_path])
+        ae_utils.export_frag_sequences_cmd(frag_rig_list=[self.frag_rig], sequences_to_skip=[x for x in rig_sequences[self.frag_rig] if x != self.sequence_path])
 
     @decorators.track_fnc
     def move_sequence(self, positive_move=True):
@@ -555,7 +555,7 @@ class AnimationExporterSequence(common_windows.ParentableWidget):
 
         :param bool positive_move: If the animation should be moved up or down on the list.
         """
-        if ae_utils.reorder_sequence(self.sequence_path, self.tek_rig, positive_move):
+        if ae_utils.reorder_sequence(self.sequence_path, self.frag_rig, positive_move):
             self.parent_frame.main_ui.initialize_tabs()
 
     @decorators.track_fnc

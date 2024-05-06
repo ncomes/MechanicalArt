@@ -14,7 +14,7 @@ import pymel.core as pm
 # mca python imports
 from mca.common.utils import pyutils
 from mca.common.textio import jsonio
-from mca.mya.rigging.tek import tek_rig
+from mca.mya.rigging.frag import frag_rig
 
 
 CINE_SEQ_DATA = {'seq_name': '',
@@ -199,7 +199,7 @@ class CineShotData(CineSequenceData):
 			shot_camera = shot_camera.name()
 		shot_start = int(maya_node.startFrame.get())
 		shot_end = int(maya_node.endFrame.get())
-		shot_chars = tek_rig.get_tek_rigs()
+		shot_chars = frag_rig.get_frag_rigs()
 		node_name = maya_node.name()
 
 		props = None

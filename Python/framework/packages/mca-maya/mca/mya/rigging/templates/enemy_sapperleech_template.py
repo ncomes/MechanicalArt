@@ -11,7 +11,7 @@ import pymel.core as pm
 # mca python imports
 from mca.common.utils import lists
 
-from mca.mya.rigging import chain_markup, tek
+from mca.mya.rigging import chain_markup, frag
 from mca.mya.utils import attr_utils
 
 from mca.mya.rigging.templates import rig_templates
@@ -29,17 +29,17 @@ class SapperLeechRig(rig_templates.RigTemplates):
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, 'combatant', self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, 'combatant', self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        flags_all = tek_rig.flagsAll.get()
+        flags_all = frag_rig.flagsAll.get()
 
         # Core Components
         # world
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                      root_joint,
                                                      'center',
                                                      'world')
@@ -48,7 +48,7 @@ class SapperLeechRig(rig_templates.RigTemplates):
         offset_flag = world_component.offset_flag
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='root',
                                     source_object=root_flag,
@@ -57,7 +57,7 @@ class SapperLeechRig(rig_templates.RigTemplates):
 
         # Cog
         pelvis_start, pelvis_end = skel_hierarchy.get_chain('body', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                  pelvis_start,
                                                  pelvis_start,
                                                  'center',
@@ -68,7 +68,7 @@ class SapperLeechRig(rig_templates.RigTemplates):
 
         # util warp
         util_warp_joint = skel_hierarchy.get_start('utility_warp', 'center')
-        util_warp_component = tek.FKComponent.create(tek_rig,
+        util_warp_component = frag.FKComponent.create(frag_rig,
                                                       util_warp_joint,
                                                       util_warp_joint,
                                                       side='center',
@@ -82,7 +82,7 @@ class SapperLeechRig(rig_templates.RigTemplates):
         # Center Components
         ###
         # Pelvis
-        pelvis_component = tek.PelvisComponent.create(tek_rig,
+        pelvis_component = frag.PelvisComponent.create(frag_rig,
                                                        pelvis_start,
                                                        pelvis_end,
                                                        'center',
@@ -93,14 +93,14 @@ class SapperLeechRig(rig_templates.RigTemplates):
 
         # Spine
         spine_start, spine_end = skel_hierarchy.get_chain('spine', 'center')
-        spine_component = tek.RFKComponent.create(tek_rig,
+        spine_component = frag.RFKComponent.create(frag_rig,
                                                    spine_start,
                                                    spine_end,
                                                    'center',
                                                    'spine')
         spine_component.attach_component(cog_component, pm.PyNode(cog_flag))
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='spine_mid_bottom',
                                     source_object=spine_component.mid_flags[0],
@@ -115,7 +115,7 @@ class SapperLeechRig(rig_templates.RigTemplates):
         start_helper_joint = skel_hierarchy.get_start('tongue_start', 'center')
         mid_helper_joint = skel_hierarchy.get_start('tongue_helper', 'center')
         end_helper_joint = skel_hierarchy.get_start('tongue_end', 'center')
-        tongue_component = tek.SplineIKComponent.create(tek_rig,
+        tongue_component = frag.SplineIKComponent.create(frag_rig,
                                                          tongue_start,
                                                          tongue_end,
                                                          end_helper_joint,
@@ -126,13 +126,13 @@ class SapperLeechRig(rig_templates.RigTemplates):
         tongue_component.attach_component(spine_component, tongue_start.getParent())
         tongue_flags = tongue_component.get_flags()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='tongue',
                                     source_object=tongue_flags[2],
                                     target_list=[tongue_flags[0], offset_flag])
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='tongue_mid',
                                     source_object=tongue_flags[-1],
@@ -141,7 +141,7 @@ class SapperLeechRig(rig_templates.RigTemplates):
         for side in ['left', 'right']:
             for tentacle_name in ['tentacle_upper', 'tentacle_lower']:
                 start_joint, end_joint = skel_hierarchy.get_chain(tentacle_name, side)
-                tentacle_component = tek.FKComponent.create(tek_rig,
+                tentacle_component = frag.FKComponent.create(frag_rig,
                                                         start_joint,
                                                         end_joint,
                                                         side=side,
@@ -152,7 +152,7 @@ class SapperLeechRig(rig_templates.RigTemplates):
             for arm_name in ['arm', 'arm_back', 'arm_front', 'arm_back_mid', 'arm_body_front', 'arm_body', 'arm_head_front']:
                 start_joint, end_joint = skel_hierarchy.get_chain(arm_name, side)
                 if start_joint:
-                    arm_component = tek.FKComponent.create(tek_rig,
+                    arm_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side=side,
@@ -164,7 +164,7 @@ class SapperLeechRig(rig_templates.RigTemplates):
             for hand_name in ['hand_head_back', 'hand_head_front', 'hand_back', 'hand_front', 'hand_back_mid', 'hand_front_mid', 'hand_body_front', 'hand_body', 'hand']:
                 start_joint = skel_hierarchy.get_start(hand_name, side)
                 if start_joint:
-                    hand_component = tek.FKComponent.create(tek_rig,
+                    hand_component = frag.FKComponent.create(frag_rig,
                                                              start_joint,
                                                              start_joint,
                                                              side=side,
@@ -176,7 +176,7 @@ class SapperLeechRig(rig_templates.RigTemplates):
                     search_name = hand_name.replace('hand', sub_name)
                     start_joint = skel_hierarchy.get_start(search_name, side)
                     if start_joint:
-                        sub_component = tek.FKComponent.create(tek_rig,
+                        sub_component = frag.FKComponent.create(frag_rig,
                                                                 start_joint,
                                                                 start_joint,
                                                                 side=side,
@@ -186,7 +186,7 @@ class SapperLeechRig(rig_templates.RigTemplates):
             for foot_name in ['foot', 'foot_front']:
                 start_joint, end_joint = skel_hierarchy.get_chain(foot_name, side)
                 if start_joint:
-                    sub_component = tek.FKComponent.create(tek_rig,
+                    sub_component = frag.FKComponent.create(frag_rig,
                                                             start_joint,
                                                             end_joint,
                                                             side=side,
@@ -194,7 +194,7 @@ class SapperLeechRig(rig_templates.RigTemplates):
                     sub_component.attach_component(spine_component, start_joint.getParent())
 
         if finalize:
-            tek_rig.rigTemplate.set(SapperLeechRig.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(SapperLeechRig.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig

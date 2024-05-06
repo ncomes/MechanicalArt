@@ -834,7 +834,7 @@ def test_multivariate_normal_dimensions_mismatch():
 
     # A simple check that the right error message was passed along. Checking
     # that the entire message is there, word for word, would be somewhat
-    # tekile, so we just check for the leading part.
+    # fragile, so we just check for the leading part.
     try:
         multivariate_normal(mu, sigma)
     except ValueError as e:

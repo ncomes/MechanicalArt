@@ -1,4 +1,4 @@
-''' Utilities to allow inserting docstring tekments for common
+''' Utilities to allow inserting docstring fragments for common
 parameters into function and method docstrings'''
 
 import numpy as np

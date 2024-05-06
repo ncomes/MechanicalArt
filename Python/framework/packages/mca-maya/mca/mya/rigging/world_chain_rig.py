@@ -10,7 +10,7 @@ from __future__ import print_function, division, absolute_import
 import pymel.core as pm
 
 from mca.mya.utils import dag
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 
 
 def world_chain(joint, scale=1.0, orientation=(-90, 0, 0)):
@@ -28,9 +28,9 @@ def world_chain(joint, scale=1.0, orientation=(-90, 0, 0)):
 
     # create flags
 
-    world_flag = tek_flag.Flag.create(joint, label='world', scale=scale, orientation=orientation)
-    root_flag = tek_flag.Flag.create(joint, label='root', scale=scale*.85, orientation=orientation)
-    offset_flag = tek_flag.Flag.create(joint, label='world_offset', scale=scale*.65, orientation=orientation)
+    world_flag = frag_flag.Flag.create(joint, label='world', scale=scale, orientation=orientation)
+    root_flag = frag_flag.Flag.create(joint, label='root', scale=scale*.85, orientation=orientation)
+    offset_flag = frag_flag.Flag.create(joint, label='world_offset', scale=scale*.65, orientation=orientation)
 
     offset_align_transform = offset_flag.get_align_transform()
     pm.parent(offset_align_transform, world_flag)

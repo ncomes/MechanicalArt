@@ -27,7 +27,7 @@ from mca.common.modifiers import decorators
 
 from mca.mya.animation import time_utils
 from mca.mya.cinematics import cine_sequence_nodes, shot_utils, cine_file_utils
-from mca.mya.rigging.tek import cine_sequence_component
+from mca.mya.rigging.frag import cine_sequence_component
 from mca.mya.pyqt.utils import ma_main_window
 from mca.mya.utils import namespace, camera_utils
 

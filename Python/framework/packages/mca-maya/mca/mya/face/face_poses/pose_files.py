@@ -14,7 +14,7 @@ import os
 import pymel.core as pm
 # mca python imports
 from mca.mya.animation import time_utils
-from mca.mya.rigging import tek, rig_utils, chain_markup
+from mca.mya.rigging import frag, rig_utils, chain_markup
 from mca.mya.utils import fbx_utils
 from mca.mya.face.face_utils import face_util
 from mca.mya.modeling import face_model
@@ -32,15 +32,15 @@ def create_face_pose_file(create_skeleton=True):
 	:rtype: pm.nt.Joint
 	"""
 	
-	all_components = tek.get_all_tek_nodes()
+	all_components = frag.get_all_frag_nodes()
 	face_components = [x for x in all_components if x.pynode.hasAttr('isFragFace')]
 	[x.keyframe_flags_max_values() for x in face_components]
 	time_utils.reframe_visible_range()
 	if create_skeleton:
-		tek_rig = tek.get_tek_rig(face_components[0])
+		frag_rig = frag.get_frag_rig(face_components[0])
 		start_frame = pm.playbackOptions(q=True, min=True)
 		end_frame = pm.playbackOptions(q=True, max=True)
-		return rig_utils.bake_skeleton_from_rig(tek_rig=tek_rig,
+		return rig_utils.bake_skeleton_from_rig(frag_rig=frag_rig,
 												start_frame=start_frame,
 												end_frame=end_frame)
 	return

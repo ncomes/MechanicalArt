@@ -54,7 +54,7 @@ def startup_init(skip_dialog=False):
 
     # make sure there are no old windows open
     maya_main_window = ma_main_window.get_maya_window()
-    maya_main_window.setWindowIcon(resources.icon(r'company_logos\jkg.png'))
+    maya_main_window.setWindowIcon(resources.icon(r'company_logos\mca.png'))
     windows.close_all_mca_docked_windows(maya_main_window)
     if not skip_dialog:
         logger.info('Double Checked to make sure all windows are closed...')

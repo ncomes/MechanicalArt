@@ -11,7 +11,7 @@ import pymel.core as pm
 
 from mca.mya.utils import dag, naming
 from mca.mya.rigging import rig_utils
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 from mca.mya.rigging import ik_utils
 
 
@@ -59,20 +59,20 @@ def ik_joint_chain(start_joint,
     ik_solver = ik_handle_node.ikSolver.get()
 
     # Create flags
-    ik_flag = tek_flag.Flag.create(end_joint,
+    ik_flag = frag_flag.Flag.create(end_joint,
                                     scale=scale,
                                     label='{0}_{1}'.format(side, region),
                                     add_align_transform=True,
                                     orientation=ik_flag_orient)
 
-    ik_flag_offset = tek_flag.Flag.create(end_joint,
+    ik_flag_offset = frag_flag.Flag.create(end_joint,
                                            scale=scale*.75,
                                            label='{0}_{1}_offset'.format(side, region),
                                            add_align_transform=True,
                                            orientation=ik_flag_orient,
                                            is_detail=True)
 
-    pv_flag = tek_flag.Flag.create(pv_locator,
+    pv_flag = frag_flag.Flag.create(pv_locator,
                                     scale=scale,
                                     label='{0}_{1}_pv'.format(side, region),
                                     add_align_transform=True,

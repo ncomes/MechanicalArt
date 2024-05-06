@@ -30,7 +30,7 @@ logger = log.MCA_LOGGER
 
 # Common misspellings due to skeleton mirrors.
 NAMING_ERROR_LIST = ['rower', 'reg']
-BLACKLIST_ATTRS = ['tekParent', 'tekRootJoint', 'noStaticAnim', 'noExport', 'SDK_Parent', 'driver_flag']
+BLACKLIST_ATTRS = ['fragParent', 'fragRootJoint', 'noStaticAnim', 'noExport', 'SDK_Parent', 'driver_flag']
 
 DEFAULT_COLOR = QtGui.QColor(1, 0, 0, 0)
 NEGATIVE_COLOR = QtGui.QColor('#521424')

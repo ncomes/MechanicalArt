@@ -1,0 +1,7 @@
+The original unreal.py file can be found:
+add to your interpreter
+[Current Project Directory]\Intermediate\PythonStub\unreal.py
+
+You will also need to raise the maximum Intellisense file size by navigating to Help > Edit Custom Properties and adding the following:
+
+idea.max.intellisense.filesize = 25000

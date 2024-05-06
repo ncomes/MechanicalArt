@@ -21,23 +21,22 @@ logger = log.MCA_LOGGER
 CONFIG_DICT = None
 
 
-def read_config_file(config_file):
+def read_config_file(config_file=None):
     """
-    Reads the config file - This is a file that states what directories should be loaded.
+    Returns the Dictionary that defines the boot sequence for dcc apps.
+
     :param config_file:
-    :return: Returns a dictionary of the config file
-    :rtype: Dictionary
+    :return: Returns the Dictionary that defines the boot sequence for dcc apps.
+    :rtype: dict
     """
 
-    if not os.path.exists(config_file):
-        logger.warning(f'the config file: {config_file} - does not exist')
-        return
-
-    config_data = yamlio.read_yaml_file(config_file)
-    return config_data
+    if not config_file:
+        config_file = project_paths.get_package_python_config_path()
+    result = yamlio.read_yaml_file(config_file)
+    return result
 
 
-def get_config_packages(config_file, dcc='maya', skip_dialog=False):
+def get_config_packages(dcc='maya', config_file=None, skip_dialog=False):
     """
     Returns the paths that need to be registered in the sys paths.
 
@@ -48,29 +47,24 @@ def get_config_packages(config_file, dcc='maya', skip_dialog=False):
     """
 
     # get the config file.  Should be located at the top level directory
-    if not config_file:
-        config_file = project_paths.get_package_python_config_path()
+    if not config_file or not isinstance(config_file, dict):
+        config_file = read_config_file()
 
-    # make sure the config file is in yaml format
-    if not isinstance(config_file, dict):
-        config_file = yamlio.read_yaml_file(config_file)
-
-    # The yaml file starts with mca_directories.  Lets strip that namespace out.
+    # The yaml file starts with jkg_directories.  Lets strip that namespace out.
     directories = config_file.get('mca_directories', None)
 
     if not directories:
         if not skip_dialog:
             logger.warning('The config file does not have the directories data.')
-        return False
+        return []
 
-    # Get the root path to the pacakges
+    # Get the root path to the packages
     package_folder = project_paths.get_mca_package_path()
-
-    loaded = []
+    load = []
     dir_paths = []
 
     # Now we loop through and find the software we want to load and put together the package paths
-    # that need to be loaded
+    # that need to be load
     package_name = None
     for software in directories.keys():
         if software == dcc:
@@ -81,13 +75,18 @@ def get_config_packages(config_file, dcc='maya', skip_dialog=False):
 
     depots = directories[package_name].get('depots', None)
     if depots:
-        loaded = loaded + depots
+        load = load + depots
     for depot in depots:
         dir_path = os.path.normpath(os.path.join(package_folder, depot))
         if not os.path.exists(dir_path):
             continue
         dir_paths.append(dir_path)
-    return [dir_paths, loaded]
+    dcc_names = [x.split('-')[-1] for x in load]
+    for x, name in enumerate(dcc_names):
+        if name == 'maya':
+            dcc_names[x] = 'mya'
+
+    return [dir_paths, dcc_names]
 
 
 def create_sys_packages(config_file, dcc='maya', skip_dialog=False):
@@ -100,7 +99,7 @@ def create_sys_packages(config_file, dcc='maya', skip_dialog=False):
     :rtype: list[str]
     """
 
-    directories, loaded = get_config_packages(config_file, dcc=dcc, skip_dialog=False)
+    directories, loaded = get_config_packages(dcc=dcc, config_file=config_file, skip_dialog=False)
     dir_paths = []
     for dir_path in directories:
         if dir_path not in sys.path:

@@ -192,7 +192,7 @@ def _expm_multiply_simple(A, B, t=1.0, balance=False):
     else:
         ell = 2
         norm_info = LazyOperatorNormInfo(t*A, A_1_norm=t*A_1_norm, ell=ell)
-        m_star, s = _tekment_3_1(norm_info, n0, tol, ell=ell)
+        m_star, s = _fragment_3_1(norm_info, n0, tol, ell=ell)
     return _expm_multiply_simple_core(A, B, t, mu, m_star, s, tol, balance)
 
 
@@ -416,7 +416,7 @@ def _compute_p_max(m_max):
     return max(p for p in range(p_low, p_high+1) if p*(p-1) <= m_max + 1)
 
 
-def _tekment_3_1(norm_info, n0, tol, m_max=55, ell=2):
+def _fragment_3_1(norm_info, n0, tol, m_max=55, ell=2):
     """
     A helper function for the _expm_multiply_* functions.
 
@@ -445,7 +445,7 @@ def _tekment_3_1(norm_info, n0, tol, m_max=55, ell=2):
 
     Notes
     -----
-    This is code tekment (3.1) in Al-Mohy and Higham (2011).
+    This is code fragment (3.1) in Al-Mohy and Higham (2011).
     The discussion of default values for m_max and ell
     is given between the definitions of equation (3.11)
     and the definition of equation (3.12).
@@ -601,7 +601,7 @@ def _expm_multiply_interval(A, B, start=None, stop=None,
     if t*A_1_norm == 0:
         m_star, s = 0, 1
     else:
-        m_star, s = _tekment_3_1(norm_info, n0, tol, ell=ell)
+        m_star, s = _fragment_3_1(norm_info, n0, tol, ell=ell)
 
     # Compute the expm action up to the initial time point.
     X[0] = _expm_multiply_simple_core(A, B, t_0, mu, m_star, s)
@@ -640,7 +640,7 @@ def _expm_multiply_interval_core_0(A, X, h, mu, q, norm_info, tol, ell, n0):
         m_star, s = 0, 1
     else:
         norm_info.set_scale(1./q)
-        m_star, s = _tekment_3_1(norm_info, n0, tol, ell=ell)
+        m_star, s = _fragment_3_1(norm_info, n0, tol, ell=ell)
         norm_info.set_scale(1)
 
     for k in range(q):

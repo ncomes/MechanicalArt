@@ -11,7 +11,7 @@ from mca.common.textio import jsonio
 from mca.common.utils import pyutils
 from mca.common.paths import paths
 from mca.mya.face import face_vertex_data, joints_data
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 
 logger = log.MCA_LOGGER
 
@@ -118,7 +118,7 @@ class SourceFaceData:
 		blend_shapes = []
 		for region in regions:
 			region_category = self.data.regions[region].get('mesh_category', None)
-			if region_category == tek.FACE_BLENDSHAPE_CATEGORY:
+			if region_category == frag.FACE_BLENDSHAPE_CATEGORY:
 				blend_shapes.append(region)
 		return blend_shapes
 	
@@ -135,7 +135,7 @@ class SourceFaceData:
 		blend_shapes = []
 		for region in regions:
 			region_category = self.data.regions[region].get('mesh_category', None)
-			if region_category == tek.FACE_BLENDSHAPE_CATEGORY:
+			if region_category == frag.FACE_BLENDSHAPE_CATEGORY:
 				blend_shapes.append(region)
 		skinned_regions = [x for x in regions if not x in blend_shapes]
 		return skinned_regions
@@ -289,7 +289,7 @@ class SourceFaceData:
 		:return: Returns an instance of ParameterData.
 		:rtype: ParameterData
 		"""
-		return tek.ParameterData(self.primary_parameters)
+		return frag.ParameterData(self.primary_parameters)
 	
 	def get_counterpart(self, type_name, region_name):
 		"""
@@ -1057,7 +1057,7 @@ class FaceMeshRegionData(SourceFaceData):
 		:rtype: ParameterData
 		"""
 		
-		return tek.ParameterData(self.parameters)
+		return frag.ParameterData(self.parameters)
 	
 	@property
 	def solve_parameters(self):

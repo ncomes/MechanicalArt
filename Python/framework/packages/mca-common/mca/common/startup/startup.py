@@ -124,7 +124,7 @@ def shutdown(dcc, config_file=None, skip_dialog=False):
     # Remove all of the paths in the sys.path
     config.remove_sys_packages(config_file=config_file, dcc=dcc, skip_dialog=skip_dialog)
     if not skip_dialog:
-        logger.info('Shutting down MAT Common framework environment')
+        logger.info('Shutting down MCA Common framework environment')
     # Remove all of the environment variables
     common_env.remove_all_mca_envs()
     # Reloads the sys.path
@@ -147,24 +147,22 @@ def run_packages_startups(config_file=None, dcc='maya', do_shutdown=False, skip_
     :param bool do_shutdown: If True, will run the shutdown instead of the startups.
     :param bool skip_dialog: If True, nothing will be written to the console.
     """
-    
-    if not config_file:
-        config_file = CONFIG_FILE
-    
-    dir_path, non_loaded = config.get_config_packages(config_file, dcc=dcc, skip_dialog=True)
+
+    dir_path, load = config.get_config_packages(dcc=dcc, config_file=config_file, skip_dialog=True)
+
     if not dir_path:
         if not skip_dialog:
             logger.info('No other packages were loaded.  Cannot find the startup functions.')
             return
-    for path in dir_path:
-        depot_name = packages.package_depot_name(os.path.join(path, consts.PKG_NAME))
+    for x, path in enumerate(dir_path):
+        depot_name = load[x]
         if not depot_name or depot_name == 'common':
             continue
-        
-        mod = 'init'
+
+        mod = 'startup_init'
         if do_shutdown:
             mod = 'shutdown'
-        
+
         string_command = f'from mca.{depot_name}.startup import startup as stup; stup.{mod}()'
         exec(string_command)
 

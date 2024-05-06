@@ -59,7 +59,7 @@ Background information
 
 Fourier analysis is fundamentally a method for expressing a function as a
 sum of periodic components, and for recovering the function from those
-tek  When both the function and its Fourier transform are
+frag  When both the function and its Fourier transform are
 replaced with discretized counterparts, it is called the discrete Fourier
 transform (DFT).  The DFT has become a mainstay of numerical computing in
 part because of a very fast algorithm for computing it, called the Fast
@@ -150,7 +150,7 @@ When the input is purely real, its transform is Hermitian, i.e., the
 component at frequency :math:`f_k` is the complex conjugate of the
 component at frequency :math:`-f_k`, which means that for real
 inputs there is no information in the negative frequency components that
-is not already available from the positive frequency tek
+is not already available from the positive frequency frag
 The family of `rfft` functions is
 designed to operate on real inputs, and exploits this symmetry by
 computing only the positive frequency components, up to and including the

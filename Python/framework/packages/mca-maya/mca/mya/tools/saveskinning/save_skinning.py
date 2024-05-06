@@ -118,8 +118,8 @@ class SaveSkinning(mayawindows.MCAMayaWindow):
         Internal callback function that is called when ID button is clicked by the user.
         """
 
-        if pm.objExists('TEKRoot'):
-            id = pm.getAttr(pm.PyNode('TEKRoot') + '.assetID')
+        if pm.objExists('FRAGRoot'):
+            id = pm.getAttr(pm.PyNode('FRAGRoot') + '.assetID')
             self.ui.asset_idLine.setCurrentText(id)
             asset_entry = assetlist.get_asset_by_id(id)
             skin_path = asset_entry.skin_data_path

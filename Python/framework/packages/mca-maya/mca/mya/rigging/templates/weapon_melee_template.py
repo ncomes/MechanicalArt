@@ -9,7 +9,7 @@ Simple Weapon Template
 # mca python imports
 import pymel.core as pm
 # mca python imports
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.mya.rigging.templates import rig_templates
 
 
@@ -31,15 +31,15 @@ class WeaponMelee(rig_templates.RigTemplates):
 		# import Skeletal Mesh using ASSET_ID into the namespace
 		root_joint = pm.PyNode('root')
 		
-		tek_root = tek.TEKRoot.create(root_joint, self.asset_type, self.asset_id)
-		tek.SkeletalMesh.create(tek_root)
-		tek_rig = tek.TEKRig.create(tek_root)
+		frag_root = frag.FRAGRoot.create(root_joint, self.asset_type, self.asset_id)
+		frag.SkeletalMesh.create(frag_root)
+		frag_rig = frag.FRAGRig.create(frag_root)
 		
-		flags_all = tek_rig.flagsAll.get()
+		flags_all = frag_rig.flagsAll.get()
 		
 		# world
 		start_joint = pm.PyNode('root')
-		world_component = tek.WorldComponent.create(tek_rig,
+		world_component = frag.WorldComponent.create(frag_rig,
 															start_joint,
 															'center',
 															'world',
@@ -52,7 +52,7 @@ class WeaponMelee(rig_templates.RigTemplates):
 
 		start_joint = pm.PyNode('weapon')
 		end_joint = pm.PyNode('weapon')
-		weapon_component = tek.FKComponent.create(tek_rig,
+		weapon_component = frag.FKComponent.create(frag_rig,
 															start_joint,
 															end_joint,
 															side='center',
@@ -61,15 +61,15 @@ class WeaponMelee(rig_templates.RigTemplates):
 		weapon_component.attach_component(world_component, pm.PyNode('root'))
 		weapon_flag = weapon_component.get_end_flag()
 		
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 											side='right',
 											region='hand_prop',
 											source_object=weapon_flag,
 											target_list=[world_flag, root_flag, flags_all],
 											switch_obj=None)
 		
-		tek_rig.rigTemplate.set(WeaponMelee.__name__)
-		tek_rig.finalize_rig(self.get_flags_path())
+		frag_rig.rigTemplate.set(WeaponMelee.__name__)
+		frag_rig.finalize_rig(self.get_flags_path())
 		
-		return tek_rig
+		return frag_rig
 

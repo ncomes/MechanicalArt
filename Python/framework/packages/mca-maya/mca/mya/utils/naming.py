@@ -18,7 +18,7 @@ def get_basename(node, remove_namespace=True, remove_attribute=False):
     """
     Get the base name in a hierarchy name (a|b|c -> returns c).
 
-    :param str or pm.PyNode or TEKNode node: name to get base name from.
+    :param str or pm.PyNode or FRAGNode node: name to get base name from.
     :param bool remove_namespace: whether to remove or not namespace from the base name.
     :param bool remove_attribute: whether to remove or not attribute from the base name.
     :return: base name of the given node name.

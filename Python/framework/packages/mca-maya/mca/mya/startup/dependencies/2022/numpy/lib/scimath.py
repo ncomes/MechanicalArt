@@ -111,7 +111,7 @@ def _tocomplex(arr):
 
 
 def _fix_real_lt_zero(x):
-    """Convert `x` to complex if it has real, negative tek
+    """Convert `x` to complex if it has real, negative frag
 
     Otherwise, output is just the array version of the input (via asarray).
 
@@ -139,7 +139,7 @@ def _fix_real_lt_zero(x):
 
 
 def _fix_int_lt_zero(x):
-    """Convert `x` to double if it has real, negative tek
+    """Convert `x` to double if it has real, negative frag
 
     Otherwise, output is just the array version of the input (via asarray).
 

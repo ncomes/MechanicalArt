@@ -11,7 +11,7 @@ import pymel.core as pm
 # mca python imports
 from mca.common.utils import lists
 
-from mca.mya.rigging import chain_markup, tek
+from mca.mya.rigging import chain_markup, frag
 from mca.mya.utils import attr_utils
 
 from mca.mya.rigging.templates import rig_templates
@@ -29,17 +29,17 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, 'combatant', self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, 'combatant', self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        flags_all = tek_rig.flagsAll.get()
+        flags_all = frag_rig.flagsAll.get()
 
         # Core Components
         # world
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                      root_joint,
                                                      'center',
                                                      'world')
@@ -48,7 +48,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
         offset_flag = world_component.offset_flag
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='root',
                                     source_object=root_flag,
@@ -57,7 +57,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
 
         # Cog
         pelvis_start, pelvis_end = skel_hierarchy.get_chain('pelvis', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                  pelvis_start,
                                                  pelvis_start,
                                                  'center',
@@ -70,7 +70,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
         # Center Components
         ###
         # Pelvis
-        pelvis_component = tek.PelvisComponent.create(tek_rig,
+        pelvis_component = frag.PelvisComponent.create(frag_rig,
                                                        pelvis_start,
                                                        pelvis_end,
                                                        'center',
@@ -81,7 +81,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
 
         # Spine
         spine_start, spine_end = skel_hierarchy.get_chain('spine', 'center')
-        spine_component = tek.RFKComponent.create(tek_rig,
+        spine_component = frag.RFKComponent.create(frag_rig,
                                                    spine_start,
                                                    spine_end,
                                                    'center',
@@ -89,7 +89,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
         spine_component.attach_component(cog_component, pm.PyNode(cog_flag))
         spine_sub_flags = spine_component.sub_flags
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='spine_top',
                                     source_object=spine_sub_flags[1],
@@ -99,7 +99,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
                                     translate=False,
                                     default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='spine_mid_top',
                                     source_object=spine_component.mid_flags[1],
@@ -109,7 +109,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
                                     translate=False,
                                     default_name='default')
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='spine_mid_bottom',
                                     source_object=spine_component.mid_flags[0],
@@ -121,7 +121,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
 
         # Neck
         neck_start, neck_end = skel_hierarchy.get_chain('neck', 'center')
-        neck_component = tek.RFKComponent.create(tek_rig,
+        neck_component = frag.RFKComponent.create(frag_rig,
                                                   neck_start,
                                                   neck_end,
                                                   'center',
@@ -134,7 +134,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
         mid_neck_flag = neck_component.mid_flags[0]
         mid_neck_flag.set_as_detail()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='head',
                                     source_object=head_flag,
@@ -147,7 +147,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
         # Jaw
         jaw_joint = skel_hierarchy.get_start('jaw', 'center')
         if jaw_joint:
-            jaw_component = tek.FKComponent.create(tek_rig,
+            jaw_component = frag.FKComponent.create(frag_rig,
                                                     jaw_joint,
                                                     jaw_joint,
                                                     side='center',
@@ -157,7 +157,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
 
         # Center
         floor_joint = skel_hierarchy.get_start('floor', 'center')
-        floor_component = tek.FKComponent.create(tek_rig,
+        floor_component = frag.FKComponent.create(frag_rig,
                                                   floor_joint,
                                                   floor_joint,
                                                   side='center',
@@ -167,7 +167,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
         floor_flag = floor_component.get_end_flag()
         floor_flag.set_as_contact()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='floor_contact',
                                     source_object=floor_flag,
@@ -183,7 +183,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
 
             # Clav
             clav_start, clav_end = skel_hierarchy.get_chain('clav', side)
-            clav_component = tek.FKComponent.create(tek_rig,
+            clav_component = frag.FKComponent.create(frag_rig,
                                                      clav_start,
                                                      clav_end,
                                                      side=side,
@@ -194,7 +194,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
 
             # IKFK arm
             arm_start, arm_end = skel_hierarchy.get_chain('arm', side)
-            arm_component = tek.IKFKComponent.create(tek_rig,
+            arm_component = frag.IKFKComponent.create(frag_rig,
                                                       arm_start,
                                                       arm_end,
                                                       side=side,
@@ -202,7 +202,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
                                                       ik_flag_pv_orient=[-90, 0, 0])
             arm_component.attach_component(clav_component, clav_start)
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='arm_pv',
                                         source_object=arm_component.pv_flag,
@@ -211,7 +211,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
             for finger in ['thumb', 'index_finger', 'middle_finger', 'ring_finger', 'pinky_finger']:
                 # Finger
                 finger_start, finger_end = skel_hierarchy.get_chain(finger, side)
-                finger_component = tek.FKComponent.create(tek_rig,
+                finger_component = frag.FKComponent.create(frag_rig,
                                                            finger_start,
                                                            finger_end,
                                                            side=side,
@@ -225,7 +225,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
 
             # Hand contact
             hand_contact = skel_hierarchy.get_start('hand_contact', side)
-            prop_component = tek.FKComponent.create(tek_rig,
+            prop_component = frag.FKComponent.create(frag_rig,
                                                      hand_contact,
                                                      hand_contact,
                                                      side=side,
@@ -238,7 +238,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
 
             # Hand weapon
             weapon_start = skel_hierarchy.get_start('hand_prop', side)
-            weapon_component = tek.FKComponent.create(tek_rig,
+            weapon_component = frag.FKComponent.create(frag_rig,
                                                        weapon_start,
                                                        weapon_start,
                                                        side=side,
@@ -257,7 +257,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
             # Leg
             leg_start, leg_end = skel_hierarchy.get_chain('leg', side)
             if leg_start:
-                leg_component = tek.ZLegComponent.create(tek_rig,
+                leg_component = frag.ZLegComponent.create(frag_rig,
                                                           leg_start,
                                                           leg_end,
                                                           side=side,
@@ -267,14 +267,14 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
                 leg_ik_flag = leg_component.ik_flag
                 leg_switch_flag = leg_component.switch_flag
 
-                tek.MultiConstraint.create(tek_rig,
+                frag.MultiConstraint.create(frag_rig,
                                             side=side,
                                             region='ik_leg',
                                             source_object=leg_ik_flag,
                                             target_list=[offset_flag, pelvis_flag, cog_flag],
                                             switch_obj=leg_switch_flag)
 
-                tek.MultiConstraint.create(tek_rig,
+                frag.MultiConstraint.create(frag_rig,
                                             side='left',
                                             region='leg_pv',
                                             source_object=leg_component.pv_flag,
@@ -282,7 +282,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
 
                 # Contact
                 foot_contact = skel_hierarchy.get_start('foot_contact', side)
-                foot_contact_component = tek.FKComponent.create(tek_rig,
+                foot_contact_component = frag.FKComponent.create(frag_rig,
                                                                  foot_contact,
                                                                  foot_contact,
                                                                  side=side,
@@ -293,7 +293,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
                 foot_contact_flag.set_as_contact()
 
                 # Contact Multiconstraint
-                tek.MultiConstraint.create(tek_rig,
+                frag.MultiConstraint.create(frag_rig,
                                             side=side,
                                             region='foot_contact',
                                             source_object=foot_contact_flag,
@@ -311,7 +311,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
 
         # util
         util_joint = skel_hierarchy.get_start('utility', 'center')
-        util_component = tek.FKComponent.create(tek_rig,
+        util_component = frag.FKComponent.create(frag_rig,
                                                  util_joint,
                                                  util_joint,
                                                  side='center',
@@ -323,7 +323,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
 
         # util warp
         util_warp_joint = skel_hierarchy.get_start('utility_warp', 'center')
-        util_warp_component = tek.FKComponent.create(tek_rig,
+        util_warp_component = frag.FKComponent.create(frag_rig,
                                                       util_warp_joint,
                                                       util_warp_joint,
                                                       side='center',
@@ -335,7 +335,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
 
         # Pelvis
         contact_joint = skel_hierarchy.get_start('pelvis_contact', 'center')
-        pelvis_contact_component = tek.FKComponent.create(tek_rig,
+        pelvis_contact_component = frag.FKComponent.create(frag_rig,
                                                            contact_joint,
                                                            contact_joint,
                                                            side='center',
@@ -345,7 +345,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
         pelvis_contact_flag = pelvis_contact_component.get_end_flag()
         pelvis_contact_flag.set_as_contact()
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='pelvis_contact',
                                     source_object=pelvis_contact_flag,
@@ -371,7 +371,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
             prop_flag = prop_component.get_flags()[0]
             inv_prop_flag = side_component_dict[inv_side][3].get_flags()[0]
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='ik_arm',
                                         source_object=arm_ik_flag,
@@ -383,7 +383,7 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
                                                      floor_flag],
                                         switch_obj=arm_switch_flag, )
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='fk_arm',
                                         source_object=arm_fk_flag,
@@ -403,14 +403,14 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
                 target_list.append(side_component_dict[inv_side][4].bindJoints.get()[0])
             target_list.append(arm_component.bindJoints.get()[-1])
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='hand_prop',
                                         source_object=prop_flag,
                                         target_list=target_list,
                                         default_name=f'{side[0]}_weapon')
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='weapon',
                                         source_object=weapon_flag,
@@ -425,10 +425,10 @@ class GargoyleBaseRig(rig_templates.RigTemplates):
                                         default_name=f'{side[0]}_hand')
 
         if finalize:
-            tek_rig.rigTemplate.set(GargoyleBaseRig.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(GargoyleBaseRig.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class GargoyleWingedRig(GargoyleBaseRig):
@@ -439,24 +439,24 @@ class GargoyleWingedRig(GargoyleBaseRig):
         super().__init__(asset_id)
 
     def build(self, finalize=True):
-        tek_rig = super().build(finalize=False)
+        frag_rig = super().build(finalize=False)
 
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
 
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        spine_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.RFKComponent, side='center', region='spine'))
+        spine_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.RFKComponent, side='center', region='spine'))
         if not spine_component:
-            return tek_rig
+            return frag_rig
 
-        world_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.WorldComponent, side='center', region='world'))
+        world_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.WorldComponent, side='center', region='world'))
         offset_flag = world_component.offset_flag
 
-        cog_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.CogComponent, side='center', region='cog'))
+        cog_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.CogComponent, side='center', region='cog'))
         cog_flag = cog_component.get_flags()[0]
 
-        floor_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.FKComponent, side='center', region='floor_contact'))
+        floor_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.FKComponent, side='center', region='floor_contact'))
         floor_flag = floor_component.get_end_flag()
 
         spine_start, spine_end = skel_hierarchy.get_chain('spine', 'center')
@@ -465,7 +465,7 @@ class GargoyleWingedRig(GargoyleBaseRig):
         for side in ['left', 'right']:
             # Clav
             clav_start, clav_end = skel_hierarchy.get_chain('clav_wing', side)
-            clav_component = tek.FKComponent.create(tek_rig,
+            clav_component = frag.FKComponent.create(frag_rig,
                                                      clav_start,
                                                      clav_end,
                                                      side=side,
@@ -476,7 +476,7 @@ class GargoyleWingedRig(GargoyleBaseRig):
 
             # IKFK wing
             wing_start, wing_end = skel_hierarchy.get_chain('wing', side)
-            wing_component = tek.IKFKComponent.create(tek_rig,
+            wing_component = frag.IKFKComponent.create(frag_rig,
                                                        wing_start,
                                                        wing_end,
                                                        side=side,
@@ -487,13 +487,13 @@ class GargoyleWingedRig(GargoyleBaseRig):
             wing_switch_flag = wing_component.switch_flag
             wing_fk_flag = wing_component.fk_flags[0]
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='wing_pv',
                                         source_object=wing_component.pv_flag,
                                         target_list=[offset_flag, clav_flag, spine_sub_flags[1], cog_flag])
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='ik_wing',
                                         source_object=wing_ik_flag,
@@ -504,7 +504,7 @@ class GargoyleWingedRig(GargoyleBaseRig):
                                                      floor_flag],
                                         switch_obj=wing_switch_flag)
 
-            tek.MultiConstraint.create(tek_rig,
+            frag.MultiConstraint.create(frag_rig,
                                         side=side,
                                         region='fk_wing',
                                         source_object=wing_fk_flag,
@@ -521,7 +521,7 @@ class GargoyleWingedRig(GargoyleBaseRig):
                 if not finger_start:
                     continue
                 finger_mid = finger_end.getParent()
-                finger_component = tek.FKComponent.create(tek_rig,
+                finger_component = frag.FKComponent.create(frag_rig,
                                                            finger_start,
                                                            finger_end,
                                                            side=side,
@@ -535,7 +535,7 @@ class GargoyleWingedRig(GargoyleBaseRig):
                     continue
                 next_finger_end = skel_hierarchy.get_end(finger_list[index+1], side)
                 next_finger_mid = next_finger_end.getParent()
-                float_component = tek.FKComponent.create(tek_rig,
+                float_component = frag.FKComponent.create(frag_rig,
                                                           float_joint,
                                                           float_joint,
                                                           side=side,
@@ -545,10 +545,10 @@ class GargoyleWingedRig(GargoyleBaseRig):
                 float_component.attach_component(wing_component, [finger_mid, next_finger_mid] if finger != 'wing_pinky' else [finger_mid, wing_end.getParent()])
 
         if finalize:
-            tek_rig.rigTemplate.set(GargoyleWingedRig.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(GargoyleWingedRig.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class HornedChargerRig(GargoyleWingedRig):
@@ -559,7 +559,7 @@ class HornedChargerRig(GargoyleWingedRig):
         super().__init__(asset_id)
 
     def build(self, finalize=True):
-        tek_rig = super().build(finalize=False)
+        frag_rig = super().build(finalize=False)
 
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
@@ -567,14 +567,14 @@ class HornedChargerRig(GargoyleWingedRig):
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
         world_component = lists.get_first_in_list(
-            tek_rig.get_tek_children(of_type=tek.WorldComponent, side='center', region='world'))
+            frag_rig.get_frag_children(of_type=frag.WorldComponent, side='center', region='world'))
         world_flag = world_component.world_flag
 
         pelvis_start = skel_hierarchy.get_start('pelvis', 'center')
-        pelvis_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.PelvisComponent, side='center', region='pelvis'))
+        pelvis_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.PelvisComponent, side='center', region='pelvis'))
 
         tail_start, tail_end = skel_hierarchy.get_chain('tail', 'center')
-        tail_component = tek.IKFKComponent.create(tek_rig,
+        tail_component = frag.IKFKComponent.create(frag_rig,
                                                   tail_start,
                                                   tail_end,
                                                   side='center',
@@ -582,29 +582,29 @@ class HornedChargerRig(GargoyleWingedRig):
                                                   ik_flag_pv_orient=[-90, 0, 0])
         tail_component.attach_component(pelvis_component, pelvis_start)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='arm_pv',
                                     source_object=tail_component.pv_flag,
                                     target_list=[pelvis_start, world_flag])
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='arm_ik',
                                     source_object=tail_component.ik_flag,
                                     target_list=[pelvis_start, world_flag])
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='arm_fk',
                                     source_object=tail_component.fk_flags[0],
                                     target_list=[pelvis_start, world_flag])
 
         if finalize:
-            tek_rig.rigTemplate.set(HornedChargerRig.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(HornedChargerRig.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class SpinyFiendRig(HornedChargerRig):
@@ -615,7 +615,7 @@ class SpinyFiendRig(HornedChargerRig):
         super().__init__(asset_id)
 
     def build(self, finalize=True):
-        tek_rig = super().build(finalize=False)
+        frag_rig = super().build(finalize=False)
 
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
@@ -623,10 +623,10 @@ class SpinyFiendRig(HornedChargerRig):
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
         for side in ['left', 'right']:
             _, arm_mid, _ = skel_hierarchy.get_full_chain('arm', side)
-            arm_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.IKFKComponent, side=side, region='arm'))
+            arm_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.IKFKComponent, side=side, region='arm'))
 
             spike_start = skel_hierarchy.get_start('spike', side)
-            spike_component = tek.FKComponent.create(tek_rig,
+            spike_component = frag.FKComponent.create(frag_rig,
                                                       spike_start,
                                                       spike_start,
                                                       side=side,
@@ -638,10 +638,10 @@ class SpinyFiendRig(HornedChargerRig):
             spike_component.attach_component(arm_component, arm_mid)
 
         if finalize:
-            tek_rig.rigTemplate.set(SpinyFiendRig.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(SpinyFiendRig.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 
 class GargoyleTailedRig(GargoyleWingedRig):
@@ -652,7 +652,7 @@ class GargoyleTailedRig(GargoyleWingedRig):
         super().__init__(asset_id)
 
     def build(self, finalize=True):
-        tek_rig = super().build(finalize=False)
+        frag_rig = super().build(finalize=False)
 
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
@@ -660,16 +660,16 @@ class GargoyleTailedRig(GargoyleWingedRig):
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
         world_component = lists.get_first_in_list(
-            tek_rig.get_tek_children(of_type=tek.WorldComponent, side='center', region='world'))
+            frag_rig.get_frag_children(of_type=frag.WorldComponent, side='center', region='world'))
         world_flag = world_component.world_flag
 
         pelvis_start = skel_hierarchy.get_start('pelvis', 'center')
         pelvis_component = lists.get_first_in_list(
-            tek_rig.get_tek_children(of_type=tek.PelvisComponent, side='center', region='pelvis'))
+            frag_rig.get_frag_children(of_type=frag.PelvisComponent, side='center', region='pelvis'))
         pelvis_flag = pelvis_component.get_flags()[0]
 
         start_tail, end_tail = skel_hierarchy.get_chain('tail', 'center')
-        tail_component = tek.IKFKRibbonComponent.create(tek_rig,
+        tail_component = frag.IKFKRibbonComponent.create(frag_rig,
                                                          start_tail,
                                                          end_tail,
                                                          side='center',
@@ -679,7 +679,7 @@ class GargoyleTailedRig(GargoyleWingedRig):
         tail_ik_flag = tail_component.ik_flag
         tail_ik_pv_flag = tail_component.pv_flag
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='fk_tail',
                                     source_object=tail_fk_flag,
@@ -687,14 +687,14 @@ class GargoyleTailedRig(GargoyleWingedRig):
                                                  world_flag],
                                     t=False)
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='ik_tail',
                                     source_object=tail_ik_flag,
                                     target_list=[pelvis_flag,
                                                  world_flag])
 
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='fk_pv_tail',
                                     source_object=tail_ik_pv_flag,
@@ -702,10 +702,10 @@ class GargoyleTailedRig(GargoyleWingedRig):
                                                  world_flag])
 
         if finalize:
-            tek_rig.rigTemplate.set(GargoyleTailedRig.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(GargoyleTailedRig.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 class AngraRig(GargoyleBaseRig):
     VERSION = 1
@@ -715,32 +715,32 @@ class AngraRig(GargoyleBaseRig):
         super().__init__(asset_id)
 
     def build(self, finalize=True):
-        tek_rig = super().build(finalize=False)
+        frag_rig = super().build(finalize=False)
 
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
 
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        spine_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.RFKComponent, side='center', region='spine'))
+        spine_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.RFKComponent, side='center', region='spine'))
         if not spine_component:
-            return tek_rig
+            return frag_rig
         spine_start, spine_end = skel_hierarchy.get_chain('spine', 'center')
         spine_end_flag = spine_component.end_flag
 
         pelvis_start = skel_hierarchy.get_start('pelvis', 'center')
-        pelvis_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.PelvisComponent, side='center', region='pelvis'))
+        pelvis_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.PelvisComponent, side='center', region='pelvis'))
 
-        world_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.WorldComponent, side='center', region='world'))
+        world_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.WorldComponent, side='center', region='world'))
         world_flag = world_component.world_flag
 
-        cog_component = lists.get_first_in_list(tek_rig.get_tek_children(of_type=tek.CogComponent, side='center', region='cog'))
+        cog_component = lists.get_first_in_list(frag_rig.get_frag_children(of_type=frag.CogComponent, side='center', region='cog'))
         cog_flag = cog_component.get_flags()[0]
 
         for side in ['left', 'right']:
             for pelvis_tentacle in ['tentacle_front', 'tentacle_front_outer', 'tentacle_back_outer', 'tentacle_back']:
                 start_tentacle, end_tentacle = skel_hierarchy.get_chain(pelvis_tentacle, side)
-                tentacle_component = tek.SplineIKRibbonComponent.create(tek_rig,
+                tentacle_component = frag.SplineIKRibbonComponent.create(frag_rig,
                                                                          start_tentacle,
                                                                          end_tentacle,
                                                                          side=side,
@@ -748,7 +748,7 @@ class AngraRig(GargoyleBaseRig):
                 tentacle_component.attach_component(pelvis_component, pelvis_start)
 
             start_tentacle, end_tentacle = skel_hierarchy.get_chain('tentacle_shoulder', side)
-            tentacle_component = tek.SplineIKRibbonComponent.create(tek_rig,
+            tentacle_component = frag.SplineIKRibbonComponent.create(frag_rig,
                                                                      start_tentacle,
                                                                      end_tentacle,
                                                                      side=side,
@@ -757,14 +757,14 @@ class AngraRig(GargoyleBaseRig):
 
             for spine_04_tentacle in ['tentacle_prime_upper', 'tentacle_prime_lower', 'tentacle_prime_center']:
                 start_tentacle, end_tentacle = skel_hierarchy.get_chain(spine_04_tentacle, side)
-                tentacle_component = tek.SplineIKRibbonComponent.create(tek_rig,
+                tentacle_component = frag.SplineIKRibbonComponent.create(frag_rig,
                                                                          start_tentacle,
                                                                          end_tentacle,
                                                                          side=side,
                                                                          region=spine_04_tentacle)
                 tentacle_component.attach_component(spine_component, spine_end)
                 for index, primary_flag in enumerate(tentacle_component.primary_flags[1:]):
-                    tek.MultiConstraint.create(tek_rig,
+                    frag.MultiConstraint.create(frag_rig,
                                                 side=side,
                                                 region=f'spine_04_tentacle_{index}',
                                                 source_object=primary_flag,
@@ -773,10 +773,10 @@ class AngraRig(GargoyleBaseRig):
                                                              spine_end_flag])
 
         if finalize:
-            tek_rig.rigTemplate.set(AngraRig.__name__)
-            tek_rig.finalize_rig(self.get_flags_path())
+            frag_rig.rigTemplate.set(AngraRig.__name__)
+            frag_rig.finalize_rig(self.get_flags_path())
 
-        return tek_rig
+        return frag_rig
 
 class AngraTentacleBurrowRig(rig_templates.RigTemplates):
     VERSION = 1
@@ -790,17 +790,17 @@ class AngraTentacleBurrowRig(rig_templates.RigTemplates):
         pm.namespace(set=':')
         root_joint = pm.PyNode('root')
 
-        tek_root = tek.TEKRoot.create(root_joint, 'combatant', self.asset_id)
-        skel_mesh = tek.SkeletalMesh.create(tek_root)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, 'combatant', self.asset_id)
+        skel_mesh = frag.SkeletalMesh.create(frag_root)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        flags_all = tek_rig.flagsAll.get()
+        flags_all = frag_rig.flagsAll.get()
 
         # Core Components
         # world
         skel_hierarchy = chain_markup.ChainMarkup(root_joint)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                      root_joint,
                                                      'center',
                                                      'world')
@@ -809,7 +809,7 @@ class AngraTentacleBurrowRig(rig_templates.RigTemplates):
         offset_flag = world_component.offset_flag
 
         # Root Multiconstraint
-        tek.MultiConstraint.create(tek_rig,
+        frag.MultiConstraint.create(frag_rig,
                                     side='center',
                                     region='root',
                                     source_object=root_flag,
@@ -818,7 +818,7 @@ class AngraTentacleBurrowRig(rig_templates.RigTemplates):
 
         # Cog
         pelvis_start, pelvis_end = skel_hierarchy.get_chain('pelvis', 'center')
-        cog_component = tek.CogComponent.create(tek_rig,
+        cog_component = frag.CogComponent.create(frag_rig,
                                                  pelvis_start,
                                                  pelvis_start,
                                                  'center',
@@ -831,7 +831,7 @@ class AngraTentacleBurrowRig(rig_templates.RigTemplates):
         start_helper_joint = skel_hierarchy.get_chain('tentacle_start', 'center')[0]
         mid_helper_joint = skel_hierarchy.get_chain('tentacle_helper', 'center')[0]
         end_helper_joint = skel_hierarchy.get_chain('tentacle_end', 'center')[0]
-        tentacle_component = tek.SplineIKComponent.create(tek_rig,
+        tentacle_component = frag.SplineIKComponent.create(frag_rig,
                                                            tentacle_start,
                                                            tentacle_end,
                                                            end_helper_joint,

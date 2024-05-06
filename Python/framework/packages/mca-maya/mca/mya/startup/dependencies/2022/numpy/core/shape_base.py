@@ -693,7 +693,7 @@ def block(arrays):
     ``v.ndim == 1``.
 
     When the nested list is two levels deep, this allows block matrices to be
-    constructed from their tek
+    constructed from their frag
 
     .. versionadded:: 1.13.0
 

@@ -10,9 +10,9 @@ import os
 # software specific imports
 
 # mca python imports
-from mca.mya.rigging import tek, chain_markup, skel_utils
+from mca.mya.rigging import frag, chain_markup, skel_utils
 from mca.mya.rigging.templates import rig_templates
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 from mca.mya.modifiers import ma_decorators
 from mca.mya.utils import namespace
 from mca.common.paths import paths
@@ -44,10 +44,10 @@ class CinematicCameraTemplate(rig_templates.RigTemplates):
         chain = chain_markup.ChainMarkup(root)
         cam_joint = chain.get_start('cam', 'center')
 
-        tek_root = tek.TEKRoot.create(root, self.asset_type, self.asset_id)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root, self.asset_type, self.asset_id)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        world_component = tek.WorldComponent.create(tek_rig,
+        world_component = frag.WorldComponent.create(frag_rig,
                                                      root,
                                                      'center',
                                                      'world',
@@ -57,7 +57,7 @@ class CinematicCameraTemplate(rig_templates.RigTemplates):
         offset_flag = world_component.offset_flag
         offset_flag.set_as_detail()
 
-        cam_component = tek.CameraComponent.create(tek_rig,
+        cam_component = frag.CameraComponent.create(frag_rig,
                                                     cam_joint,
                                                     'center',
                                                     'cam',
@@ -66,11 +66,11 @@ class CinematicCameraTemplate(rig_templates.RigTemplates):
 
         # Since the camera is not a mca asset, and we do not want to add all meshes to skins grp, finalizing rig here.
         flag_path = os.path.join(camera_rig_path, 'Flags')
-        flags = tek_rig.get_flags()
-        tek_flag.swap_flags(flags, flag_path)
-        tek_rig.color_flags()
-        tek_rig.create_display_layers_for_cam(cam)
-        tek_rig.all_grp.rename(f'{camera_ns}_all')
+        flags = frag_rig.get_flags()
+        frag_flag.swap_flags(flags, flag_path)
+        frag_rig.color_flags()
+        frag_rig.create_display_layers_for_cam(cam)
+        frag_rig.all_grp.rename(f'{camera_ns}_all')
 
-        return tek_rig
+        return frag_rig
 

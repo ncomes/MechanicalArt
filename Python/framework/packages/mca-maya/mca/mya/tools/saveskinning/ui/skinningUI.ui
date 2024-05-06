@@ -68,7 +68,7 @@
          </sizepolicy>
         </property>
         <property name="toolTip">
-         <string>Gets asset ID from TEKRoot </string>
+         <string>Gets asset ID from FRAGRoot </string>
         </property>
         <property name="text">
          <string> Get Asset ID </string>

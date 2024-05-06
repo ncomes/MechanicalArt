@@ -9,7 +9,7 @@ Purpose: Creates spline IK
 # python imports
 import pymel.core as pm
 #  python imports
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 from mca.mya.utils import constraint
 
 
@@ -50,27 +50,27 @@ def spline_ctrl(start_joint,
 
     # START FLAG
     start_label = '{0}_start'.format(region)
-    start_flag_node = tek_flag.Flag.create(spline_ctrl_start,
+    start_flag_node = frag_flag.Flag.create(spline_ctrl_start,
                                        label=start_label,
                                        add_align_transform=root_align_transform)
     start_parent_con = pm.parentConstraint(start_flag_node, spline_ctrl_start, w=1, mo=1)
     parent_cons.append(start_parent_con)
     flag_nodes.append(start_flag_node)
-    pm.addAttr(ln='tekParent', at='message')
+    pm.addAttr(ln='fragParent', at='message')
 
     # END FLAG
     end_label = '{0}_end'.format(region)
-    end_flag_node = tek_flag.Flag.create(spline_ctrl_end,
+    end_flag_node = frag_flag.Flag.create(spline_ctrl_end,
                                      label=end_label,
                                      add_align_transform=root_align_transform)
     end_parent_con = pm.parentConstraint(end_flag_node, spline_ctrl_end, w=1, mo=1)
     parent_cons.append(end_parent_con)
     flag_nodes.append(end_flag_node)
-    pm.addAttr(ln='tekParent', at='message')
+    pm.addAttr(ln='fragParent', at='message')
 
     # AUX FLAG
 
-    aux_flag_node = tek_flag.Flag.create(aux_ctrl_joint,
+    aux_flag_node = frag_flag.Flag.create(aux_ctrl_joint,
                                      label=region + '_aux',
                                      add_align_transform=True)
     aux_parent_con = pm.parentConstraint(aux_flag_node, aux_ctrl_joint, w=1, mo=1)
@@ -80,7 +80,7 @@ def spline_ctrl(start_joint,
     aux_secondary_constraint = pm.parentConstraint(end_joint, aux_ctrl_joint)
     parent_cons.append(aux_parent_con)
     parent_cons.append(aux_secondary_constraint)
-    pm.addAttr(ln='tekParent', at='message')
+    pm.addAttr(ln='fragParent', at='message')
 
 
     # CREATE SPLINE IK
@@ -104,7 +104,7 @@ def spline_ctrl(start_joint,
     if mid_spline_flag:
         cv = pm.PyNode(f'{curve}.cv[2]')
         clus = pm.cluster(cv, n=f'mid{region}_cluster')[1]
-        mid_flag = tek_flag.Flag.create_ratio(object_to_match=clus,
+        mid_flag = frag_flag.Flag.create_ratio(object_to_match=clus,
                                           label=f'{region}_mid',
                                           scale=0.5,
                                           add_align_transform=True,
@@ -115,7 +115,7 @@ def spline_ctrl(start_joint,
                                                   end_flag_node,
                                                   mid_flag_align_transform)
         parent_cons.append(mid_flag_constraint)
-        pm.addAttr(ln='tekParent', at='message')
+        pm.addAttr(ln='fragParent', at='message')
 
         pm.connectAttr(f'f_{region}_mid.translate', f'{clus}.translate')
         pm.connectAttr(f'f_{region}_mid.rotate', f'{clus}.rotate')

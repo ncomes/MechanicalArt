@@ -506,7 +506,7 @@
        <item>
         <widget class="QPushButton" name="load_rig_pushButton">
          <property name="toolTip">
-          <string>Deserialize a rig and build it on either a selected, or new tek rig.</string>
+          <string>Deserialize a rig and build it on either a selected, or new frag rig.</string>
          </property>
          <property name="text">
           <string>Load Rig</string>

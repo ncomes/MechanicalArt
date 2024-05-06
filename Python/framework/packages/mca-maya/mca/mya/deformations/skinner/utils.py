@@ -389,7 +389,7 @@ def getMObjectForVertIndices(verts:list) -> om2.MObject:
     Parameters:
     verts : list : The "meshName.vtx[#]' for each vertex.
 
-    Return : MObject : The representation of these tek.
+    Return : MObject : The representation of these frag.
     """
     if not isinstance(verts, (list,tuple)):
         verts = [verts]

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# MAT DCC Tools startup script for Autodesk MotionBuilder
+# MCA DCC Tools startup script for Autodesk MotionBuilder
 
 from __future__ import print_function, division, absolute_import
 

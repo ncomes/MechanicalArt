@@ -22,8 +22,8 @@ from mca.mya.animation import anim_curves, baking, time_utils
 from mca.mya.deformations import cluster
 from mca.mya.modifiers import ma_decorators
 from mca.mya.pyqt import dialogs
-from mca.mya.rigging import tek, chain_markup, skel_utils, joint_utils, ik_utils
-from mca.mya.rigging.flags import tek_flag, flag_utils
+from mca.mya.rigging import frag, chain_markup, skel_utils, joint_utils, ik_utils
+from mca.mya.rigging.flags import frag_flag, flag_utils
 from mca.mya.utils import groups, naming, constraint, dag, material_utils, namespace, attr_utils, fbx_utils
 
 logger = log.MCA_LOGGER
@@ -109,11 +109,11 @@ def get_asset_skeleton(asset_id):
 @ma_decorators.keep_namespace_decorator
 @ma_decorators.keep_current_frame_decorator
 @ma_decorators.undo_decorator
-def bake_skeleton_from_rig(tek_rig, start_frame=None, end_frame=None, set_to_zero=True):
+def bake_skeleton_from_rig(frag_rig, start_frame=None, end_frame=None, set_to_zero=True):
     """
     From a selected rig, duplicate and attach the skeleton, before baking rig animation to it.
 
-    :param TEKRig tek_rig: The tek rig we're going to duplicate the skeleton from.
+    :param FRAGRig frag_rig: The frag rig we're going to duplicate the skeleton from.
     :param int start_frame: The first frame in the bake range.
     :param int end_frame: The last frame in the bake range.
     :param bool set_to_zero: If the animation should start at frame 0 after bake.
@@ -123,16 +123,16 @@ def bake_skeleton_from_rig(tek_rig, start_frame=None, end_frame=None, set_to_zer
 
     # retrieve a valid frame range.
     if any(x is None for x in [start_frame, end_frame]):
-        start_frame, end_frame = time_utils.get_keyframe_range_from_nodes(tek_rig.get_flags())
+        start_frame, end_frame = time_utils.get_keyframe_range_from_nodes(frag_rig.get_flags())
 
-    tek_root = tek.get_tek_root(tek_rig)
+    frag_root = frag.get_frag_root(frag_rig)
 
     if any(x is None for x in [start_frame, end_frame]):
         # unable to retrieve a valid framerange.
-        logger.warning(f'No keyframes found on: {tek_root.getAttr("assetName")}')
+        logger.warning(f'No keyframes found on: {frag_root.getAttr("assetName")}')
         return
 
-    asset_id = tek_root.assetID.get()
+    asset_id = frag_root.assetID.get()
     skel_path = get_asset_skeleton(asset_id)
     if not os.path.exists(skel_path):
         # skel path is missing file.
@@ -141,11 +141,11 @@ def bake_skeleton_from_rig(tek_rig, start_frame=None, end_frame=None, set_to_zer
     root_joint = skel_utils.import_skeleton(skel_path)
 
     # duplicate and attach our skels.
-    skel_root = tek_root.getAttr('rootJoint')
+    skel_root = frag_root.getAttr('rootJoint')
 
-    current_scale = tek_rig.rig_scale
+    current_scale = frag_rig.rig_scale
     if current_scale != 1.0:
-        tek_rig.rig_scale = 1.0
+        frag_rig.rig_scale = 1.0
 
     custom_attr_list = list(set(attach_skeletons_by_name(skel_root, root_joint)))
 
@@ -159,7 +159,7 @@ def bake_skeleton_from_rig(tek_rig, start_frame=None, end_frame=None, set_to_zer
         anim_curves.change_curve_start_time(bake_hierarchy._animationJoints, 0 - start_frame)
 
     if current_scale != 1.0:
-        tek_rig.rig_scale = current_scale
+        frag_rig.rig_scale = current_scale
 
     return bake_hierarchy.root
 
@@ -209,29 +209,29 @@ def bake_skeleton_from_rig_cmd(start_frame=None, end_frame=None, set_to_zero=Tru
     """
 
     selection = pm.selected()
-    tek_root = None
-    tek_rig = None
+    frag_root = None
+    frag_rig = None
     for selected_node in selection:
-        # find us a valid tek_rig
-        tek_rig = tek.get_tek_rig(selected_node)
-        if tek_rig:
-            tek_root = tek_rig.get_root()
+        # find us a valid frag_rig
+        frag_rig = frag.get_frag_rig(selected_node)
+        if frag_rig:
+            frag_root = frag_rig.get_root()
             break
 
-    if not tek_root:
-        logger.warning(f'Unable to locate a TEKRig from selection: {selection}')
+    if not frag_root:
+        logger.warning(f'Unable to locate a FRAGRig from selection: {selection}')
         return
-    asset_id = tek_root.get_asset_id(tek_root)
+    asset_id = frag_root.get_asset_id(frag_root)
     # retrieve a valid frame range.
     if any(x is None for x in [start_frame, end_frame]):
-        start_frame, end_frame = time_utils.get_keyframe_range_from_nodes(tek_rig.get_flags())
+        start_frame, end_frame = time_utils.get_keyframe_range_from_nodes(frag_rig.get_flags())
 
     if any(x is None for x in [start_frame, end_frame]):
         # unable to retrieve a valid framerange.
-        logger.warning(f'No keyframes found on: {tek_root.getAttr("assetName")}')
+        logger.warning(f'No keyframes found on: {frag_root.getAttr("assetName")}')
         return
 
-    bake_root = bake_skeleton_from_rig(tek_rig, start_frame, end_frame, set_to_zero)
+    bake_root = bake_skeleton_from_rig(frag_rig, start_frame, end_frame, set_to_zero)
     return asset_id
 
 
@@ -249,34 +249,34 @@ def attach_rigs_cmd():
     selection = pm.selected()
 
     if not selection or len(selection) < 2:
-        dialogs.info_prompt(title='No Selections', text='Please select exactly two separate TEK rigs')
+        dialogs.info_prompt(title='No Selections', text='Please select exactly two separate FRAG rigs')
         return
         #pass
 
-    tek_rig = None
+    frag_rig = None
     asset_id = ''
     rig_list = []
     for selected_node in selection:
-        tek_rig = tek.get_tek_rig(selected_node)
-        if not tek_rig and tek_flag.is_flag_node(selected_node):
-            wrapped_node = tek_flag.Flag(selected_node)
-            rig_component = tek.TEKNode(wrapped_node.getAttr('tekParent'))
-            tek_rig = rig_component.get_tek_parent()
-        rig_list.append(tek_rig)
+        frag_rig = frag.get_frag_rig(selected_node)
+        if not frag_rig and frag_flag.is_flag_node(selected_node):
+            wrapped_node = frag_flag.Flag(selected_node)
+            rig_component = frag.FRAGNode(wrapped_node.getAttr('fragParent'))
+            frag_rig = rig_component.get_frag_parent()
+        rig_list.append(frag_rig)
 
     if not rig_list or rig_list[0] == rig_list[-1]:
-        dialogs.info_prompt(title='No Selections', text='Please select exactly two separate TEK rigs')
+        dialogs.info_prompt(title='No Selections', text='Please select exactly two separate FRAG rigs')
         return
         #pass
-    head_rig = [x for x in rig_list if tek.get_tek_root(x).assetType.get() == 'head']
+    head_rig = [x for x in rig_list if frag.get_frag_root(x).assetType.get() == 'head']
     if head_rig:
         driven_rig = head_rig[0]
         driver_rig = [x for x in rig_list if x != driven_rig][0]
     else:
         driver_rig, driven_rig = rig_list
     attach_rigs(driver_rig, driven_rig)
-    if tek_rig:
-        asset_id = tek_rig.get_asset_id(tek_rig)
+    if frag_rig:
+        asset_id = frag_rig.get_asset_id(frag_rig)
     return asset_id
 
 
@@ -285,16 +285,16 @@ def attach_rigs(driver_rig, driven_rig):
     """
     From the two given rigs, match up their components by side and region then constrain their flags.
 
-    :param TEKRig driver_rig: The TEKRig that will drive the pair of rigs.
-    :param TEKRig driven_rig: The TEKRIG that will be puppeted by the driver rig.
+    :param FRAGRig driver_rig: The FRAGRig that will drive the pair of rigs.
+    :param FRAGRig driven_rig: The FRAGRIG that will be puppeted by the driver rig.
     """
     if driven_rig.hasAttr('attached_to') and driven_rig.getAttr('attached_to'):
         logger.warning(f'{driven_rig.getAttr("rigTemplate")} already has a driver rig.')
         return
 
     driver_rig_dict = {}
-    for rig_component in driver_rig.get_tek_children():
-        if isinstance(rig_component, tek.MultiConstraint):
+    for rig_component in driver_rig.get_frag_children():
+        if isinstance(rig_component, frag.MultiConstraint):
             continue
         rig_side = rig_component.side
         rig_region = rig_component.region
@@ -303,7 +303,7 @@ def attach_rigs(driver_rig, driven_rig):
                 driver_rig_dict[rig_side] = {}
             driver_rig_dict[rig_side][rig_region] = rig_component
 
-    for rig_component in driven_rig.get_tek_children():
+    for rig_component in driven_rig.get_frag_children():
         rig_side = rig_component.side
         rig_region = rig_component.region
         driver_component = driver_rig_dict.get(rig_side, {}).get(rig_region, None)
@@ -348,22 +348,22 @@ def detach_rig_cmd(bake_animation=False, start_frame=None, end_frame=None):
     """
     selection = pm.selected()
     if not selection:
-        dialogs.info_prompt(title='Select a rig', text='Please select a TEK rig')
+        dialogs.info_prompt(title='Select a rig', text='Please select a FRAG rig')
         return
 
     selected_node = lists.get_first_in_list(selection)
-    tek_rig = tek.get_tek_rig(selected_node)
-    if not tek_rig and tek_flag.is_flag_node(selected_node):
-        wrapped_node = tek_flag.Flag(selected_node)
-        rig_component = tek.TEKNode(wrapped_node.getAttr('tekParent'))
-        tek_rig = rig_component.get_tek_parent()
+    frag_rig = frag.get_frag_rig(selected_node)
+    if not frag_rig and frag_flag.is_flag_node(selected_node):
+        wrapped_node = frag_flag.Flag(selected_node)
+        rig_component = frag.FRAGNode(wrapped_node.getAttr('fragParent'))
+        frag_rig = rig_component.get_frag_parent()
 
-    if not tek_rig:
-        dialogs.info_prompt(title='Select a rig', text='Please select a TEK rig')
+    if not frag_rig:
+        dialogs.info_prompt(title='Select a rig', text='Please select a FRAG rig')
         return
 
-    detach_rig(tek_rig, bake_animation, start_frame, end_frame)
-    asset_id = tek_rig.get_asset_id(tek_rig)
+    detach_rig(frag_rig, bake_animation, start_frame, end_frame)
+    asset_id = frag_rig.get_asset_id(frag_rig)
     return asset_id
 
 
@@ -380,7 +380,7 @@ def detach_rig(driven_rig, bake_animation, start_frame=None, end_frame=None):
     custom_attr_list = []
     constraint_list = []
     if driven_rig.hasAttr('attached_to') and driven_rig.getAttr('attached_to'):
-        driver_rig = tek.TEKNode(driven_rig.getAttr('attached_to'))
+        driver_rig = frag.FRAGNode(driven_rig.getAttr('attached_to'))
         for flag_node in driven_rig.get_flags():
             if not flag_node.hasAttr('overdriven_by') or not flag_node.getAttr('overdriven_by'):
                 attached_flags.append(flag_node)
@@ -431,7 +431,7 @@ def create_overdriver_cmd(skip_rotate_attrs=None, skip_translate_attrs=None):
     
     
     flag = None
-    if driver_object == driven_object and tek_flag.is_flag_node(driven_object):
+    if driver_object == driven_object and frag_flag.is_flag_node(driven_object):
         driver_object = pm.spaceLocator(n=f'{naming.get_basename(driven_object)}_overdriver')
         pm.delete(pm.parentConstraint(driven_object, driver_object))
         flag = driven_object
@@ -450,8 +450,8 @@ def create_overdriver_cmd(skip_rotate_attrs=None, skip_translate_attrs=None):
     
     asset_id = ''
     if flag:
-        tek_root = tek.get_tek_root(flag)
-        asset_id = tek_root.asset_id
+        frag_root = frag.get_frag_root(flag)
+        asset_id = frag_root.asset_id
         return asset_id
     return asset_id
 
@@ -474,7 +474,7 @@ def bake_overdriver_cmd(bake_animation=True, start_frame=None, end_frame=None):
     bakeable_node_list = []
     driver_list = []
     for node in selection:
-        if not tek_flag.is_flag_node(node):
+        if not frag_flag.is_flag_node(node):
             continue
         if node.hasAttr('overdriven_by') and node.getAttr('overdriven_by'):
             overdriver_constraint = lists.get_first_in_list(node.listRelatives(type=pm.nt.Constraint))
@@ -509,29 +509,29 @@ def animate_rig_from_skeleton_cmd(start_frame=None, end_frame=None, append=False
     """
 
     selection = pm.selected()
-    tek_rig = None
+    frag_rig = None
     skel_root = None
     for selected_node in selection:
-        # search through our selection to find a valid tek root and a valid skeleton, grab the first of each.
-        tek_rig = tek.get_tek_rig(selected_node)
-        if not tek_rig and tek_flag.is_flag_node(selected_node):
-            wrapped_node = tek_flag.Flag(selected_node)
-            rig_component = tek.TEKNode(wrapped_node.getAttr('tekParent'))
-            tek_rig = rig_component.get_tek_parent()
-        elif not skel_root and not tek_flag.is_flag_node(selected_node) and isinstance(selected_node, pm.nt.Joint):
+        # search through our selection to find a valid frag root and a valid skeleton, grab the first of each.
+        frag_rig = frag.get_frag_rig(selected_node)
+        if not frag_rig and frag_flag.is_flag_node(selected_node):
+            wrapped_node = frag_flag.Flag(selected_node)
+            rig_component = frag.FRAGNode(wrapped_node.getAttr('fragParent'))
+            frag_rig = rig_component.get_frag_parent()
+        elif not skel_root and not frag_flag.is_flag_node(selected_node) and isinstance(selected_node, pm.nt.Joint):
             skel_root = dag.get_absolute_parent(selected_node, node_type=pm.nt.Joint, inclusive=True)
 
-        if tek_rig and skel_root:
+        if frag_rig and skel_root:
             break
 
-    if not tek_rig:
+    if not frag_rig:
         # failed to find required nodes for processing animation.
         logger.warning(f'Please select a rig')
         return
-    tek_root = tek.get_tek_root(tek_rig)
-    asset_type = tek_root.getAttr('assetType')
+    frag_root = frag.get_frag_root(frag_rig)
+    asset_type = frag_root.getAttr('assetType')
     head_rig = True if asset_type == 'head' else False
-    asset_id = tek_root.getAttr('assetID')
+    asset_id = frag_root.getAttr('assetID')
     imported_anim = False
     if not skel_root:
         skel_root = select_and_import_anim(asset_id)
@@ -544,7 +544,7 @@ def animate_rig_from_skeleton_cmd(start_frame=None, end_frame=None, append=False
         motion_encode_grp = None
         align_grp = None
 
-        frame_range = time_utils.get_keyframe_range_from_nodes(tek_rig.get_flags())
+        frame_range = time_utils.get_keyframe_range_from_nodes(frag_rig.get_flags())
         rig_start_frame, start_frame = (0, 0) if None in frame_range else frame_range
         if None not in [rig_start_frame, start_frame]:
             # new bake start time is the end of the current rig animation.
@@ -574,8 +574,8 @@ def animate_rig_from_skeleton_cmd(start_frame=None, end_frame=None, append=False
 
                     # We're going to align the align_grp to the root of the rig.
                     # This aligns the incomming animation to the end of the existing animation.
-                    tek_root = tek_rig.get_tek_parent()
-                    rig_skel_root = tek_root.root_joint
+                    frag_root = frag_rig.get_frag_parent()
+                    rig_skel_root = frag_root.root_joint
 
                     pm.delete(pm.parentConstraint(rig_skel_root, align_grp))
                 else:
@@ -585,11 +585,11 @@ def animate_rig_from_skeleton_cmd(start_frame=None, end_frame=None, append=False
 
     reanimate_body_rig = True
     if head_rig:
-        animate_head_rig_from_skel(tek_rig, skel_root, start_frame=start_frame, end_frame=end_frame)
-        if tek_rig.hasAttr('attached_to') and tek_rig.getAttr('attached_to'):
+        animate_head_rig_from_skel(frag_rig, skel_root, start_frame=start_frame, end_frame=end_frame)
+        if frag_rig.hasAttr('attached_to') and frag_rig.getAttr('attached_to'):
             reanimate_body_rig = False
     if reanimate_body_rig:
-        animate_rig_from_skeleton(tek_rig, skel_root, start_frame=start_frame, end_frame=end_frame)
+        animate_rig_from_skeleton(frag_rig, skel_root, start_frame=start_frame, end_frame=end_frame)
     if append and motion_encode:
         # cleanup our temp nodes when doing motion encoding.
         if motion_encode_grp:
@@ -629,7 +629,7 @@ def get_rig_flag(rig_root, side, region, index):
     """
     Retrieve a specific flag by index from one of keyable components.
 
-    :param TEKRoot rig_root: The tek structure to search.
+    :param FRAGRoot rig_root: The frag structure to search.
     :param str region: The string value of the region
     :param str side: The string value of the side.
     :param int index: Which flag index should be returned.
@@ -637,11 +637,11 @@ def get_rig_flag(rig_root, side, region, index):
     :rtype: Flag
     """
 
-    if rig_root.hasAttr('tekChildren'):
-        tek_children = rig_root.tekChildren.listConnections()
-        for child_node in tek_children:
-            wrapped_node = tek.TEKNode(child_node)
-            if not isinstance(wrapped_node, tek.KeyableComponent):
+    if rig_root.hasAttr('fragChildren'):
+        frag_children = rig_root.fragChildren.listConnections()
+        for child_node in frag_children:
+            wrapped_node = frag.FRAGNode(child_node)
+            if not isinstance(wrapped_node, frag.KeyableComponent):
                 continue
 
             if wrapped_node.side != side:
@@ -658,11 +658,11 @@ def get_rig_flag(rig_root, side, region, index):
 @ma_decorators.keep_autokey_decorator
 @ma_decorators.keep_current_frame_decorator
 @ma_decorators.undo_decorator
-def animate_rig_from_skeleton(tek_rig, skel_root, start_frame=None, end_frame=None):
+def animate_rig_from_skeleton(frag_rig, skel_root, start_frame=None, end_frame=None):
     """
     Connect a rig to a skeleton then bake animation back to the flags.
 
-    :param TEKRig tek_rig: The TEKRig of the rig to attach to the skeleton
+    :param FRAGRig frag_rig: The FRAGRig of the rig to attach to the skeleton
     :param Joint skel_root: The animated skeleton we will be transfering animation from.
     :param int start_frame: The first frame in the bake range.
     :param int end_frame: The last frame in the bake range.
@@ -674,19 +674,19 @@ def animate_rig_from_skeleton(tek_rig, skel_root, start_frame=None, end_frame=No
         logger.warning(f'{skel_root} is not a valid joint.')
         return
 
-    if not tek.is_tek_node(tek_rig):
-        # not a tek node
-        logger.warning(f'{tek_rig} is not a valid TEKNode.')
+    if not frag.is_frag_node(frag_rig):
+        # not a frag node
+        logger.warning(f'{frag_rig} is not a valid FRAGNode.')
         return
     else:
-        tek_rig = tek.TEKNode(tek_rig)
-        if isinstance(tek_rig, tek.TEKRoot):
+        frag_rig = frag.FRAGNode(frag_rig)
+        if isinstance(frag_rig, frag.FRAGRoot):
             # If we have a root instead of a rig, just grab the rig.
-            tek_rig = tek_rig.get_rig()
+            frag_rig = frag_rig.get_rig()
 
-        if not isinstance(tek_rig, tek.TEKRig):
-            # we need the TEKRig to process from
-            logger.warning(f'{tek_rig} is not a valid TEKRig.')
+        if not isinstance(frag_rig, frag.FRAGRig):
+            # we need the FRAGRig to process from
+            logger.warning(f'{frag_rig} is not a valid FRAGRig.')
             return
 
     if None in [start_frame, end_frame]:
@@ -696,14 +696,14 @@ def animate_rig_from_skeleton(tek_rig, skel_root, start_frame=None, end_frame=No
 
     pm.autoKeyframe(state=False)
 
-    tek_root = tek_rig.get_tek_parent()
-    asset_id = tek_root.getAttr('assetID')
+    frag_root = frag_rig.get_frag_parent()
+    asset_id = frag_root.getAttr('assetID')
     skel_path = get_asset_skeleton(asset_id)
     cmds.currentTime(start_frame - 1)
 
-    current_scale = tek_rig.rig_scale
+    current_scale = frag_rig.rig_scale
     if current_scale != 1.0:
-        tek_rig.rig_scale = 1.0
+        frag_rig.rig_scale = 1.0
 
     if skel_path:
         skel_utils.restore_skeleton_bindpose(skel_path, skel_root)
@@ -714,11 +714,11 @@ def animate_rig_from_skeleton(tek_rig, skel_root, start_frame=None, end_frame=No
         pass
 
     # reset rig position
-    for wrapped_flag in tek_rig.get_flags():
-        flag_tek_parent = tek.TEKNode(pm.listConnections(f'{wrapped_flag}.tekParent')[0])
+    for wrapped_flag in frag_rig.get_flags():
+        flag_frag_parent = frag.FRAGNode(pm.listConnections(f'{wrapped_flag}.fragParent')[0])
         # remove any existing constraints as it'll prevent a clean bake.
         # if the constraints were added when two rigs were attached this should be reconnected.
-        if not isinstance(flag_tek_parent, (tek.FaceFKComponent, tek.EyeCenterComponent, tek.EyeComponent)):
+        if not isinstance(flag_frag_parent, (frag.FaceFKComponent, frag.EyeCenterComponent, frag.EyeComponent)):
             pm.delete(wrapped_flag.getChildren(type=pm.nt.ParentConstraint))
             for attr_type in 'tr':
                 for axis_type in 'xyz':
@@ -726,12 +726,12 @@ def animate_rig_from_skeleton(tek_rig, skel_root, start_frame=None, end_frame=No
                     if not current_attr.isLocked():
                         current_attr.set(0)
 
-    bakeable_node_list, custom_attr_list, things_to_delete = attach_rig_to_skeleton(tek_rig, skel_root)
+    bakeable_node_list, custom_attr_list, things_to_delete = attach_rig_to_skeleton(frag_rig, skel_root)
 
     driver_rig = None
-    if tek_rig.hasAttr('attached_to'):
-        driver_rig = tek.TEKNode(tek_rig.getAttr('attached_to'))
-        tek_rig.disconnectAttr('attached_to')
+    if frag_rig.hasAttr('attached_to'):
+        driver_rig = frag.FRAGNode(frag_rig.getAttr('attached_to'))
+        frag_rig.disconnectAttr('attached_to')
 
     # snap frame after constraints to catch the rig up.
     cmds.currentTime(start_frame - 1)
@@ -739,26 +739,26 @@ def animate_rig_from_skeleton(tek_rig, skel_root, start_frame=None, end_frame=No
     pm.delete(things_to_delete)
 
     if current_scale != 1.0:
-        tek_rig.rig_scale = current_scale
+        frag_rig.rig_scale = current_scale
 
     if driver_rig:
-        attach_rigs(driver_rig, tek_rig)
+        attach_rigs(driver_rig, frag_rig)
 
 
-def animate_head_rig_from_skel(tek_rig, other_root, start_frame=None, end_frame=None):
+def animate_head_rig_from_skel(frag_rig, other_root, start_frame=None, end_frame=None):
     """
     Reanimates head rig components
 
-    :param TEKRig tek_rig: The TEKRig of the rig to attach to the skeleton
+    :param FRAGRig frag_rig: The FRAGRig of the rig to attach to the skeleton
     :param pm.nt.Joint other_root: The animated skeleton we will be transferring animation from.
     :param int start_frame: The first frame in the bake range.
     :param int end_frame: The last frame in the bake range.
     """
 
-    tek_children = tek_rig.get_tek_children()
-    for tek_child in tek_children:
-        if isinstance(tek_child, (tek.FaceFKComponent, tek.EyeCenterComponent, tek.EyeComponent)):
-            tek_child.reanimate(other_root, start_time=start_frame, end_time=end_frame)
+    frag_children = frag_rig.get_frag_children()
+    for frag_child in frag_children:
+        if isinstance(frag_child, (frag.FaceFKComponent, frag.EyeCenterComponent, frag.EyeComponent)):
+            frag_child.reanimate(other_root, start_time=start_frame, end_time=end_frame)
 
 
 @ma_decorators.keep_namespace_decorator
@@ -770,7 +770,7 @@ def switch_multiconstraint(rig_multi_dict, switch_target, start_frame=None, end_
     """
     Switch a rig's multicconstraint target, and bake animation across.
 
-    :param dict{} rig_multi_dict: A dictionary containing TEKRigs and a list of mulitconstraints to be switched.
+    :param dict{} rig_multi_dict: A dictionary containing FRAGRigs and a list of mulitconstraints to be switched.
     :param Transform switch_target: The object the multiconstraints will be switched to.
     :param int start_frame: The first frame in the bake range.
     :param int end_frame: The last frame in the bake range.
@@ -783,11 +783,11 @@ def switch_multiconstraint(rig_multi_dict, switch_target, start_frame=None, end_
     flag_list = []
     pm.autoKeyframe(state=False)
     rig = None
-    for tek_rig, multi_constraint_list in rig_multi_dict.items():
-        all_grp = tek_rig.getAttr('all')
+    for frag_rig, multi_constraint_list in rig_multi_dict.items():
+        all_grp = frag_rig.getAttr('all')
         driver_all_grp = pm.duplicate(all_grp, upstreamNodes=True, returnRootsOnly=True)[0]
-        driver_rig = tek.TEKNode(driver_all_grp.getAttr('tekParent'))
-        rig = tek_rig
+        driver_rig = frag.FRAGNode(driver_all_grp.getAttr('fragParent'))
+        rig = frag_rig
 
         for multiconstraint_node in multi_constraint_list:
             root_namespace = multiconstraint_node.namespace()
@@ -795,10 +795,10 @@ def switch_multiconstraint(rig_multi_dict, switch_target, start_frame=None, end_
             switch_node = multiconstraint_node.getAttr('switchObject')
             source_node = multiconstraint_node.getAttr('sourceObject')
 
-            rig_component = tek.TEKNode(source_node.getAttr('tekParent'))
+            rig_component = frag.FRAGNode(source_node.getAttr('fragParent'))
             flag_index = rig_component.get_flags().index(source_node)
 
-            driver_component = get_tek_keyable_component(driver_rig, rig_component.region, rig_component.side)
+            driver_component = get_frag_keyable_component(driver_rig, rig_component.region, rig_component.side)
             driver_source_node = driver_component.get_flags()[flag_index]
 
             attr_target_dict = switch_node.follow.getEnums()
@@ -900,11 +900,11 @@ def find_primary_axis(node):
     return primary_axis, axis_is_positive
 
 
-def attach_rig_to_skeleton(tek_rig, skel_root, maintain_offset=True):
+def attach_rig_to_skeleton(frag_rig, skel_root, maintain_offset=True):
     """
-    Attaches all of the keyable components of a tek_rig to the passed skeleton.
+    Attaches all of the keyable components of a frag_rig to the passed skeleton.
 
-    :param TEKRig tek_rig: The TEKRig of the rig to attach to the skeleton.
+    :param FRAGRig frag_rig: The FRAGRig of the rig to attach to the skeleton.
     :param Joint skel_root: The root joint of the skeleton to attach to.
     :param bool maintain_offset: If when attaching to the skeleton the rig should maintain its offset.
     :return: Three lists containing: The bakeable nodes, a list of custom attrs found, and the constraints to delete after baking
@@ -914,10 +914,10 @@ def attach_rig_to_skeleton(tek_rig, skel_root, maintain_offset=True):
     bakable_node_list = []
     custom_attr_list = []
     things_to_delete = []
-    for rig_component in tek_rig.get_tek_children():
-        if isinstance(rig_component, tek.KeyableComponent):
-            if not isinstance(rig_component, (tek.FaceFKComponent, tek.EyeCenterComponent, tek.EyeComponent,
-                                              tek.ChannelFloatComponent)):
+    for rig_component in frag_rig.get_frag_children():
+        if isinstance(rig_component, frag.KeyableComponent):
+            if not isinstance(rig_component, (frag.FaceFKComponent, frag.EyeCenterComponent, frag.EyeComponent,
+                                              frag.ChannelFloatComponent)):
                 rig_component.attach_to_skeleton(skel_root, mo=maintain_offset)
                 node_list, attr_list, constraint_list = rig_component.get_bakeable_rig_nodes()
                 bakable_node_list += node_list
@@ -926,23 +926,23 @@ def attach_rig_to_skeleton(tek_rig, skel_root, maintain_offset=True):
     return bakable_node_list, custom_attr_list, things_to_delete
 
 
-def get_tek_keyable_component(rig_root, region, side):
+def get_frag_keyable_component(rig_root, region, side):
     """
     From the attached children get the keyable component with the matching markup.
     This should be used to find an exact component.
 
-    :param TEKRoot rig_root: The tek structure to search.
+    :param FRAGRoot rig_root: The frag structure to search.
     :param str region: The string value of the region
     :param str side: The string value of the side.
     :return: The requested keyable component.
     :rtype KeyableComponent:
     """
 
-    if rig_root.hasAttr('tekChildren'):
-        tek_children = rig_root.tekChildren.listConnections()
-        for child_node in tek_children:
-            wrapped_node = tek.TEKNode(child_node)
-            if not isinstance(wrapped_node, tek.KeyableComponent):
+    if rig_root.hasAttr('fragChildren'):
+        frag_children = rig_root.fragChildren.listConnections()
+        for child_node in frag_children:
+            wrapped_node = frag.FRAGNode(child_node)
+            if not isinstance(wrapped_node, frag.KeyableComponent):
                 continue
 
             if wrapped_node.side != side:
@@ -967,32 +967,32 @@ def purge_rig_cmd():
     
     selection = pm.selected()
     if not selection:
-        dialogs.info_prompt(title='Purge Rig', text='Please make sure you select at least one TEK rig!')
-        logger.warning('Please make sure you select at least one TEK rig!')
+        dialogs.info_prompt(title='Purge Rig', text='Please make sure you select at least one FRAG rig!')
+        logger.warning('Please make sure you select at least one FRAG rig!')
         return
     for x in selection:
-        tek_rig = tek.get_tek_rig(x)
-        if tek_rig:
-            purge_rig(tek_rig)
+        frag_rig = frag.get_frag_rig(x)
+        if frag_rig:
+            purge_rig(frag_rig)
             
 
 @ma_decorators.undo_decorator
-def purge_rig(tek_rig):
+def purge_rig(frag_rig):
     """
-    From a given tek_rig find and delete its major components.
+    From a given frag_rig find and delete its major components.
     NOTE: This does leave behind materials and a handful of nodes if the rig is not within a namespace.
     NOTE: This will PURGE a namespace if the rig is within one.
 
-    :param TEKRig tek_rig: The TEKRig to be purged from the scene.
+    :param FRAGRig frag_rig: The FRAGRig to be purged from the scene.
     """
-    namespace_name = tek_rig.namespace()
+    namespace_name = frag_rig.namespace()
     if namespace_name:
         namespace.set_namespace('')
         namespace.purge_namespace(namespace_name)
     else:
-        tek_root = tek_rig.get_root()
-        display_layer_network_node = lists.get_first_in_list([x for x in tek_rig.listConnections(type=pm.nt.Network) if 'DisplayLayers' in x.name()])
-        pm.delete(tek_root.get_tek_children()+[tek_rig.all_grp]+display_layer_network_node.layers.listConnections()+tek_rig.get_tek_children())
+        frag_root = frag_rig.get_root()
+        display_layer_network_node = lists.get_first_in_list([x for x in frag_rig.listConnections(type=pm.nt.Network) if 'DisplayLayers' in x.name()])
+        pm.delete(frag_root.get_frag_children()+[frag_rig.all_grp]+display_layer_network_node.layers.listConnections()+frag_rig.get_frag_children())
 
 
 @ma_decorators.keep_namespace_decorator
@@ -1003,21 +1003,21 @@ def single_frame_switch(rig_components_dict, start_frame=None, end_frame=None):
     """
     Switches between IK and FK settings on components with switching feature, matches position, and sets key.
 
-    :param dict rig_components_dict: A dictionary of TEKRigs to a list of switchable components.
+    :param dict rig_components_dict: A dictionary of FRAGRigs to a list of switchable components.
     :param int start_frame: The first frame in the bake range.
     :param int end_frame: The last frame in the bake range.
     """
 
     temp_namespace = strings.generate_random_string(5)
 
-    for tek_rig, component_list in rig_components_dict.items():
+    for frag_rig, component_list in rig_components_dict.items():
 
-        root_namespace = tek_rig.namespace()
+        root_namespace = frag_rig.namespace()
         og_ikfk_flag_list = []
         flag_list = []
         for rig_component in component_list:
-            if not isinstance(rig_component, (tek.IKFKComponent, tek.ReverseFootComponent,
-                                              tek.IKFKRibbonComponent, tek.ZLegComponent)):
+            if not isinstance(rig_component, (frag.IKFKComponent, frag.ReverseFootComponent,
+                                              frag.IKFKRibbonComponent, frag.ZLegComponent)):
                 logger.warning(f'Skipping {rig_component}, as it is not one of the supported component types.')
                 continue
 
@@ -1034,7 +1034,7 @@ def single_frame_switch(rig_components_dict, start_frame=None, end_frame=None):
             namespace.set_namespace(temp_namespace)
 
             if is_ik:
-                if isinstance(rig_component, (tek.ReverseFootComponent, tek.ZLegComponent)):
+                if isinstance(rig_component, (frag.ReverseFootComponent, frag.ZLegComponent)):
                     fk_flag_list = rig_component.fk_flags
                 else:
                     fk_flag_list = rig_component.fk_flags[:3]
@@ -1050,7 +1050,7 @@ def single_frame_switch(rig_components_dict, start_frame=None, end_frame=None):
                 flag_list += [ik_flag, pv_flag]
                 fk_joint_list = rig_component.fkChain.listConnections()[:3]
 
-                if isinstance(rig_component, (tek.ReverseFootComponent, tek.ZLegComponent)):
+                if isinstance(rig_component, (frag.ReverseFootComponent, frag.ZLegComponent)):
                     ik_loc = create_locator_at_object(rig_component.ikChain.listConnections()[-2])
                     toe_flag = rig_component.ikToeFlag.listConnections()[0]
                     flag_list.append(toe_flag)
@@ -1083,7 +1083,7 @@ def switch_ikfk_components(rig_components_dict, start_frame=None, end_frame=None
 
     If a frame range is not provided we use the start/end keyframe in the scene, or best guess.
 
-    :param dict rig_components_dict: A dictionary of TEKRigs to a list of switchable components.
+    :param dict rig_components_dict: A dictionary of FRAGRigs to a list of switchable components.
     :param int start_frame: The first frame in the bake range.
     :param int end_frame: The last frame in the bake range.
     """
@@ -1091,29 +1091,29 @@ def switch_ikfk_components(rig_components_dict, start_frame=None, end_frame=None
     temp_namespace = strings.generate_random_string(5)
     namespace.set_namespace(temp_namespace)
 
-    for tek_rig, component_list in rig_components_dict.items():
-        root_namespace = tek_rig.namespace()
-        all_grp = tek_rig.getAttr('all')
+    for frag_rig, component_list in rig_components_dict.items():
+        root_namespace = frag_rig.namespace()
+        all_grp = frag_rig.getAttr('all')
 
         driver_all_grp = pm.duplicate(all_grp, upstreamNodes=True, returnRootsOnly=True)[0]
-        driver_rig = tek.TEKNode(driver_all_grp.getAttr('tekParent'))
+        driver_rig = frag.FRAGNode(driver_all_grp.getAttr('fragParent'))
 
         flag_list = []
         driver_flag_list = []
         for rig_component in component_list:
-            if not isinstance(rig_component, (tek.IKFKComponent, tek.ReverseFootComponent,
-                                              tek.IKComponent, tek.FKComponent,
-                                              tek.IKFKRibbonComponent, tek.ZLegComponent)):
+            if not isinstance(rig_component, (frag.IKFKComponent, frag.ReverseFootComponent,
+                                              frag.IKComponent, frag.FKComponent,
+                                              frag.IKFKRibbonComponent, frag.ZLegComponent)):
                 logger.warning(f'Skipping {rig_component}, as it is not one of the supported component types.')
                 continue
-            driver_component = get_tek_keyable_component(driver_rig, rig_component.region,
+            driver_component = get_frag_keyable_component(driver_rig, rig_component.region,
                                                           rig_component.side)
 
             is_ik = False
             switch_flag = None
             switch_setting = None
             pm.autoKeyframe(state=False)
-            if isinstance(rig_component, (tek.IKFKComponent, tek.ReverseFootComponent, tek.IKFKRibbonComponent, tek.ZLegComponent)):
+            if isinstance(rig_component, (frag.IKFKComponent, frag.ReverseFootComponent, frag.IKFKRibbonComponent, frag.ZLegComponent)):
                 # this handles ik/fk components and the reverse foot component. It's arguable this sorta functionality
                 # should live with the component, but we can reduce the amount of duplicating by running it all in
                 # one space here.
@@ -1135,28 +1135,28 @@ def switch_ikfk_components(rig_components_dict, start_frame=None, end_frame=None
                 switch_flag.setAttr('ikfk_switch', (not switch_setting))
 
             else:
-                for og_rig_component in tek_rig.get_tek_children():
-                    if not isinstance(og_rig_component, tek.KeyableComponent):
+                for og_rig_component in frag_rig.get_frag_children():
+                    if not isinstance(og_rig_component, frag.KeyableComponent):
                         continue
                     # save attachment
                     # $TODO FSchorsch you cannot switch a pure ik or fk component without removing and rebuilding it
                     # this has a knock effect on needed to get and restore attachments, and for bonus points
                     # multiconstraints
 
-                if isinstance(rig_component, tek.IKComponent):
+                if isinstance(rig_component, frag.IKComponent):
                     print('IKComponent')
                     # remove IK component
                     # build FK component
                     is_ik = True
 
-                elif isinstance(rig_component, tek.FKComponent):
+                elif isinstance(rig_component, frag.FKComponent):
                     print('FKComponent')
                     # remove FK component
                     # build IK component
                     is_ik = False
 
             # align rigs.
-            for wrapped_flag in tek_rig.get_flags() + driver_rig.get_flags():
+            for wrapped_flag in frag_rig.get_flags() + driver_rig.get_flags():
                 # $TODO Fschorsch might need to save and restore values here incase there are values set that are not
                 # default but are also not keyed.
 
@@ -1209,20 +1209,20 @@ def switch_ikfk_components_cmd(start_frame=None, end_frame=None):
     """
 
     selection = pm.selected()
-    flag_filter_list = [x for x in selection if tek_flag.is_flag_node(x)]
+    flag_filter_list = [x for x in selection if frag_flag.is_flag_node(x)]
 
     rig_components_dict = {}
     for wrapped_flag in flag_filter_list:
-        rig_component = tek.TEKNode(wrapped_flag.tekParent.get())
-        tek_rig = rig_component.get_tek_parent()
+        rig_component = frag.FRAGNode(wrapped_flag.fragParent.get())
+        frag_rig = rig_component.get_frag_parent()
 
-        if isinstance(rig_component, (tek.IKFKComponent, tek.ReverseFootComponent,
-                                      tek.IKComponent, tek.FKComponent,
-                                      tek.IKFKRibbonComponent, tek.ZLegComponent)):
-            if tek_rig not in rig_components_dict:
-                rig_components_dict[tek_rig] = []
+        if isinstance(rig_component, (frag.IKFKComponent, frag.ReverseFootComponent,
+                                      frag.IKComponent, frag.FKComponent,
+                                      frag.IKFKRibbonComponent, frag.ZLegComponent)):
+            if frag_rig not in rig_components_dict:
+                rig_components_dict[frag_rig] = []
 
-            rig_components_dict[tek_rig].append(rig_component)
+            rig_components_dict[frag_rig].append(rig_component)
     single_frame = False
     if end_frame is not None and start_frame is not None:
         num_frames = abs(end_frame - start_frame) + 1
@@ -1240,39 +1240,39 @@ def reload_rig_cmd():
     """
 
     selection = pm.selected()
-    tek_rigs = []
+    frag_rigs = []
     if not selection:
-        dialogs.info_prompt(title='Reload Rig', text='Please make sure you select at least one TEK rig!')
-        logger.warning('Please make sure you select at least one TEK rig!')
+        dialogs.info_prompt(title='Reload Rig', text='Please make sure you select at least one FRAG rig!')
+        logger.warning('Please make sure you select at least one FRAG rig!')
         return
     for x in selection:
-        tek_rig = tek.get_tek_rig(x)
-        if tek_rig:
-            reload_rig(tek_rig)
-            tek_rigs.append(tek_rig)
-    asset_ids = [x.get_asset_id(x) for x in tek_rigs]
+        frag_rig = frag.get_frag_rig(x)
+        if frag_rig:
+            reload_rig(frag_rig)
+            frag_rigs.append(frag_rig)
+    asset_ids = [x.get_asset_id(x) for x in frag_rigs]
     return asset_ids
     
 
 @ma_decorators.undo_decorator
-def reload_rig(tek_rig):
+def reload_rig(frag_rig):
     """
-    From the given tek_rig bake the animation down to a skeleton, reimport the rig, then restore the animation to it.
+    From the given frag_rig bake the animation down to a skeleton, reimport the rig, then restore the animation to it.
 
-    :param tek_rig:
-    :return: The re-imported TEKRig
-    :rtype: TEKRig
+    :param frag_rig:
+    :return: The re-imported FRAGRig
+    :rtype: FRAGRig
     """
-    asset_id = tek_rig.get_asset_id(tek_rig)
-    skel_root = bake_skeleton_from_rig(tek_rig, set_to_zero=False)
+    asset_id = frag_rig.get_asset_id(frag_rig)
+    skel_root = bake_skeleton_from_rig(frag_rig, set_to_zero=False)
 
-    namespace.purge_namespace(tek_rig.namespace())
-    tek_root = import_asset(asset_id)
-    tek_rig = tek_root.get_rig()
+    namespace.purge_namespace(frag_rig.namespace())
+    frag_root = import_asset(asset_id)
+    frag_rig = frag_root.get_rig()
 
-    animate_rig_from_skeleton(tek_rig, skel_root)
+    animate_rig_from_skeleton(frag_rig, skel_root)
     pm.delete(skel_root)
-    return tek_rig
+    return frag_rig
 
 
 @ma_decorators.keep_namespace_decorator
@@ -1281,8 +1281,8 @@ def import_asset(asset_id):
     From the asset id import the skeleton and rig. If the .skel and .rg files are missing default to the .ma file.
 
     :param str asset_id: AssetId lookup for a given asset.
-    :return: The TEKRoot of the imported asset.
-    :rtype: TEKRoot
+    :return: The FRAGRoot of the imported asset.
+    :rtype: FRAGRoot
     """
 
     mca_asset = assetlist.get_asset_by_id(asset_id)
@@ -1325,27 +1325,27 @@ def import_asset(asset_id):
         namespace_to_use = found_namespace if found_namespace != '' else base_namespace
     namespace.set_namespace(namespace_to_use.lower())
 
-    tek_root = None
+    frag_root = None
     if all(os.path.isfile(x) for x in [rig_path, skel_path]):
         root_joint = skel_utils.import_skeleton(skel_path)
         if not root_joint:
             # failed to import a skeleton
             logger.warning(f'Skeleton failed to import from. {skel_path}')
             return
-        tek_root = tek.TEKRoot.create(root_joint, mca_asset.asset_type, asset_id)
-        tek_rig = tek.TEKRig.create(tek_root)
+        frag_root = frag.FRAGRoot.create(root_joint, mca_asset.asset_type, asset_id)
+        frag_rig = frag.FRAGRig.create(frag_root)
 
-        import_rig(rig_path, tek_rig)
+        import_rig(rig_path, frag_rig)
     elif os.path.isfile(maya_path):
         imported_node_list = pm.importFile(maya_path, returnNewNodes=True)
         for node in pm.ls(imported_node_list, type=pm.nt.Network):
-            if node.name().endswith('TEKRoot'):
-                tek_root = tek.TEKNode(node)
+            if node.name().endswith('FRAGRoot'):
+                frag_root = frag.FRAGNode(node)
                 break
         pm.refresh()
         material_utils.refresh_file_nodes()
     namespace.delete_empty_namespaces()
-    return tek_root
+    return frag_root
 
 
 def import_rig(rig_path, rig_root):
@@ -1353,7 +1353,7 @@ def import_rig(rig_path, rig_root):
     From a serialized rig file, build a rig.
 
     :param str rig_path: Path to a serialized rig file.
-    :param TEKRig rig_root: The TEKRig of the rig to be serialized.
+    :param FRAGRig rig_root: The FRAGRig of the rig to be serialized.
     """
 
     return
@@ -1372,28 +1372,28 @@ def mirror_rig_cmd(start_frame=None, end_frame=None):
     selection = pm.selected()
 
     if not selection:
-        dialogs.info_prompt(title='Purge Rig', text='Please make sure you select at least one TEK rig!')
-        logger.warning('Please make sure you select at least one TEK rig!')
+        dialogs.info_prompt(title='Purge Rig', text='Please make sure you select at least one FRAG rig!')
+        logger.warning('Please make sure you select at least one FRAG rig!')
         return
     
-    tek_roots = []
+    frag_roots = []
     for x in selection:
-        tek_rig = tek.get_tek_rig(x)
-        if tek_rig:
-            tek_root = tek_rig.get_root()
-            tek_roots.append(tek_root)
+        frag_rig = frag.get_frag_rig(x)
+        if frag_rig:
+            frag_root = frag_rig.get_root()
+            frag_roots.append(frag_root)
 
             # retrieve a valid frame range.
             if any(x is None for x in [start_frame, end_frame]):
-                start_frame, end_frame = time_utils.get_keyframe_range_from_nodes(tek_rig.get_flags())
+                start_frame, end_frame = time_utils.get_keyframe_range_from_nodes(frag_rig.get_flags())
 
             if any(x is None for x in [start_frame, end_frame]):
                 # unable to retrieve a valid framerange.
-                logger.warning(f'No keyframes found on: {tek_root.getAttr("assetName")}')
+                logger.warning(f'No keyframes found on: {frag_root.getAttr("assetName")}')
                 return
 
-            mirror_rig(tek_rig, start_frame, end_frame)
-    asset_ids = [x.asset_id for x in tek_roots]
+            mirror_rig(frag_rig, start_frame, end_frame)
+    asset_ids = [x.asset_id for x in frag_roots]
     return asset_ids
 
 
@@ -1401,16 +1401,16 @@ def mirror_rig_cmd(start_frame=None, end_frame=None):
 @ma_decorators.keep_autokey_decorator
 @ma_decorators.keep_current_frame_decorator
 @ma_decorators.undo_decorator
-def mirror_rig(tek_rig, start_frame, end_frame):
+def mirror_rig(frag_rig, start_frame, end_frame):
     """
     This mirrors a rig's animation by baking it down to a skeleton, mirroring the skeleton then reattaching it to the active rig.
 
-    :param TEKRig tek_rig: The Frag rig which animation's should be mirrored.
+    :param FRAGRig frag_rig: The Frag rig which animation's should be mirrored.
     :param int start_frame: The first frame in the bake range.
     :param int end_frame: The last frame in the bake range.
     """
-    tek_root = tek_rig.get_root()
-    asset_id = tek_root.asset_id
+    frag_root = frag_rig.get_root()
+    asset_id = frag_root.asset_id
 
     # Setup our working name space and disable autokey.
     temp_namespace = strings.generate_random_string(5)
@@ -1421,10 +1421,10 @@ def mirror_rig(tek_rig, start_frame, end_frame):
 
     if end_frame - start_frame > 1:
         # If we're doing more than just a pose bake the frame range.
-        drive_root = bake_skeleton_from_rig(tek_rig, start_frame, end_frame, False)
+        drive_root = bake_skeleton_from_rig(frag_rig, start_frame, end_frame, False)
     else:
         # If it's a single pose duplicate the skeleton and match it to the pose
-        drive_root = pm.duplicate(tek_root.root_joint)[0]
+        drive_root = pm.duplicate(frag_root.root_joint)[0]
         drive_root.setParent(None)
         pm.setKeyframe([drive_root] + drive_root.listRelatives(ad=True, type=pm.nt.Joint))
 
@@ -1465,36 +1465,36 @@ def mirror_rig(tek_rig, start_frame, end_frame):
 
     # Reset the namespace so we can keep our keys after the purge.
     namespace.set_namespace(':')
-    animate_rig_from_skeleton(tek_rig, final_root, start_frame=start_frame, end_frame=end_frame)
+    animate_rig_from_skeleton(frag_rig, final_root, start_frame=start_frame, end_frame=end_frame)
 
     namespace.purge_namespace(temp_namespace)
 
 
-def setup_twist_components(tek_rig):
+def setup_twist_components(frag_rig):
     """
     Purge old twist components and rebuild them.
 
-    :param TEKRig tek_rig: The TEKRig to have new twist joints built on.
+    :param FRAGRig frag_rig: The FRAGRig to have new twist joints built on.
     """
-    existing_twist_component_list = tek_rig.get_tek_children(of_type=tek.TwistFixUpComponent)
+    existing_twist_component_list = frag_rig.get_frag_children(of_type=frag.TwistFixUpComponent)
     for twist_component in existing_twist_component_list:
-        if twist_component.get_version() != tek.TwistFixUpComponent.VERSION:
+        if twist_component.get_version() != frag.TwistFixUpComponent.VERSION:
             pm.delete([twist_component.noTouch.get(), twist_component.get_pynode()])
 
-    tek_root = tek_rig.get_root()
-    skel_root = tek_root.root_joint
+    frag_root = frag_rig.get_root()
+    skel_root = frag_root.root_joint
 
-    flag_utils.zero_flags([tek_rig])
+    flag_utils.zero_flags([frag_rig])
 
     skel_hierarchy = chain_markup.ChainMarkup(skel_root)
     for side, entry_dict in skel_hierarchy.twist_joints.items():
         for twist_chain, data_dict in entry_dict.items():
-            tek.TwistFixUpComponent.create(tek_rig, data_dict['joints'], side, twist_chain)
+            frag.TwistFixUpComponent.create(frag_rig, data_dict['joints'], side, twist_chain)
 
 @ma_decorators.keep_selection_decorator
 def export_flag_shapes_cmd():
     """
-    From a given tek rig export all flag shapes to its local flags directory.
+    From a given frag rig export all flag shapes to its local flags directory.
 
     """
     selection = pm.selected()
@@ -1505,31 +1505,31 @@ def export_flag_shapes_cmd():
 
     exported_rig_list = []
     for x in selection:
-        tek_rig = tek.get_tek_rig(x)
-        if tek_rig and tek_rig not in exported_rig_list:
-            exported_rig_list.append(tek_rig)
-            export_flag_shapes(tek_rig)
+        frag_rig = frag.get_frag_rig(x)
+        if frag_rig and frag_rig not in exported_rig_list:
+            exported_rig_list.append(frag_rig)
+            export_flag_shapes(frag_rig)
 
 
-def export_flag_shapes(tek_rig):
+def export_flag_shapes(frag_rig):
     """
-    From a given tek rig export all flag shapes to its local flags directory.
+    From a given frag rig export all flag shapes to its local flags directory.
 
-    :param TEKRig tek_rig: The TEKRig to have export shapes from.
+    :param FRAGRig frag_rig: The FRAGRig to have export shapes from.
     """
-    tek_root = tek_rig.get_root()
-    asset_id = tek_root.asset_id
+    frag_root = frag_rig.get_root()
+    asset_id = frag_root.asset_id
     mca_asset = assetlist.get_asset_by_id(asset_id)
     base_flag_path = mat_asset.flags_path
 
-    for flag_node in tek_rig.get_flags():
+    for flag_node in frag_rig.get_flags():
         flag_path = os.path.join(base_flag_path, f'{naming.get_basename(flag_node)}.flag')
-        tek_flag.export_flag(flag_node.node, flag_path)
+        frag_flag.export_flag(flag_node.node, flag_path)
 
 
-def remove_dead_tek_nodes(ignore_types=None):
+def remove_dead_frag_nodes(ignore_types=None):
     """
-    Removes dead (non-connected) TEK nodes. Ignores CineSequenceComponent and TEKSequencer by default as these
+    Removes dead (non-connected) FRAG nodes. Ignores CineSequenceComponent and FRAGSequencer by default as these
     are not expected to be connected to a rig.
 
     :param tuple(type) ignore_types: A list of types to ignore.
@@ -1539,43 +1539,43 @@ def remove_dead_tek_nodes(ignore_types=None):
     """
     # These types are not expected to be connected to a rig, so ignore them.
     if not ignore_types:
-        ignore_types = (tek.CineSequenceComponent, tek.TEKSequencer)
+        ignore_types = (frag.CineSequenceComponent, frag.FRAGSequencer)
 
     # Get all rigs and any nodes connected to them.
-    f_rigs = tek.get_tek_rigs()
+    f_rigs = frag.get_frag_rigs()
     all_connections = []
     for f_rig in f_rigs:
-        f_root = tek.get_tek_root(f_rig)
+        f_root = frag.get_frag_root(f_rig)
         rig_connections = f_rig.listConnections()
         root_connections = f_root.listConnections()
         all_connections = list(set(rig_connections + root_connections + [f_rig, f_root] + all_connections))
 
     # Get all network nodes in scene and check if they are abandoned.
-    abandoned_tek_nodes = []
+    abandoned_frag_nodes = []
     scene_network_nodes = pm.ls(type=pm.nt.Network)
     for network_node in scene_network_nodes:
-        # If not a TEK node, skip it.
-        if not tek.is_tek_node(network_node):
+        # If not a FRAG node, skip it.
+        if not frag.is_frag_node(network_node):
             continue
-        tek_node = tek.TEKNode(network_node)
-        if tek_node not in all_connections:
+        frag_node = frag.FRAGNode(network_node)
+        if frag_node not in all_connections:
             # If it is connected to a rig just further down the line than to have caught it on
-            # TEKRig connections, skip it.
-            if any(x in all_connections for x in tek_node.listConnections()):
+            # FRAGRig connections, skip it.
+            if any(x in all_connections for x in frag_node.listConnections()):
                 pass
             # If not connected and not in ignore_types, add it to the abandoned list.
-            elif not isinstance(tek.TEKNode(network_node), ignore_types):
-                abandoned_tek_nodes.append(tek_node)
+            elif not isinstance(frag.FRAGNode(network_node), ignore_types):
+                abandoned_frag_nodes.append(frag_node)
 
-    # Get a list of all Maya nodes connected to the abandoned TEK nodes.
+    # Get a list of all Maya nodes connected to the abandoned FRAG nodes.
     delete_nodes = []
-    for abandoned_node in abandoned_tek_nodes:
+    for abandoned_node in abandoned_frag_nodes:
         node_connections = abandoned_node.listConnections()
         for node_connection in node_connections:
             delete_nodes.append(node_connection)
 
     # Getting string names of removed nodes for logging purposes.
-    abandoned_tek_nodes_names = [x.name() for x in abandoned_tek_nodes]
+    abandoned_frag_nodes_names = [x.name() for x in abandoned_frag_nodes]
     delete_nodes_list = list(set(delete_nodes))
     delete_nodes_names_list = [x.name() for x in delete_nodes_list]
 
@@ -1584,6 +1584,6 @@ def remove_dead_tek_nodes(ignore_types=None):
     pm.delete(delete_nodes_list)
 
     logger.warning(f'Full removal list: {delete_nodes_names_list}')
-    logger.warning(f'Removed {len(abandoned_tek_nodes_names)} dead tek nodes: {abandoned_tek_nodes_names}')
+    logger.warning(f'Removed {len(abandoned_frag_nodes_names)} dead frag nodes: {abandoned_frag_nodes_names}')
 
-    return abandoned_tek_nodes_names
+    return abandoned_frag_nodes_names

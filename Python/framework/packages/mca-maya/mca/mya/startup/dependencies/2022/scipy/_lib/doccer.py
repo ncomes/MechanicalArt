@@ -1,4 +1,4 @@
-''' Utilities to allow inserting docstring tekments for common
+''' Utilities to allow inserting docstring fragments for common
 parameters into function and method docstrings'''
 
 import sys
@@ -18,7 +18,7 @@ def docformat(docstring, docdict=None):
         docstring from function, possibly with dict formatting strings
     docdict : dict, optional
         dictionary with keys that match the dict formatting strings
-        and values that are docstring tekments to be inserted. The
+        and values that are docstring fragments to be inserted. The
         indentation of the inserted docstrings is set to match the
         minimum indentation of the ``docstring`` by adding this
         indentation to all lines of the inserted string, except the
@@ -205,7 +205,7 @@ def filldoc(docdict, unindent_params=True):
     Parameters
     ----------
     docdict : dictionary
-        dictionary containing name, docstring tekment pairs
+        dictionary containing name, docstring fragment pairs
     unindent_params : {False, True}, boolean, optional
         If True, strip common indentation from all parameters in
         docdict

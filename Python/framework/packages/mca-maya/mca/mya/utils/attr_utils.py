@@ -821,7 +821,7 @@ def set_limits(rig_flag,
     Sets limits on a flag and stamps the info onto a network node.
     
     :param flag.Flag rig_flag: A rig Flag
-    :param TEKNode rig_node: TEK Node
+    :param FRAGNode rig_node: FRAG Node
     :param list(list(float)) limit_point: The limit points of a flag
     :param list(list(float)) limit_orient: The limit points of a flag
     """

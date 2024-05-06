@@ -10,7 +10,7 @@ Purpose: Creates an cog rig
 import pymel.core as pm
 #  python imports
 from mca.mya.utils import dag
-from mca.mya.rigging.flags import tek_flag
+from mca.mya.rigging.flags import frag_flag
 
 
 def cog_chain(start_joint, end_joint, scale=1.0, orientation=(-90,0,0)):
@@ -31,7 +31,7 @@ def cog_chain(start_joint, end_joint, scale=1.0, orientation=(-90,0,0)):
 	flags = []
 	constraints = []
 	for jnt in chain:
-		flag_node = tek_flag.Flag.create(jnt, label='cog', orientation=orientation, scale=scale)
+		flag_node = frag_flag.Flag.create(jnt, label='cog', orientation=orientation, scale=scale)
 		
 		flag_node.setAttr('rotateOrder', 2)
 		constraint = pm.parentConstraint(flag_node, jnt, w=1, mo=1)

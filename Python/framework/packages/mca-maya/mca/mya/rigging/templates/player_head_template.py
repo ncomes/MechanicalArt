@@ -7,10 +7,10 @@ import os
 # Software specific imports
 import pymel.core as pm
 # mca python imports
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 from mca.mya.rigging.templates import rig_templates
 from mca.mya.rigging import chain_markup, mesh_markup_rig, rig_utils
-from mca.mya.rigging.tek import face_mesh_component
+from mca.mya.rigging.frag import face_mesh_component
 from mca.common.paths import paths
 from mca.common.utils import fileio
 from mca.mya.face import source_data, source_meshes
@@ -54,20 +54,20 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		world_root = pm.PyNode('root')
 		
 		# Progress Bar
-		ui.update_status(10, 'Gathering Data and Creating Base TEK Nodes')
+		ui.update_status(10, 'Gathering Data and Creating Base FRAG Nodes')
 		
-		# create the rig core tek nodes
-		tek_root = tek.TEKRoot.create(world_root, 'head', self.asset_id)
-		skeletal_mesh = tek.SkeletalMesh.create(tek_root)
+		# create the rig core frag nodes
+		frag_root = frag.FRAGRoot.create(world_root, 'head', self.asset_id)
+		skeletal_mesh = frag.SkeletalMesh.create(frag_root)
 		
 		# get the meshes and the markups
 		mesh_markup = mesh_markup_rig.RigMeshMarkup.create(skeletal_mesh.namespace())
 		mesh_dict = mesh_markup.get_dict()
-		face_mesh_comp = tek.FaceMeshComponent.create(skeletal_mesh, mesh_dict)
+		face_mesh_comp = frag.FaceMeshComponent.create(skeletal_mesh, mesh_dict)
 		
-		tek_rig = tek.TEKRig.create(tek_root)
+		frag_rig = frag.FRAGRig.create(frag_root)
 		
-		parameter_node = tek.FragFaceParameters.create(tek_rig, parameter_list)
+		parameter_node = frag.FragFaceParameters.create(frag_rig, parameter_list)
 		
 		# Need to compare to list of meshes in the scene/namespace
 		
@@ -102,7 +102,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		# Move the pose grp under all flags
 		if shape_results:
 			pose_grp = shape_results.get('pose_grp')
-			pm.parent(pose_grp, tek_rig.do_not_touch)
+			pm.parent(pose_grp, frag_rig.do_not_touch)
 		
 		# Remove the source mesh for now.  It will get re-loaded if the checkbox is checked.
 		if self.generate_shapes:
@@ -127,20 +127,20 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		# Connect the joints
 		rivets = head_blendshape.connect_joints(self.asset_id)
 		if rivets:
-			pm.parent(pm.PyNode(rivets[0]).getParent(), tek_rig.do_not_touch)
-			tek_rig.connect_nodes(rivets, 'rivets', 'tekParent')
+			pm.parent(pm.PyNode(rivets[0]).getParent(), frag_rig.do_not_touch)
+			frag_rig.connect_nodes(rivets, 'rivets', 'fragParent')
 		mouth_rivets = mouth_blendshape.connect_joints(self.asset_id, delete_old_rivet_grp=False)
 		if mouth_rivets:
-			pm.parent(pm.PyNode(mouth_rivets[0]).getParent(), tek_rig.do_not_touch)
-			tek_rig.connect_nodes(mouth_rivets, 'rivets', 'tekParent')
+			pm.parent(pm.PyNode(mouth_rivets[0]).getParent(), frag_rig.do_not_touch)
+			frag_rig.connect_nodes(mouth_rivets, 'rivets', 'fragParent')
 
 		#### Skin Meshes #####
 		mesh_dict.keys()
 		for category, mesh_data in mesh_dict.items():
-			if category == tek.FACE_SOURCE_CATEGORY:
+			if category == frag.FACE_SOURCE_CATEGORY:
 				continue
 			for type_mesh, mesh in mesh_dict[category].items():
-				if category == tek.FACE_BLENDSHAPE_CATEGORY and self.generate_shapes:
+				if category == frag.FACE_BLENDSHAPE_CATEGORY and self.generate_shapes:
 					type_minus_mesh = type_mesh.split('mesh')[0]
 					face_skinning.apply_common_skinning(mesh, f'{type_minus_mesh}blendshape')
 				else:
@@ -153,7 +153,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 
 		# world
 		
-		world_component = tek.WorldComponent.create(tek_rig,
+		world_component = frag.WorldComponent.create(frag_rig,
 															root,
 															'center',
 															'world',
@@ -165,7 +165,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		offset_flag.set_as_detail()
 
 		spine = chain.get_end('spine', 'center')
-		spine_component = tek.FKComponent.create(tek_rig,
+		spine_component = frag.FKComponent.create(frag_rig,
 														   spine,
 														   spine,
 														   side='center',
@@ -179,7 +179,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 
 # Neck
 		neck_chain = chain.get_chain('neck', 'center')
-		neck_component = tek.RFKComponent.create(tek_rig,
+		neck_component = frag.RFKComponent.create(frag_rig,
 														neck_chain[0],
 														neck_chain[1],
 														'center',
@@ -203,7 +203,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		# Progress Bar
 		ui.update_status(40, 'Creating Components - Eyes')
 		
-		l_eye_component = tek.EyeComponent.create(tek_rig,
+		l_eye_component = frag.EyeComponent.create(frag_rig,
 															bind_joint=pm.PyNode('l_eye'),
 															side='left',
 															region='eye')
@@ -219,7 +219,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(l_rotate_obj, 'rotateX', 0, 25, 'left_eye_down')
 		parameter_node.config_output_blendnode(head_blendnode.left_eye_down, 'left_eye_down')
 
-		r_eye_component = tek.EyeComponent.create(tek_rig,
+		r_eye_component = frag.EyeComponent.create(frag_rig,
 															bind_joint=pm.PyNode('r_eye'),
 															side='right',
 															region='eye')
@@ -236,7 +236,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_output_blendnode(head_blendnode.right_eye_down, 'right_eye_down')
 
 		# center
-		center_eye_component = tek.EyeCenterComponent.create(tek_parent=tek_rig,
+		center_eye_component = frag.EyeCenterComponent.create(frag_parent=frag_rig,
 																	side='center',
 																	region='eyes',
 																	components=[l_eye_component, r_eye_component])
@@ -247,7 +247,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		ui.update_status(50, 'Creating Components - Brows')
 		
 		# Left
-		l_outer_brow = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_outer_brow = frag.FaceFKComponent.create(frag_parent=frag_rig,
 													joint=pm.PyNode('l_outer_brow_null'),
 													side='left',
 													region='outer_brow',
@@ -272,7 +272,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(l_outer_brow_flag, 'rotateZ', 0, -60, 'left_outer_brow_tilt_sad')
 		parameter_node.config_output_blendnode(head_blendnode.left_outer_brow_tilt_sad, 'left_outer_brow_tilt_sad')
 		
-		l_inner_brow = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_inner_brow = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('l_inner_brow_null'),
 															side='left',
 															region='inner_brow',
@@ -298,7 +298,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_output_blendnode(head_blendnode.left_inner_brow_tilt_sad, 'left_inner_brow_tilt_sad')
 		
 		# Right
-		r_outer_brow = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_outer_brow = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('r_outer_brow_null'),
 															side='right',
 															region='outer_brow',
@@ -323,7 +323,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(r_outer_brow_flag, 'rotateZ', 0, -60, 'right_outer_brow_tilt_sad')
 		parameter_node.config_output_blendnode(head_blendnode.right_outer_brow_tilt_sad, 'right_outer_brow_tilt_sad')
 		
-		r_inner_brow = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_inner_brow = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('r_inner_brow_null'),
 															side='right',
 															region='inner_brow',
@@ -351,7 +351,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		ui.update_status(60, 'Creating Components - Cheeks')
 		
 		# Left
-		l_outer_cheek = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_outer_cheek = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('l_cheek_outer_null'),
 															side='left',
 															region='outer_cheek',
@@ -367,7 +367,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(l_outer_cheek_flag, 'translateY', 0, -10, 'left_cheek_outer_down')
 		parameter_node.config_output_blendnode(head_blendnode.left_cheek_outer_down, 'left_cheek_outer_down')
 		
-		l_inner_cheek = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_inner_cheek = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('l_cheek_inner_null'),
 															side='left',
 															region='inner_cheek',
@@ -383,7 +383,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(l_inner_cheek_flag, 'translateY', 0, -10, 'left_cheek_inner_down')
 		parameter_node.config_output_blendnode(head_blendnode.left_cheek_inner_down, 'left_cheek_inner_down')
 		
-		l_cheek = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_cheek = frag.FaceFKComponent.create(frag_parent=frag_rig,
 													joint=pm.PyNode('l_cheek_null'),
 													side='left',
 													region='cheek',
@@ -410,7 +410,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_output_blendnode(head_blendnode.left_cheek_up, 'left_cheek_up')
 
 		# Right
-		r_outer_cheek = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_outer_cheek = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('r_cheek_outer_null'),
 															side='right',
 															region='outer_cheek',
@@ -426,7 +426,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(r_outer_cheek_flag, 'translateY', 0, -10, 'right_cheek_outer_down')
 		parameter_node.config_output_blendnode(head_blendnode.right_cheek_outer_down, 'right_cheek_outer_down')
 		
-		r_inner_cheek = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_inner_cheek = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('r_cheek_inner_null'),
 															side='right',
 															region='inner_cheek',
@@ -442,7 +442,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(r_inner_cheek_flag, 'translateY', 0, -10, 'right_cheek_inner_down')
 		parameter_node.config_output_blendnode(head_blendnode.right_cheek_inner_down, 'right_cheek_inner_down')
 		
-		r_cheek = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_cheek = frag.FaceFKComponent.create(frag_parent=frag_rig,
 														joint=pm.PyNode('r_cheek_null'),
 														side='right',
 														region='cheek',
@@ -472,7 +472,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		ui.update_status(70, 'Creating Components - Nose')
 		
 		# Left
-		l_nasolabial = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_nasolabial = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('l_nasolabial_null'),
 															side='left',
 															region='nasolabial',
@@ -487,7 +487,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_output_blendnode(head_blendnode.left_nasolabial_out, 'left_nasolabial_out')
 		
 		# Right
-		r_nasolabial = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_nasolabial = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('r_nasolabial_null'),
 															side='right',
 															region='nasolabial',
@@ -503,7 +503,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		
 		#### Nose ####
 		# Center
-		c_nose = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		c_nose = frag.FaceFKComponent.create(frag_parent=frag_rig,
 													joint=pm.PyNode('nose_null'),
 													side='center',
 													region='nose',
@@ -525,7 +525,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_output_blendnode(head_blendnode.nose_tip_left, 'nose_tip_left')
 		
 		# Left
-		l_nose = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_nose = frag.FaceFKComponent.create(frag_parent=frag_rig,
 													joint=pm.PyNode('l_nose_null'),
 													side='left',
 													region='nostril',
@@ -547,7 +547,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_output_blendnode(head_blendnode.left_nose_suck, 'left_nose_suck')
 		
 		# Right
-		r_nose = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_nose = frag.FaceFKComponent.create(frag_parent=frag_rig,
 													joint=pm.PyNode('r_nose_null'),
 													side='right',
 													region='nostril',
@@ -572,7 +572,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		ui.update_status(80, 'Creating Components - Mouth')
 		
 		# Center
-		center_lips = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		center_lips = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('c_lips_null'),
 															side='center',
 															region='lips',
@@ -626,7 +626,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_output_blendnode(head_blendnode.center_mouth_close, 'center_mouth_close')
 
 		# Left
-		l_mouth_corner = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_mouth_corner = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('l_mouth_corner_null'),
 															side='left',
 															region='outer_lips',
@@ -648,7 +648,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_output_blendnode(head_blendnode.left_mouth_oo, 'left_mouth_oo')
 		
 		# Upper
-		upper_lip = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		upper_lip = frag.FaceFKComponent.create(frag_parent=frag_rig,
 														joint=pm.PyNode('upper_lip_null'),
 														side='center',
 														region='upper_lip',
@@ -664,7 +664,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(upper_lip_flag, 'translateY', 0, -10, 'center_upper_lip_down')
 		parameter_node.config_output_blendnode(head_blendnode.center_upper_lip_down, 'center_upper_lip_down')
 		
-		l_upper_lip = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_upper_lip = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('l_upper_lip_null'),
 															side='left',
 															region='upper_mid_lip',
@@ -686,7 +686,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_output_blendnode(head_blendnode.left_upper_corner_adjust_down, 'left_upper_corner_adjust_down')
 		
 		# Lower
-		lower_lip = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		lower_lip = frag.FaceFKComponent.create(frag_parent=frag_rig,
 														joint=pm.PyNode('lower_lip_null'),
 														side='center',
 														region='lower_lip',
@@ -703,7 +703,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(lower_lip_flag, 'translateY', 0, -10, 'center_lower_lip_down')
 		parameter_node.config_output_blendnode(head_blendnode.center_lower_lip_down, 'center_lower_lip_down')
 		
-		l_lower_lip = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_lower_lip = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('l_lower_lip_null'),
 															side='left',
 															region='lower_mid_lip',
@@ -726,7 +726,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_output_blendnode(head_blendnode.left_lower_corner_adjust_down, 'left_lower_corner_adjust_down')
 		
 		# Right
-		r_mouth_corner = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_mouth_corner = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('r_mouth_corner_null'),
 															side='right',
 															region='outer_lips',
@@ -748,7 +748,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_output_blendnode(head_blendnode.right_mouth_oo, 'right_mouth_oo')
 		
 		# Upper
-		r_upper_lip = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_upper_lip = frag.FaceFKComponent.create(frag_parent=frag_rig,
 																joint=pm.PyNode('r_upper_lip_null'),
 																side='right',
 																region='upper_mid_lip',
@@ -769,7 +769,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(r_upper_lip_flag, 'rotateZ', 0, -10, 'right_upper_corner_adjust_down')
 		parameter_node.config_output_blendnode(head_blendnode.right_upper_corner_adjust_down, 'right_upper_corner_adjust_down')
 		
-		r_lower_lip = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_lower_lip = frag.FaceFKComponent.create(frag_parent=frag_rig,
 															joint=pm.PyNode('r_lower_lip_null'),
 															side='right',
 															region='lower_mid_lip',
@@ -793,7 +793,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_output_blendnode(head_blendnode.right_lower_corner_adjust_down, 'right_lower_corner_adjust_down')
 		
 		# Mouth
-		c_mouth = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		c_mouth = frag.FaceFKComponent.create(frag_parent=frag_rig,
 														joint=pm.PyNode('mouth_null'),
 														side='center',
 														region='mouth',
@@ -846,7 +846,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(c_mouth_flag, 'chin_up_down', 0, -10, 'chin_down')
 		parameter_node.config_output_blendnode(head_blendnode.chin_down, 'chin_down')
 
-		c_upper_jaw = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		c_upper_jaw = frag.FaceFKComponent.create(frag_parent=frag_rig,
 														joint=pm.PyNode('upper_jaw_null'),
 														side='center',
 														region='upper_jaw',
@@ -864,7 +864,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(c_upper_jaw_flag, 'translateZ', 0, -10, 'tongue_upper_jaw_back')
 		parameter_node.config_output_blendnode(mouth_blendnode.tongue_upper_jaw_back, 'tongue_upper_jaw_back')
 
-		c_lower_jaw = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		c_lower_jaw = frag.FaceFKComponent.create(frag_parent=frag_rig,
 														joint=pm.PyNode('lower_jaw_null'),
 														side='center',
 														region='lower_jaw',
@@ -882,7 +882,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(c_lower_jaw_flag, 'translateZ', 0, -10, 'tongue_lower_jaw_back')
 		parameter_node.config_output_blendnode(mouth_blendnode.tongue_lower_jaw_back, 'tongue_lower_jaw_back')
 
-		c_jaw_squash = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		c_jaw_squash = frag.FaceFKComponent.create(frag_parent=frag_rig,
 														joint=pm.PyNode('jaw_squash_null'),
 														side='center',
 														region='squash_stretch',
@@ -910,7 +910,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 
 		# Eyelids Up/Down
 
-		l_eyelid_upper = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_eyelid_upper = frag.FaceFKComponent.create(frag_parent=frag_rig,
 													  joint=pm.PyNode('l_eyelid_upper_null'),
 													  side='left',
 													  region='eyelid_upper',
@@ -926,7 +926,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(l_eyelid_upper_flag, 'translateY', 0, 10, 'left_upper_eyelid_up')
 		parameter_node.config_output_blendnode(head_blendnode.left_upper_eyelid_up, 'left_upper_eyelid_up')
 
-		l_eyelid_lower = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_eyelid_lower = frag.FaceFKComponent.create(frag_parent=frag_rig,
 													  joint=pm.PyNode('l_eyelid_lower_null'),
 													  side='left',
 													  region='eyelid_lower',
@@ -941,7 +941,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(l_eyelid_lower_flag, 'translateY', 0, 10, 'left_lower_eyelid_down')
 		parameter_node.config_output_blendnode(head_blendnode.left_lower_eyelid_down, 'left_lower_eyelid_down')
 
-		r_eyelid_upper = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_eyelid_upper = frag.FaceFKComponent.create(frag_parent=frag_rig,
 													  joint=pm.PyNode('r_eyelid_upper_null'),
 													  side='right',
 													  region='eyelid_upper',
@@ -956,7 +956,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(r_eyelid_upper_flag, 'translateY', 0, 10, 'right_upper_eyelid_up')
 		parameter_node.config_output_blendnode(head_blendnode.right_upper_eyelid_up, 'right_upper_eyelid_up')
 
-		r_eyelid_lower = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_eyelid_lower = frag.FaceFKComponent.create(frag_parent=frag_rig,
 													  joint=pm.PyNode('r_eyelid_lower_null'),
 													  side='right',
 													  region='eyelid_lower',
@@ -973,7 +973,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 
 
 		# Eye Lids
-		l_eyelids = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		l_eyelids = frag.FaceFKComponent.create(frag_parent=frag_rig,
 														joint=pm.PyNode('l_eyelid_null'),
 														side='left',
 														region='eyelids',
@@ -1014,7 +1014,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		parameter_node.config_input(l_eyelids_flag, 'lower_outer_up_down', 0, 10, 'left_lower_eyelid_outer_down')
 		parameter_node.config_output_blendnode(head_blendnode.left_lower_eyelid_outer_down, 'left_lower_eyelid_outer_down')
 		
-		r_eyelids = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		r_eyelids = frag.FaceFKComponent.create(frag_parent=frag_rig,
 														joint=pm.PyNode('r_eyelid_null'),
 														side='right',
 														region='eyelids',
@@ -1057,7 +1057,7 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		
 		### Multi Constraints ###############
 		# Eye Look
-		tek.MultiConstraint.create(tek_rig,
+		frag.MultiConstraint.create(frag_rig,
 											side='center',
 											region='eye_look',
 											source_object=center_eye_flag,
@@ -1066,15 +1066,15 @@ class BaseHeadTemplate(rig_templates.RigTemplates):
 		
 		ui.update_status(90, 'Finalizing Rig')
 		
-		connect_poses_to_root(tek_rig=tek_rig, parameter_node=parameter_node)
+		connect_poses_to_root(frag_rig=frag_rig, parameter_node=parameter_node)
 		
 		flag_path = os.path.join(paths.get_asset_rig_path(self._asset_id), 'Flags')
 
-		tek_rig.finalize_rig(flag_path)
+		frag_rig.finalize_rig(flag_path)
 		
 		ui.update_status(100, 'Rig Complete')
 		
-		return tek_rig
+		return frag_rig
 
 class PlayerHeadTemplate(BaseHeadTemplate):
 	VERSION = 1
@@ -1088,13 +1088,13 @@ class PlayerHeadTemplate(BaseHeadTemplate):
 	def build(self, finalize=True):
 		pm.namespace(set=':')
 
-		tek_rig = super(PlayerHeadTemplate, self).build(finalize=False)
-		neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')[0]
+		frag_rig = super(PlayerHeadTemplate, self).build(finalize=False)
+		neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')[0]
 		head_flag = neck_component.end_flag
-		parameter_node = tek_rig.get_tek_children(of_type=tek.FragFaceParameters)[0]
-		tek_root = tek.get_tek_root(tek_rig)
-		skeletal_mesh_comp = tek_root.get_skeletal_mesh()
-		face_mesh_comp = skeletal_mesh_comp.get_tek_children(of_type=tek.FaceMeshComponent)[0]
+		parameter_node = frag_rig.get_frag_children(of_type=frag.FragFaceParameters)[0]
+		frag_root = frag.get_frag_root(frag_rig)
+		skeletal_mesh_comp = frag_root.get_skeletal_mesh()
+		face_mesh_comp = skeletal_mesh_comp.get_frag_children(of_type=frag.FaceMeshComponent)[0]
 		head_blendshape = face_mesh_comp.head_blendshape
 		head_blendnode_inst = head_blendshape.get_blendnode()
 
@@ -1104,7 +1104,7 @@ class PlayerHeadTemplate(BaseHeadTemplate):
 		mouth_blendshape_inst = mouth_blendshape.get_blendnode()
 
 		mouth_blendnode = mouth_blendshape_inst.blendnode
-		tongue_component = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		tongue_component = frag.FaceFKComponent.create(frag_parent=frag_rig,
 		                                               joint=pm.PyNode('tongue_null'),
 		                                               side='left',
 		                                               region='tongue',
@@ -1201,9 +1201,9 @@ class PlayerHeadTemplate(BaseHeadTemplate):
 		parameter_node.config_input(tongue_flag, 'oo', 0, 10, 'oo')
 		parameter_node.config_output_blendnode(head_blendnode.eh, 'oo')
 		parameter_node.config_output_blendnode(mouth_blendnode.tongue_eh, 'oo')
-		tek_rig.rigTemplate.set(PlayerHeadTemplate.__name__)
+		frag_rig.rigTemplate.set(PlayerHeadTemplate.__name__)
 		if finalize:
-			tek_rig.finalize_rig(self.get_flags_path())
+			frag_rig.finalize_rig(self.get_flags_path())
 			
 
 class AngelHeadTemplate(BaseHeadTemplate):
@@ -1218,20 +1218,20 @@ class AngelHeadTemplate(BaseHeadTemplate):
 	def build(self, finalize=True):
 		pm.namespace(set=':')
 
-		tek_rig = super(AngelHeadTemplate, self).build(finalize=False)
-		neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent,
+		frag_rig = super(AngelHeadTemplate, self).build(finalize=False)
+		neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent,
 		                                            region='neck')[0]
-		mouth_corner_r_component = tek_rig.get_tek_children(of_type=tek.FaceFKComponent,
+		mouth_corner_r_component = frag_rig.get_frag_children(of_type=frag.FaceFKComponent,
 		                                                      region='outer_lips',
 		                                                      side='right')[0]
-		mouth_corner_l_component = tek_rig.get_tek_children(of_type=tek.FaceFKComponent,
+		mouth_corner_l_component = frag_rig.get_frag_children(of_type=frag.FaceFKComponent,
 		                                                      region='outer_lips',
 		                                                      side='left')[0]
 
 		head_flag = neck_component.end_flag
 		mouth_corner_l_flag = mouth_corner_l_component.get_start_flag()
 		mouth_corner_r_flag = mouth_corner_r_component.get_start_flag()
-		parameter_node = tek_rig.get_tek_children(of_type=tek.FragFaceParameters)[0]
+		parameter_node = frag_rig.get_frag_children(of_type=frag.FragFaceParameters)[0]
 		face_mesh_comp = face_mesh_component.get_face_mesh_component(head_flag)
 		head_blendshape = face_mesh_comp.head_blendshape
 		head_blendnode_inst = head_blendshape.get_blendnode()
@@ -1250,7 +1250,7 @@ class AngelHeadTemplate(BaseHeadTemplate):
 		mouth_blendshape_inst = mouth_blendshape.get_blendnode()
 
 		mouth_blendnode = mouth_blendshape_inst.blendnode
-		tongue_component = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		tongue_component = frag.FaceFKComponent.create(frag_parent=frag_rig,
 		                                               joint=pm.PyNode('tongue_null'),
 		                                               side='left',
 		                                               region='tongue',
@@ -1349,9 +1349,9 @@ class AngelHeadTemplate(BaseHeadTemplate):
 		parameter_node.config_input(mouth_corner_r_flag, 'rx', 0, -10, 'flap')
 		parameter_node.config_output_blendnode(head_blendnode.flap, 'flap')
 		parameter_node.config_output_blendnode(mouth_blendnode.tongue_flap, 'flap')
-		tek_rig.rigTemplate.set(AngelHeadTemplate.__name__)
+		frag_rig.rigTemplate.set(AngelHeadTemplate.__name__)
 		if finalize:
-			tek_rig.finalize_rig(self.get_flags_path())
+			frag_rig.finalize_rig(self.get_flags_path())
 
 class AngeloHeadTemplate(BaseHeadTemplate):
 	VERSION = 1
@@ -1365,19 +1365,19 @@ class AngeloHeadTemplate(BaseHeadTemplate):
 	def build(self, finalize=True):
 		pm.namespace(set=':')
 
-		tek_rig = super(AngeloHeadTemplate, self).build(finalize=False)
-		neck_component = tek_rig.get_tek_children(of_type=tek.RFKComponent,
+		frag_rig = super(AngeloHeadTemplate, self).build(finalize=False)
+		neck_component = frag_rig.get_frag_children(of_type=frag.RFKComponent,
 		                                            region='neck')[0]
 
-		l_eye_component = tek_rig.get_tek_children(of_type=tek.EyeComponent,
+		l_eye_component = frag_rig.get_frag_children(of_type=frag.EyeComponent,
 		                                            region='eye',
 		                                             side='left')[0]
 
-		r_eye_component = tek_rig.get_tek_children(of_type=tek.EyeComponent,
+		r_eye_component = frag_rig.get_frag_children(of_type=frag.EyeComponent,
 		                                            region='eye',
 		                                             side='right')[0]
 
-		c_eye_component = tek_rig.get_tek_children(of_type=tek.EyeCenterComponent,
+		c_eye_component = frag_rig.get_frag_children(of_type=frag.EyeCenterComponent,
 		                                            region='eyes',
 		                                             side='center')[0]
 		l_rotate_obj = l_eye_component.get_rotate_object()
@@ -1386,7 +1386,7 @@ class AngeloHeadTemplate(BaseHeadTemplate):
 
 		c_eye_flag = c_eye_component.get_flag()
 		head_flag = neck_component.end_flag
-		parameter_node = tek_rig.get_tek_children(of_type=tek.FragFaceParameters)[0]
+		parameter_node = frag_rig.get_frag_children(of_type=frag.FragFaceParameters)[0]
 		face_mesh_comp = face_mesh_component.get_face_mesh_component(head_flag)
 		head_blendshape = face_mesh_comp.head_blendshape
 		head_blendnode_inst = head_blendshape.get_blendnode()
@@ -1397,7 +1397,7 @@ class AngeloHeadTemplate(BaseHeadTemplate):
 		mouth_blendshape_inst = mouth_blendshape.get_blendnode()
 
 		mouth_blendnode = mouth_blendshape_inst.blendnode
-		tongue_component = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		tongue_component = frag.FaceFKComponent.create(frag_parent=frag_rig,
 		                                               joint=pm.PyNode('tongue_null'),
 		                                               side='left',
 		                                               region='tongue',
@@ -1441,7 +1441,7 @@ class AngeloHeadTemplate(BaseHeadTemplate):
 		driven_attrs['end']['ty'] = 0.15
 
 		l_eye_align_grp = rig_utils.create_align_transform(l_rotate_obj)
-		l_eye_sdk = tek.SingleSDKComponent.create(tek_parent=tek_rig,
+		l_eye_sdk = frag.SingleSDKComponent.create(frag_parent=frag_rig,
 		                                         drive_attr=c_eye_flag.ty,
 		                                         driven_obj=l_eye_align_grp,
 		                                         side='left',
@@ -1453,7 +1453,7 @@ class AngeloHeadTemplate(BaseHeadTemplate):
 		parameter_node.config_output_blendnode(mouth_blendnode.tongue_th, 'th')
 
 		r_eye_align_grp = rig_utils.create_align_transform(r_rotate_obj)
-		r_eye_sdk = tek.SingleSDKComponent.create(tek_parent=tek_rig,
+		r_eye_sdk = frag.SingleSDKComponent.create(frag_parent=frag_rig,
 		                                         drive_attr=c_eye_flag.ty,
 		                                         driven_obj=r_eye_align_grp,
 		                                         side='right',
@@ -1501,7 +1501,7 @@ class AngeloHeadTemplate(BaseHeadTemplate):
 		parameter_node.config_output_blendnode(head_blendnode.eh, 'oo')
 		parameter_node.config_output_blendnode(mouth_blendnode.tongue_eh, 'oo')
 
-		jaw_break_right_component = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		jaw_break_right_component = frag.FaceFKComponent.create(frag_parent=frag_rig,
 		                                               joint=pm.PyNode('r_jaw_break_null'),
 		                                               side='right',
 		                                               region='jaw_break',
@@ -1515,7 +1515,7 @@ class AngeloHeadTemplate(BaseHeadTemplate):
 		parameter_node.config_output_blendnode(head_blendnode.fph, 'fph')
 		parameter_node.config_output_blendnode(mouth_blendnode.tongue_fph, 'fph')
 
-		jaw_break_left_component = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		jaw_break_left_component = frag.FaceFKComponent.create(frag_parent=frag_rig,
 		                                               joint=pm.PyNode('l_jaw_break_null'),
 		                                               side='left',
 		                                               region='jaw_break',
@@ -1529,7 +1529,7 @@ class AngeloHeadTemplate(BaseHeadTemplate):
 		parameter_node.config_output_blendnode(head_blendnode.flap, 'flap')
 		parameter_node.config_output_blendnode(mouth_blendnode.tongue_flap, 'flap')
 
-		jaw_break_center_component = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		jaw_break_center_component = frag.FaceFKComponent.create(frag_parent=frag_rig,
 		                                               joint=pm.PyNode('c_jaw_break_null'),
 		                                               side='center',
 		                                               region='jaw_break',
@@ -1543,7 +1543,7 @@ class AngeloHeadTemplate(BaseHeadTemplate):
 		parameter_node.config_output_blendnode(head_blendnode.k, 'k')
 		parameter_node.config_output_blendnode(mouth_blendnode.tongue_k, 'k')
 
-		face_melt_component = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		face_melt_component = frag.FaceFKComponent.create(frag_parent=frag_rig,
 		                                               joint=pm.PyNode('c_face_melt_null'),
 		                                               side='center',
 		                                               region='face_melt',
@@ -1557,7 +1557,7 @@ class AngeloHeadTemplate(BaseHeadTemplate):
 		parameter_node.config_output_blendnode(head_blendnode.td, 'td')
 		parameter_node.config_output_blendnode(mouth_blendnode.tongue_td, 'td')
 
-		eyes_deflate_component = tek.FaceFKComponent.create(tek_parent=tek_rig,
+		eyes_deflate_component = frag.FaceFKComponent.create(frag_parent=frag_rig,
 		                                               joint=pm.PyNode('c_eyes_deflate_null'),
 		                                               side='center',
 		                                               region='eyes_deflate',
@@ -1571,9 +1571,9 @@ class AngeloHeadTemplate(BaseHeadTemplate):
 		parameter_node.config_output_blendnode(head_blendnode.p, 'p')
 		parameter_node.config_output_blendnode(mouth_blendnode.tongue_p, 'p')
 
-		tek_rig.rigTemplate.set(AngeloHeadTemplate.__name__)
+		frag_rig.rigTemplate.set(AngeloHeadTemplate.__name__)
 		if finalize:
-			tek_rig.finalize_rig(self.get_flags_path())
+			frag_rig.finalize_rig(self.get_flags_path())
 
 def get_source_data(asset_id):
 	"""
@@ -1689,7 +1689,7 @@ def handle_blendshapes(asset_id, source_head_name, generate_shapes=False, source
 		for mesh in imported_source_list:
 			mesh = face_model.FaceModel(mesh)
 			type_name = mesh.type_name
-			target_mesh = [x for x in target_meshes if x.type_name == type_name and x.category == tek.FACE_BLENDSHAPE_CATEGORY]
+			target_mesh = [x for x in target_meshes if x.type_name == type_name and x.category == frag.FACE_BLENDSHAPE_CATEGORY]
 			if not target_mesh:
 				continue
 			_dict = source_meshes.generate_blendshapes(mesh.mesh, target_mesh[0].mesh)
@@ -1710,20 +1710,20 @@ def handle_blendshapes(asset_id, source_head_name, generate_shapes=False, source
 	return pose_dict
 
 
-def connect_poses_to_root(tek_rig, parameter_node):
+def connect_poses_to_root(frag_rig, parameter_node):
 	pose_names = parameter_node.get_parameter_names()
 	pose_attributes = [parameter_node.pynode.attr(x).attr('value') for x in pose_names]
 	
 	channel_dicts = []
 	for x, pose in enumerate(pose_attributes):
-		channel_dicts.append(tek.create_channel_float_dict(obj_attr_name=pose,
+		channel_dicts.append(frag.create_channel_float_dict(obj_attr_name=pose,
 																	joint_attr_name=pose_names[x],
 																	attr_min=0.0,
 																	attr_max=1.0,
 																	default_value=0.0,
 																	keyable=True))
 	
-	channel_component = tek.ChannelFloatComponent.create(tek_parent=tek_rig,
+	channel_component = frag.ChannelFloatComponent.create(frag_parent=frag_rig,
 															obj=parameter_node.pynode,
 															joint=pm.PyNode('root'),
 															channel_dict_list=channel_dicts,

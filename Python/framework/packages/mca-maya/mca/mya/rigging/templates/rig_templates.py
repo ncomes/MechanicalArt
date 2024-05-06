@@ -27,7 +27,7 @@ class RigTemplates(object):
     VERSION = 1
     ASSET_ID = ''
     ASSET_TYPE = ''
-    LOG_NAME = 'TEK.build.{}'
+    LOG_NAME = 'FRAG.build.{}'
 
     def __init__(self, asset_id=ASSET_ID, asset_type=ASSET_TYPE, debug=False, log_directory=None):
         self._asset_id = asset_id
@@ -92,9 +92,9 @@ class RigTemplates(object):
         start_msg = self._get_start_build_log_message()
         #self._log.info(start_msg)
 
-        tek_rig = self.build()
-        if tek_rig:
-            rig_utils.setup_twist_components(tek_rig)
+        frag_rig = self.build()
+        if frag_rig:
+            rig_utils.setup_twist_components(frag_rig)
 
         pm.select(clear=True)
         self._end_time = time.time()
@@ -174,7 +174,7 @@ class RigTemplates(object):
         logger.info('Setting up builder log: {}'.format(log_directory))
 
         date_str = datetime.now().strftime('%Y-%m-%d_%H%M%S')
-        log_file_name = 'tek_build_{}_{}.log'.format(self.asset_id.lower(), date_str)
+        log_file_name = 'frag_build_{}_{}.log'.format(self.asset_id.lower(), date_str)
         log_file = os.path.join(log_directory, log_file_name)
 
         file_handler = logging.FileHandler(log_file)

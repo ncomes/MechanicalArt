@@ -67,7 +67,7 @@ script I was working with.
 
 '''
 
-# Small tekments of current code adapted from matfile.py by Heiko
+# Small fragments of current code adapted from matfile.py by Heiko
 # Henkelmann; parts of the code for simplify_cells=True adapted from
 # http://blog.nephics.com/2019/08/28/better-loadmat-for-scipy/.
 

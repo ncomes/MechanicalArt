@@ -25,8 +25,8 @@ from mca.common.pyqt import messages
 from mca.common.utils import fileio
 from mca.mya.utils import naming, constraint, camera_utils, namespace, plugins
 from mca.mya.modifiers import ma_decorators
-from mca.mya.rigging import rig_utils, tek
-from mca.mya.rigging.tek import cine_sequence_component, tek_rig
+from mca.mya.rigging import rig_utils, frag
+from mca.mya.rigging.frag import cine_sequence_component, frag_rig
 from mca.mya.animation import baking, time_utils
 from mca.mya.cinematics import cine_sequence_nodes, cine_file_utils
 from mca.mya.thirdpartytools.mocapx.lib import utils as mcpx_utils
@@ -524,7 +524,7 @@ def create_reference_cam_cine_shot(cine_seq_data, shot_number):
 	end = cmds.playbackOptions(query=True, maxTime=True)
 	cam = create_cine_cam(cine_seq_data.seq_name)
 	shot_name = f'{cine_seq_data.seq_name}_shot_{int(shot_number):0=3d}'
-	chars = tek_rig.get_tek_rigs()
+	chars = frag_rig.get_frag_rigs()
 
 	cine_shot = cine_sequence_nodes.CineShotData.create(shot_number,
 														cine_seq_data.data,
@@ -589,7 +589,7 @@ def load_mocap(mocap_path, bake_anim=False):
 
 	t1 = time.time()
 
-	head_rig = tek_rig.get_tek_rigs()
+	head_rig = frag_rig.get_frag_rigs()
 	if not head_rig:
 		return
 	head_rig = head_rig[0]
@@ -612,7 +612,7 @@ def load_mocap(mocap_path, bake_anim=False):
 			if mcpx_utils.is_attr_type_valid(possible_source):
 				mcpx_nodes.connect_attrs(possible_source, pose_node + ".weight", verbose=True)
 
-	neck_component = head_rig.get_tek_children(of_type=tek.RFKComponent, region='neck')[0]
+	neck_component = head_rig.get_frag_children(of_type=frag.RFKComponent, region='neck')[0]
 	head_flag = neck_component.end_flag
 	for attr in ['X', 'Y', 'Z']:
 		pm.connectAttr(f'{clip_reader}.transformRotate{attr}', f'{head_flag}.rotate.rotate{attr}')

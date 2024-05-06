@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="dw_splash">
+    <file>images/mat_splash.png</file>
+    <file>images/mat_splash2.png</file>
+    <file>images/darkwinter_splash.png</file>
+    <file>images/godfall_splash.png</file>
+  </qresource>
+</RCC>

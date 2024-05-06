@@ -18,8 +18,8 @@ from mca.common.modifiers import decorators
 from mca.mya.utils import attr_utils, namespace
 from mca.mya.animation import time_utils, baking
 from mca.mya.rigging.templates import cinematic_camera_template
-from mca.mya.rigging import tek, rig_utils
-from mca.mya.rigging.tek import tek_rig
+from mca.mya.rigging import frag, rig_utils
+from mca.mya.rigging.frag import frag_rig
 from mca.mya.utils import constraint
 from mca.mya.modifiers import ma_decorators
 from mca.mya.pyqt import dialogs
@@ -411,8 +411,8 @@ def rig_cinematic_camera_cmd():
 
 			cam_rig = cinematic_camera_template.CinematicCameraTemplate().build(**{'cam': camera_xform})
 
-			tek_children = [tek.TEKNode(x) for x in cam_rig.tekChildren.listConnections()]
-			cam_comp = [x for x in tek_children if isinstance(x, tek.CameraComponent)][0]
+			frag_children = [frag.FRAGNode(x) for x in cam_rig.fragChildren.listConnections()]
+			cam_comp = [x for x in frag_children if isinstance(x, frag.CameraComponent)][0]
 			cam_flag = cam_comp.get_flags()[0]
 
 			if temp_loc:
@@ -461,9 +461,9 @@ def camera_is_rigged(camera_xform):
 	"""
 
 	found_rig = False
-	if camera_xform.hasAttr('tekParent'):
-		tek_parent = camera_xform.tekParent.listConnections()
-		if tek_parent:
+	if camera_xform.hasAttr('fragParent'):
+		frag_parent = camera_xform.fragParent.listConnections()
+		if frag_parent:
 			found_rig = True
 	return found_rig
 
@@ -477,10 +477,10 @@ def get_camera_flag_from_camera(camera_xform):
 	:rtype: pm.nt.Transform or None
 	"""
 	cam_flag = None
-	if camera_xform.hasAttr('tekParent'):
-		tek_parent = camera_xform.tekParent.listConnections()
-		if tek_parent:
-			camera_component = tek.TEKNode(tek_parent[0])
+	if camera_xform.hasAttr('fragParent'):
+		frag_parent = camera_xform.fragParent.listConnections()
+		if frag_parent:
+			camera_component = frag.FRAGNode(frag_parent[0])
 			cam_flag = camera_component.get_cam_flag()
 	return cam_flag
 
@@ -494,11 +494,11 @@ def get_camera_from_flag(flag_node):
 	:rtype: pm.nt.Transform or None
 
 	"""
-	tek_rig_node = tek_rig.get_tek_rig(flag_node)
-	if not tek_rig_node:
-		logger.warning(f'{flag_node} is not part of a TEK rig.')
+	frag_rig_node = frag_rig.get_frag_rig(flag_node)
+	if not frag_rig_node:
+		logger.warning(f'{flag_node} is not part of a FRAG rig.')
 		return None
-	camera_component = tek_rig_node.get_tek_children(of_type=tek.CameraComponent)
+	camera_component = frag_rig_node.get_frag_children(of_type=frag.CameraComponent)
 
 	if not camera_component:
 		logger.warning(f'Could not find camera component for {flag_node}.')

@@ -22,7 +22,7 @@ from mca.common.pyqt import messages
 from mca.common.utils import fileio
 from mca.common.modifiers import decorators
 from mca.mya.utils import scene_utils, namespace
-from mca.mya.rigging import tek, rig_utils
+from mca.mya.rigging import frag, rig_utils
 from mca.mya.pyqt.utils import ma_main_window
 from mca.mya.pyqt import mayawindows
 
@@ -215,22 +215,22 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 
 		self.layer_tree_build_dict = {}
 		all_rig_layers = []
-		rigs = tek.get_tek_rigs()
+		rigs = frag.get_frag_rigs()
 		for rig in rigs:
 			camera_rig = False
-			tek_node = tek.TEKNode(rig)
-			for tek_child in tek_node.get_tek_children():
-				if isinstance(tek_child, tek.CameraComponent):
+			frag_node = frag.FRAGNode(rig)
+			for frag_child in frag_node.get_frag_children():
+				if isinstance(frag_child, frag.CameraComponent):
 					camera_rig = True
 					break
 
-			tek_root = tek_node.get_tek_root(rig)
+			frag_root = frag_node.get_frag_root(rig)
 			if camera_rig:
 				rig_name = rig.name().split(':')[0]
 			else:
-				rig_name = tek_root.assetName.get()
+				rig_name = frag_root.assetName.get()
 
-			display_layer_node = rig.get_tek_children(of_type=tek.DisplayLayers)
+			display_layer_node = rig.get_frag_children(of_type=frag.DisplayLayers)
 			display_layers = display_layer_node[0].get_layers()
 
 			if not display_layers:
@@ -251,7 +251,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 
 		"""
 
-		self.ui.actionRemove_Dead_TEK_Nodes.triggered.connect(self._on_action_remove_dead_tek_nodes_triggered)
+		self.ui.actionRemove_Dead_FRAG_Nodes.triggered.connect(self._on_action_remove_dead_frag_nodes_triggered)
 		self.ui.actionClean_Scene.triggered.connect(self._on_action_clean_scene_triggered)
 		# self.ui.actionNamespace_Check.triggered.connect(self._on_namespace_check_triggered)
 		self.ui.actionCheck_Out_in_Plastic.triggered.connect(self._on_action_check_out_in_plastic_triggered)
@@ -677,14 +677,14 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		self.initialize_layer_tree()
 
 	@decorators.track_fnc
-	def _on_action_remove_dead_tek_nodes_triggered(self):
+	def _on_action_remove_dead_frag_nodes_triggered(self):
 		"""
-		Removes dead tek nodes.
+		Removes dead frag nodes.
 
 		"""
 
-		dead_nodes_list = rig_utils.remove_dead_tek_nodes()
-		info_message = messages.info_message('Remove Dead Frag Nodes', f'Removed {len(dead_nodes_list)} abandoned TEK nodes.'
+		dead_nodes_list = rig_utils.remove_dead_frag_nodes()
+		info_message = messages.info_message('Remove Dead Frag Nodes', f'Removed {len(dead_nodes_list)} abandoned FRAG nodes.'
 																	   f'\nPlease see script editor for more details.')
 		self.initialize_layer_tree()
 
@@ -725,18 +725,18 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 
 	# def _on_namespace_check_triggered(self):
 	# #Not safe for all Dark Winter assets due to incomplete connections.
-	# 	tek_rig_nodes = tek_rig.get_tek_rigs()
+	# 	frag_rig_nodes = frag_rig.get_frag_rigs()
 	# 	rig_namespaces = []
 	#
-	# 	for f_rig_node in tek_rig_nodes:
+	# 	for f_rig_node in frag_rig_nodes:
 	# 		rig_nodes = []
 	# 		if not ':' in f_rig_node.name():
 	# 			rig_namespace = None
 	# 		else:
 	# 			rig_namespace = namespace.get_namespace(f_rig_node.name(), check_node=False)
-	# 		tek_rt = tek.get_tek_root(f_rig_node)
-	# 		asset_id = tek_rt.assetID.get()
-	# 		asset_name = tek_rt.assetName.get()
+	# 		frag_rt = frag.get_frag_root(f_rig_node)
+	# 		asset_id = frag_rt.assetID.get()
+	# 		asset_name = frag_rt.assetName.get()
 	#
 	# 		if rig_namespace in rig_namespaces or not rig_namespace:
 	# 			correct_namespace = assetlist.get_asset_by_id(asset_id).asset_namespace
@@ -754,19 +754,19 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 	# 			for node in node_connections:
 	# 				rig_nodes.append(node)
 	#
-	# 		tek_root_connections = tek_rt.listConnections()
-	# 		for tek_root_connection in tek_root_connections:
-	# 			rig_nodes.append(tek_root_connection.name())
+	# 		frag_root_connections = frag_rt.listConnections()
+	# 		for frag_root_connection in frag_root_connections:
+	# 			rig_nodes.append(frag_root_connection.name())
 	#
-	# 			if isinstance(tek_root_connection, pm.nt.Network):
-	# 				if isinstance(tek.TEKNode(tek_root_connection), tek.SkeletalMesh):
-	# 					skins_grp = tek_root_connection.grpSkins.get()
+	# 			if isinstance(frag_root_connection, pm.nt.Network):
+	# 				if isinstance(frag.FRAGNode(frag_root_connection), frag.SkeletalMesh):
+	# 					skins_grp = frag_root_connection.grpSkins.get()
 	# 					rig_nodes.append(skins_grp)
 	#
 	# 					meshes = skins_grp.listRelatives(ad=True)
 	# 					materials = []
 	#
-	# 					bshape_grp = tek_root_connection.grpBlendshapes.get()
+	# 					bshape_grp = frag_root_connection.grpBlendshapes.get()
 	# 					if bshape_grp:
 	# 						rig_nodes.append(bshape_grp)
 	# 						meshes = meshes + bshape_grp.listRelatives(ad=True)
@@ -795,7 +795,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 	# 						material_nodes = pm.listHistory(material)
 	# 						rig_nodes = rig_nodes + material_nodes
 	#
-	# 		rig_nodes.append(tek_rt)
+	# 		rig_nodes.append(frag_rt)
 	# 		all_group_contents = f_rig_node.all.get().listRelatives(ad=True)
 	# 		rig_nodes_filtered = list(set(rig_nodes + all_group_contents))
 	# 		all_rig_nodes = [pm.PyNode(x) for x in rig_nodes_filtered]

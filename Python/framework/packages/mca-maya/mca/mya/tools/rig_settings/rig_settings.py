@@ -18,7 +18,7 @@ import pymel.core as pm
 from mca.common import log
 from mca.common.pyqt import messages
 from mca.mya.pyqt import mayawindows
-from mca.mya.rigging import tek
+from mca.mya.rigging import frag
 
 logger = log.MCA_LOGGER
 
@@ -94,20 +94,20 @@ class RigSettings(mayawindows.MCAMayaWindow):
 
         # Rig information
         self.rig_namespace = selection.namespace()
-        tek_rig = tek.get_tek_rig(selection)
-        tek_rig_flags = tek_rig.get_flags()
+        frag_rig = frag.get_frag_rig(selection)
+        frag_rig_flags = frag_rig.get_flags()
         self.attr_flags = []
 
         # Goes through and gets flags with ik/fk and space switching
-        for flag in tek_rig_flags:
+        for flag in frag_rig_flags:
             found_flag = pm.listAttr(flag, userDefined=True, keyable=True)
             if found_flag:
                 if 'follow' in found_flag or 'rotateFollow' in found_flag or 'ikfk_switch' in found_flag:
                     self.attr_flags.append(flag)
 
         # Gets all components in the rig
-        tekrig = tek.get_tek_rig(selection)
-        components = tek.get_tek_node_descendants(tekrig)
+        fragrig = frag.get_frag_rig(selection)
+        components = frag.get_frag_node_descendants(fragrig)
         sorted_components_all = []
 
         # Gets components that have flags with ik/fk and space switching

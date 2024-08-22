@@ -12,9 +12,7 @@ Framework for Rigging Assets in Games
 
 ## Setup for Character Technical Artists / Riggers
 
-1) Make sure that you have installed a clean Python 2/3 interpreter in your machine.
-2) Clone <a href="https://github.com/88dots/cpg-dcc-tools-dev/" target="_blank">cpg-dcc-tools-dev</a> repository in the following directory: ```D:\tools\dev\cpg-dcc-tools-dev```
-3) Execute setup_repos.bat to clone all the necessary repos into ```packages``` folder (it will be created)
+1) Make sure that you have installed a clean Python 3 interpreter in your machine.
 4) Execute setup_py3_dev_env.bat to create a Python 3 virtual environment and to install all the CPG repos and their dependencies.
 5) Execute the following code.
 

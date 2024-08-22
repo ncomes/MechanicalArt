@@ -13,7 +13,7 @@ import maya.cmds as cmds
 import maya.mel as mel
 # mca python imports
 from mca.common import log
-from mca.common.utils import lists, strings
+from mca.common.utils import list_utils, string_utils
 from mca.mya.utils import maya_utils
 
 logger = log.MCA_LOGGER
@@ -34,7 +34,7 @@ def get_vertices_as_numbers(vertices, as_string=False):
 	for vert in vertices:
 		if '.' in vert:
 			vert = vert.split('.')[-1]
-		vert_string = strings.get_numbers_from_string(vert, as_string=True)
+		vert_string = string_utils.get_numbers_from_string(vert, as_string=True)
 		vert_num = ''.join(vert_string)
 		if not as_string:
 			vert_num = int(vert_num)
@@ -227,13 +227,13 @@ def convert_to_vertices(obj):
 	:param obj: variant, can be the mesh transform, the mesh shape or component based selection
 	"""
 	
-	check_object = lists.get_first_in_list(lists.force_list(obj))
+	check_object = list_utils.get_first_in_list(list_utils.force_list(obj))
 	
 	obj_type = pm.objectType(check_object)
 	check_type = check_object
 	if obj_type == 'transform':
-		shapes = lists.force_list(obj.getShapes())
-		check_type = lists.get_first_in_list(shapes) if shapes else obj
+		shapes = list_utils.force_list(obj.getShapes())
+		check_type = list_utils.get_first_in_list(shapes) if shapes else obj
 	
 	obj_type = pm.objectType(check_type)
 	if obj_type == 'mesh':
@@ -266,7 +266,7 @@ def fix_mesh_components_selection_visualization(mesh):
 
 	object_type = pm.objectType(mesh)
 	if object_type == 'transform':
-		shape = lists.get_first_in_list(pm.listRelatives(mesh, children=True, shapes=True))
+		shape = list_utils.get_first_in_list(pm.listRelatives(mesh, children=True, shapes=True))
 		object_type = pm.objectType(shape)
 
 	mel.eval('if( !`exists doMenuComponentSelection` ) eval( "source dagMenuProc" );')

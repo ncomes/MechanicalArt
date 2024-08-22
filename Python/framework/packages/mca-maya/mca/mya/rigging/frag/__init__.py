@@ -14,43 +14,27 @@ for mod in [m for m in sys.modules.keys() if m != __name__ and sys.modules[m] !=
 	os.path.sep)[-1].startswith("__init__"))]:
 	del(sys.modules[mod])
 
-from mca.mya.rigging.frag.aim_component import *
-from mca.mya.rigging.frag.animated_curves import *
-from mca.mya.rigging.frag.attachment_component import *
-from mca.mya.rigging.frag.channel_float_component import *
-from mca.mya.rigging.frag.cog_component import *
-from mca.mya.rigging.frag.display_layers import *
-from mca.mya.rigging.frag.eye_center_component import *
-from mca.mya.rigging.frag.eye_component import *
-from mca.mya.rigging.frag.face_edit_component import *
-from mca.mya.rigging.frag.face_fk_component import *
-from mca.mya.rigging.frag.face_mesh_component import *
-from mca.mya.rigging.frag.face_parameters import *
 from mca.mya.rigging.frag.frag_base import *
-from mca.mya.rigging.frag.frag_rig import *
-from mca.mya.rigging.frag.frag_root import *
 from mca.mya.rigging.frag.frag_sequencer import *
-from mca.mya.rigging.frag.fk_component import *
-from mca.mya.rigging.frag.ik_component import *
-from mca.mya.rigging.frag.ikfk_component import *
-from mca.mya.rigging.frag.keyable_component import *
-from mca.mya.rigging.frag.leaper_tongue_component import *
-from mca.mya.rigging.frag.mesh_component import *
-from mca.mya.rigging.frag.multi_constraint import *
-from mca.mya.rigging.frag.pelvis_component import *
-from mca.mya.rigging.frag.pin_component import *
-from mca.mya.rigging.frag.reverse_foot_component import *
-from mca.mya.rigging.frag.rfk_component import *
-from mca.mya.rigging.frag.ribbon_component import *
-from mca.mya.rigging.frag.rig_component import *
-from mca.mya.rigging.frag.spline_ik_component import *
-from mca.mya.rigging.frag.twist_fixup_component import *
-from mca.mya.rigging.frag.s_sdk_component import *
-from mca.mya.rigging.frag.skeletal_mesh import *
-from mca.mya.rigging.frag.world_component import *
-from mca.mya.rigging.frag.z_leg_component import *
-from mca.mya.rigging.frag.cine_sequence_component import *
-from mca.mya.rigging.frag.camera_component import *
+
+# Core modules
+from mca.mya.rigging.frag.components.frag_display import *
+from mca.mya.rigging.frag.components.frag_mesh import *
+from mca.mya.rigging.frag.components.frag_rig import *
+from mca.mya.rigging.frag.components.frag_root import *
+
+# Rig components
+from mca.mya.rigging.frag.components.cog_component import *
+from mca.mya.rigging.frag.components.fk_component import *
+from mca.mya.rigging.frag.components.ik_component import *
+from mca.mya.rigging.frag.components.ikfk_component import *
+from mca.mya.rigging.frag.components.multiconstraint_component import *
+from mca.mya.rigging.frag.components.pelvis_component import *
+from mca.mya.rigging.frag.components.piston_component import *
+from mca.mya.rigging.frag.components.reverse_foot_component import *
+from mca.mya.rigging.frag.components.rfk_component import *
+from mca.mya.rigging.frag.components.twist_component import *
+from mca.mya.rigging.frag.components.world_component import *
 
 
 #deleting classes, functions, modules not in module

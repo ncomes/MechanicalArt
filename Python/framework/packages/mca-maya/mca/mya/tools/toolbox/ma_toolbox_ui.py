@@ -1,22 +1,16 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Toolbox main UI
 """
 
 # python imports
-# PySide2 imports
 # software specific imports
-
 # mca python imports
 from mca.common import log
-
-from mca.common.pyqt.qt_utils import qt_menus
-from mca.common.resources import resources
+from mca.common.pyqt.qt_utils import windows
 from mca.common.startup.configs import consts
-from mca.common.tools.toolbox import toolbox_data, toolbox_editor, toolbox_ui
+from mca.common.tools.toolbox import toolbox_data, toolbox_editor, toolbox_prefs, toolbox_ui
 
+from mca.mya.startup import start_menus
 from mca.mya.pyqt.utils import ma_main_window
 
 MAYA_MAIN_WINDOW = ma_main_window.get_maya_window()
@@ -49,15 +43,15 @@ class MayaToolboxEditor(toolbox_editor.ToolboxEditor):
         Pitch all found toolbars and reload them.
 
         """
-        menu_tools_inst = qt_menus.MainWindowsMenus.create('Toolbox', MAYA_MAIN_WINDOW)
-        for x in menu_tools_inst.menu.actions():
-            if x.text() == 'ToolBox':
-                menu_tools_inst.menu.removeAction(x)
-                break
+        maya_main_window = ma_main_window.get_maya_window()
+        windows.close_all_mca_docked_windows(maya_main_window)
+        start_menus.create_menus()
 
-        menu_toolbars = qt_menus.MainWindowsMenus(menu_tools_inst.menu, MAYA_MAIN_WINDOW)
-        menu_toolbars.add_menu('ToolBox')
-        for toolbox_name, toolbox_class in toolbox_data.ToolboxRegistry().TOOLBOX_NAME_DICT.items():
-            menu_toolbars.add_action(toolbox_name,
-                                     lambda sacrificial=False, toolbox_class=toolbox_class: MayaToolBox(toolbox_class=toolbox_class),
-                                     icon=resources.icon(r'software\mca.png'))
+        # Check to see if any Toolboxes need to be opened.
+        TOOLBOX_P = toolbox_prefs.ToolBoxPreferences(dcc=consts.MAYA)
+        all_on_start = TOOLBOX_P.get_all_on_startups()
+        if all_on_start:
+            for toolbox_name in all_on_start:
+                toolbox_class = toolbox_data.ToolboxRegistry().TOOLBOX_NAME_DICT.get(toolbox_name)
+                if toolbox_class:
+                    MayaToolBox(toolbox_class)

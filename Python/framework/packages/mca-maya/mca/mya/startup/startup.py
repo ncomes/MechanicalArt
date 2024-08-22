@@ -12,7 +12,7 @@ from mca import mya as mca_maya
 from mca.common import log
 from mca.common.startup.configs import consts, config
 from mca.common.pyqt.qt_utils import windows
-from mca.common.paths import project_paths
+from mca.common.project import project_paths
 from mca.mya.pyqt.utils import ma_main_window
 from mca.common.tools.toolbox import toolbox_prefs, toolbox_data
 from mca.mya.tools.toolbox import ma_toolbox_ui

@@ -14,12 +14,8 @@ import inspect
 import subprocess
 import webbrowser
 import time
-
-# PySide2 imports
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QIcon, QFont
-from PySide2.QtWidgets import QWidget, QAbstractItemView, QDialogButtonBox, QHBoxLayout, QLayout, QLabel, QListWidgetItem
-from PySide2.QtWidgets import QPushButton, QSizePolicy
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets, qtcore, qtgui
 
 # software specific imports
 import pymel.core as pm
@@ -27,29 +23,27 @@ import maya.cmds as cmds
 
 # mca python imports
 from mca.common import log
-from mca.common.paths import paths
-from mca.common.utils import fileio, sounds, lists
-from mca.common.modifiers import decorators
+from mca.common.project import paths
+from mca.common.utils import fileio, sounds, list_utils
 from mca.common.assetlist import assetlist
 from mca.common.tools.progressbar import progressbar_ui
 from mca.common.resources import resources
 from mca.common.pyqt.qt_utils import listwidget_utils
 
 from mca.mya.modifiers import ma_decorators
-from mca.mya.rigging import frag, skel_utils
-from mca.mya.modeling import face_model
+from mca.mya.rigging import frag, joint_utils, flag_utils, flags
+from mca.mya.modeling import face_model, material_utils
 from mca.mya.face import source_meshes, face_vertex_data, source_data
-from mca.mya.rigging.flags import flag_utils, frag_flag, serialize_flag
-from mca.mya.rigging import mesh_markup_rig, chain_markup
+from mca.mya.rigging import mesh_markup_rig
 from mca.mya.face.face_utils import face_util, face_import_export, eyelash_snapping, face_skinning
 from mca.mya.face.face_poses import pose_files
 from mca.mya.face.face_poses import face_pose_edit
-from mca.mya.utils import optionvars, fbx_utils, naming, display_layers, textures
-from mca.mya.deformations import skin_utils
+from mca.mya.utils import optionvars, fbx_utils, naming, display_layers
+from mca.mya.rigging import skin_utils
 from mca.mya.pyqt import mayawindows
 from mca.mya.tools.faceskinning import face_skinning_tool
 from mca.mya.tools.assetregister import ma_asset_register
-from mca.mya.pyqt import dialogs
+from mca.mya.pyqt import maya_dialogs
 
 
 logger = log.MCA_LOGGER
@@ -336,10 +330,10 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         self.ui.source_head_comboBox.setCurrentIndex(self.optionvars.source_head_selection)
 
-        self.ui.tagged_listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.ui.pose_flag_listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.ui.engine_meshes_listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.ui.blendshape_skin_listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.ui.tagged_listWidget.setSelectionMode(qtwidgets.QAbstractItemView.ExtendedSelection)
+        self.ui.pose_flag_listWidget.setSelectionMode(qtwidgets.QAbstractItemView.ExtendedSelection)
+        self.ui.engine_meshes_listWidget.setSelectionMode(qtwidgets.QAbstractItemView.ExtendedSelection)
+        self.ui.blendshape_skin_listWidget.setSelectionMode(qtwidgets.QAbstractItemView.ExtendedSelection)
 
         # Button Icons
         my_icon = resources.icon(r'default\flag_white.png')
@@ -421,16 +415,16 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         region = listwidget_utils.get_qlist_widget_selected_items(self.ui.regions_listWidget)
         if not region:
-            self.ui.region_icons_pushButton.setIcon(QIcon())
+            self.ui.region_icons_pushButton.setIcon(qtgui.QIcon())
             return
         region = region[0]
         race = self.source_face_data.race
         logo = os.path.join(REGION_LOGO_PATH, f'{race}_{region}.JPG')
         if not os.path.exists(logo):
-            self.ui.region_icons_pushButton.setIcon(QIcon())
+            self.ui.region_icons_pushButton.setIcon(qtgui.QIcon())
             return
-        self.ui.region_icons_pushButton.setIcon(QIcon(logo))
-        # self.ui.region_icons_pushButton.setIconSize(QtCore.QSize(150,200))
+        self.ui.region_icons_pushButton.setIcon(qtgui.QIcon(logo))
+        # self.ui.region_icons_pushButton.setIconSize(qtcore.QSize(150,200))
 
     def tools_documentation(self):
         """
@@ -679,10 +673,10 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
     def set_edit_buttons_active(self, button, frame):
         """
-        Sets a QPushButton and a Qframe to the active color.
+        Sets a qtwidgets.QPushButton and a Qframe to the active color.
 
-        :param QPushButton button: The QT button that the color is being applied.
-        :param Qframe frame: The QT Frame that the color is being applied.
+        :param qtwidgets.QPushButton button: The QT button that the color is being applied.
+        :param qtwidgets.Qframe frame: The QT Frame that the color is being applied.
         """
 
         button.setStyleSheet(STAGING_BUTTON_ACTIVE_COLORS)
@@ -690,9 +684,9 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
     def set_edit_buttons_inactive(self, button, frame):
         """
-        Sets a QPushButton and a Qframe to the inactive color.
+        Sets a qtwidgets.QPushButton and a Qframe to the inactive color.
 
-        :param QPushButton button: The QT button that the color is being applied.
+        :param qtwidgets.QPushButton button: The QT button that the color is being applied.
         :param Qframe frame: The QT Frame that the color is being applied.
         """
 
@@ -733,7 +727,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             frame_pose.setdefault(parameter.frame, parameter.parameter_name)
         return frame_pose
 
-    @decorators.track_fnc
+    
     def add_overlay_texture(self):
         """
         Adds a Clown Mask to the selected objs.
@@ -750,16 +744,16 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             if not overlay_path:
                 return
             overlay_path = os.path.join(paths.get_common_face(), overlay_path)
-            textures.add_overlay_textures(objs, overlay_path)
+            material_utils.add_overlay_textures(objs, overlay_path)
 
     def remove_overlay_texture(self):
         """
         Removes the Clown Mask from selected objs.
         """
 
-        textures.remove_overlay_textures()
+        material_utils.remove_overlay_textures()
 
-    @decorators.track_fnc
+    
     def _export_selected(self):
         """
         Exports selected blend shapes to the asset directory.
@@ -799,9 +793,9 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         face_import_export.export_blendshapes(path=path, meshes=verified_pose, remove_mtls=True)
         if pose_grp:
             pm.parent(verified_pose, pose_grp)
-        dialogs.display_view_message(text='Blend Shapes Exported', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text='Blend Shapes Exported', header='Face Staging', fade_time=220)
 
-    @decorators.track_fnc
+    
     def _export_all_blendshapes(self, skip_dialog=False):
         """
         Exports all blend shape poses in the scene.
@@ -826,7 +820,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
                 regions.append(region)
         for region in regions:
             face_import_export.export_all_blendshapes(self.asset_id, region)
-        dialogs.display_view_message(text='All Blend Shapes Exported', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text='All Blend Shapes Exported', header='Face Staging', fade_time=220)
 
     def import_skeleton(self):
         """
@@ -837,11 +831,11 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         skel_path = mca_asset.skel_path
         if os.path.exists(os.path.join(skel_path)):
-            skel = skel_utils.import_skeleton(skel_path)
+            skel = joint_utils.import_skeleton(skel_path)
         else:
             skel_path = paths.get_common_face_skeletons()
             skel_path = os.path.join(skel_path, 'human_face_skeleton.skl')
-            skel = skel_utils.import_skeleton(skel_path)
+            skel = joint_utils.import_skeleton(skel_path)
         if not skel:
             logger.warning('No skeleton file exists to import')
             return
@@ -849,13 +843,13 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         [x.radius.set(0.5) for x in pm.selected()]
         [x.drawStyle.set(2) for x in pm.selected() if x.hasAttr('chainEnd') and x.chainEnd.get() == 'neck']
 
-    @decorators.track_fnc
+    
     def export_skeleton(self):
         """
         Exports the .skl skeleton to the asset location.
         """
 
-        result = dialogs.question_prompt(title='Export Skeleton?', text='Export Skeleton?')
+        result = maya_dialogs.question_prompt(title='Export Skeleton?', text='Export Skeleton?')
         if result != 'Yes':
             return
 
@@ -866,9 +860,9 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         if not export_path:
             return
         path = export_path[0]
-        skel_utils.export_skeleton(path, pm.PyNode('root'))
+        joint_utils.export_skeleton(path, pm.PyNode('root'))
 
-    @decorators.track_fnc
+    
     def export_skin_meshes_as_ma(self):
         """
         Exports the skinned meshes as .ma
@@ -876,7 +870,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         self.export_skinned_meshes(fbx_export=False)
 
-    @decorators.track_fnc
+    
     def export_skin_meshes_as_fbx(self):
         """
         Exports the skinned meshes as fbx
@@ -884,7 +878,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         self.export_skinned_meshes(fbx_export=True)
 
-    @decorators.track_fnc
+    
     @ma_decorators.keep_selection_decorator
     def export_skinned_meshes(self, fbx_export=True):
         """
@@ -930,9 +924,9 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             raise
         finally:
             pm.delete(temp_meshes)
-            dialogs.display_view_message(text=f'Meshes Exported Successfully!', header='Face Staging', fade_time=220)
+            maya_dialogs.display_view_message(text=f'Meshes Exported Successfully!', header='Face Staging', fade_time=220)
 
-    @decorators.track_fnc
+    
     def open_common_in_explorer(self):
         """
         Opens the face common folder in Windows Explorer.
@@ -943,7 +937,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         subprocess.Popen(r'explorer ' + common_directory)
         return
 
-    @decorators.track_fnc
+    
     def open_asset_location_in_explorer(self):
         """
         Opens the asset folder in Windows Explorer.
@@ -954,7 +948,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         subprocess.Popen(r'explorer ' + asset_directory)
         return
 
-    @decorators.track_fnc
+    
     def import_from_common(self):
         """
         Imports .ma files from starting from the common file directory.
@@ -970,7 +964,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             [pm.importFile(x) for x in filepath]
             self._populate_tagged_meshes()
 
-    @decorators.track_fnc
+    
     def import_from_asset_location(self):
         """
         Imports .ma files from starting from the asset file directory.
@@ -986,11 +980,11 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             [pm.importFile(x) for x in filepath]
             self._populate_tagged_meshes()
 
-    @decorators.track_fnc
+    
     def create_pose_file(self):
         pose_files.create_face_pose_file(create_skeleton=False)
 
-    @decorators.track_fnc
+    
     def export_skeletal_mesh(self):
         """
         Exports head SK
@@ -1003,9 +997,9 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         face_util.export_head_sk(meshes, root_joint, sk_path)
 
-        dialogs.display_view_message(text=f'SK Export Successful!', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text=f'SK Export Successful!', header='Face Staging', fade_time=220)
 
-    @decorators.track_fnc
+    
     def export_pose_file(self):
         """
         Exports a duplicate skeleton file with the poses bake.
@@ -1030,21 +1024,21 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         if not file_path:
             return
         pose_files.export_face_pose_file(file_path[0])
-        dialogs.display_view_message(text=f'Pose File Successful!', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text=f'Pose File Successful!', header='Face Staging', fade_time=220)
 
-    @decorators.track_fnc
+    
     def import_model_file(self):
         """
         Imports the model file
 
         """
-        result = dialogs.question_prompt(title='Open model file?', text='Open model file?')
+        result = maya_dialogs.question_prompt(title='Open model file?', text='Open model file?')
         if result != 'Yes':
             return False
         pm.newFile(f=True)
         sm_path = self.get_asset_sm_name_path()
         if not os.path.exists(sm_path):
-            dialogs.info_prompt(title="File Doesn't Exist",
+            maya_dialogs.info_prompt(title="File Doesn't Exist",
                                     text='The SM FBX File does not exist or is not named correctly.\n'
                                     f'The name should be:\n{sm_path}')
             return
@@ -1053,27 +1047,27 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             imported_list = [x for x in imported_objs if isinstance(x, pm.nt.Transform)]
             face_util.face_scene_setup(imported_list[0])
         self.set_ui_on_open()
-        dialogs.display_view_message(text=f'Model File Imported Successfully!', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text=f'Model File Imported Successfully!', header='Face Staging', fade_time=220)
         return True
 
-    @decorators.track_fnc
+    
     def export_source_meshes(self):
         """
         Exports the source meshes and creates a new source rig.\
         """
 
-        result = dialogs.question_prompt(title='Export Source Files?', text='Export Source Files?')
+        result = maya_dialogs.question_prompt(title='Export Source Files?', text='Export Source Files?')
         if result != 'Yes':
             return
 
         face_component = self.get_face_component()
         if not face_component:
-            dialogs.info_prompt(title='Need A Rig', text='Need to be in a rig file.\nNo Face Mesh Component or Rig found.')
+            maya_dialogs.info_prompt(title='Need A Rig', text='Need to be in a rig file.\nNo Face Mesh Component or Rig found.')
             return
 
         blendshape_meshes = self.get_all_blendshape_meshes()
         if not blendshape_meshes:
-            dialogs.info_prompt(title='No Blend Shapes Meshes',
+            maya_dialogs.info_prompt(title='No Blend Shapes Meshes',
                                 text='No blend shapes meshes found.')
             return
         save_source_data = False
@@ -1085,7 +1079,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         if not source_data.FACE_FILE_NAME in files:
             save_source_data = True
         else:
-            result = dialogs.question_prompt(title='Re-Save Face Data?', text='The source text files already exist.\n'
+            result = maya_dialogs.question_prompt(title='Re-Save Face Data?', text='The source text files already exist.\n'
                                                 'Re-Export Source Data Files?\n'
                                                 'This is not the Meshes!\nThis is the text data associated with '
                                                 'the mesh file.')
@@ -1099,7 +1093,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         source_meshes.export_source_shapes(source_list=source_list,
                                             asset_id=self.asset_id,
                                             save_source_data=save_source_data)
-        dialogs.display_view_message(text=f'Source Meshes Exported Successfully!', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text=f'Source Meshes Exported Successfully!', header='Face Staging', fade_time=220)
 
     ####################
     # Side Toolbar
@@ -1213,7 +1207,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         blendshape_meshes = face_component.get_all_category_meshes(frag.FACE_BLENDSHAPE_CATEGORY)
         return blendshape_meshes
 
-    @decorators.track_fnc
+    
     def eyelash_snap(self):
         """
         Snaps eyelash/shadow/tear to head mesh based on UV coordinates for asset ID
@@ -1221,7 +1215,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         eyelash_snapping.eyelash_snap_action()
 
-    @decorators.track_fnc
+    
     def calibration_animation(self):
         """
         Adds an animation to the rig scene
@@ -1237,7 +1231,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         anim_curves_component.restore_all_animation_curves(flags)
         pm.playbackOptions(min=anim_curves_component.startFrame.get(), max=anim_curves_component.endFrame.get())
         anim_curves_component.remove()
-        dialogs.display_view_message(text=f'Animation Applied Successfully!', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text=f'Animation Applied Successfully!', header='Face Staging', fade_time=220)
 
     def cut_animation(self):
         """
@@ -1248,14 +1242,14 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         if not frag_rig:
             return
         flag_utils.cut_all_flag_animations(frag_rig)
-        dialogs.display_view_message(text=f'Animation Cut Successfully!', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text=f'Animation Cut Successfully!', header='Face Staging', fade_time=220)
 
-    @decorators.track_fnc
+    
     def save_calibration_animation(self):
         """
         Saves an animation to a file
         """
-        result = dialogs.question_prompt(title='Save Animation?', text='Overwrite the Calibration Animation?')
+        result = maya_dialogs.question_prompt(title='Save Animation?', text='Overwrite the Calibration Animation?')
         if result != 'Yes':
             return
 
@@ -1270,9 +1264,9 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         path = os.path.join(paths.get_common_face(), 'Animations', 'face_calibration.ma')
         anim_curves_component.export(path)
         anim_curves_component.remove()
-        dialogs.display_view_message(text=f'Animation Saved Successfully!', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text=f'Animation Saved Successfully!', header='Face Staging', fade_time=220)
 
-    @decorators.track_fnc
+    
     def zero_flags(self):
         """
         Zeros out the flags.
@@ -1288,7 +1282,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         flag_utils.zero_flags(all_frag_rigs)
         self.tab_start_ups()
 
-    @decorators.track_fnc
+    
     def flags_visibility(self):
         """
         Sets the flags to invisible using the layers.
@@ -1302,7 +1296,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         all_frag_rigs = self.get_rigs()
         flag_utils.flags_visibility(all_frag_rigs, toggle=True)
 
-    @decorators.track_fnc
+    
     def refreshUI(self):
         """
         Refreshes the UI.
@@ -1310,7 +1304,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         FaceStagingUI()
 
-    @decorators.track_fnc
+    
     def _mirror_selected_vertices(self):
         """
         Mirrors selected vertices.
@@ -1318,7 +1312,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         selected = cmds.ls(sl=True, fl=True)
         if not selected:
-            dialogs.info_prompt(title='Select Vertices', text='Please select the vertices you wish to mirror')
+            maya_dialogs.info_prompt(title='Select Vertices', text='Please select the vertices you wish to mirror')
             return
 
         mesh = pm.ls(selected[0], o=True)[0].getParent()
@@ -1343,7 +1337,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         if not just_rename:
             cmds.file(save=True, type='mayaAscii')
 
-    @decorators.track_fnc
+    
     def register_new_head(self):
         """
         Opens asset register tool UI and pre-sets category to head.
@@ -1353,7 +1347,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         asset_reg_tool.ui.categoryBox.setCurrentText('head')
         asset_reg_tool.on_new_button_pressed()
 
-    @decorators.track_fnc
+    
     def open_skinning_tools(self):
         """
         Opens face skinning tools UI.
@@ -1430,12 +1424,12 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         meshes = pm.selected()
         usable_meshes = []
         for mesh in meshes:
-            mesh_children = lists.get_first_in_list(mesh.listRelatives(children=True))
+            mesh_children = list_utils.get_first_in_list(mesh.listRelatives(children=True))
             if isinstance(mesh_children, pm.nt.Mesh):
                 usable_meshes.append(str(mesh))
 
         if not usable_meshes:
-            dialogs.info_prompt(title='No Mesh Usable Meshes Selected', text='Select a mesh and try again')
+            maya_dialogs.info_prompt(title='No Mesh Usable Meshes Selected', text='Select a mesh and try again')
             return
 
         region = listwidget_utils.get_qlist_widget_selected_items(self.ui.regions_listWidget)[0]
@@ -1475,7 +1469,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         if not selected_meshes:
             return
 
-        result = dialogs.question_prompt(title='Remove the mesh markup?', text='Remove the mesh markup?')
+        result = maya_dialogs.question_prompt(title='Remove the mesh markup?', text='Remove the mesh markup?')
         if result != 'Yes':
             return
 
@@ -1527,7 +1521,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             return
 
         if not skip_dialog:
-            result = dialogs.question_prompt(title='Create Head Rig?', text='Do you wish to build the Head Rig?')
+            result = maya_dialogs.question_prompt(title='Create Head Rig?', text='Do you wish to build the Head Rig?')
             if result != 'Yes':
                 return
 
@@ -1568,19 +1562,19 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
                 source_head_name = mca_asset.asset_name
             source_meshes.connect_source_meshes_to_rig(source_head_name, parameter_node)
 
-        dialogs.display_view_message(text='Rig Build Complete', header='Face Staging Tool', fade_time=220)
+        maya_dialogs.display_view_message(text='Rig Build Complete', header='Face Staging Tool', fade_time=220)
 
-    @decorators.track_fnc
+    
     def _create_rig_existing(self):
         """
         Creates the rig with existing blend shapes.
         """
 
         self._create_rig()
-        dialogs.display_view_message(text='Blend shapes were imported successfully', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text='Blend shapes were imported successfully', header='Face Staging', fade_time=220)
         pm.select(cl=True)
 
-    @decorators.track_fnc
+    
     def _create_rig_generate(self):
         """
         Creates the rig and generates new blend shapes.
@@ -1588,7 +1582,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         mca_asset = assetlist.get_asset_by_id(self.asset_id)
 
-        result = dialogs.question_prompt(title='Create Head Rig?', text=f'Do you wish to build a new head rig for '
+        result = maya_dialogs.question_prompt(title='Create Head Rig?', text=f'Do you wish to build a new head rig for '
                                                                         f'{mca_asset.asset_name}?')
         if result != 'Yes':
             return
@@ -1599,7 +1593,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         create_flags = self.create_flags_from_common()
 
-        skel_utils.export_skeleton(mca_asset.skel_path, pm.PyNode('root'))
+        joint_utils.export_skeleton(mca_asset.skel_path, pm.PyNode('root'))
         meshes = self.get_all_skinned_meshes()
 
         if self.ui.generate_process_skinning_checkBox.isChecked():
@@ -1625,7 +1619,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             face_util.clean_and_save_face_rig(self.asset_id)
             pm.select(cl=True)
 
-        dialogs.display_view_message(text='Blend shapes were generated successfully', header='Face Staging',
+        maya_dialogs.display_view_message(text='Blend shapes were generated successfully', header='Face Staging',
                                      fade_time=220)
         pm.select(cl=True)
         e = time.time()
@@ -1637,7 +1631,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         if not model_file:
             return
         self._create_rig(skip_dialog=True)
-        dialogs.display_view_message(text='Blend shapes were imported successfully', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text='Blend shapes were imported successfully', header='Face Staging', fade_time=220)
         pm.select(cl=True)
 
     ####################################
@@ -1856,16 +1850,16 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         blendshape_mesh = self._get_blendshape_mesh_from_qlistwidget()
         pose_name = self._get_pose_from_listwidget()
         if not pose_name:
-            dialogs.info_prompt(title='No Pose Selected', text='Please Select a pose from the pose list and try again')
+            maya_dialogs.info_prompt(title='No Pose Selected', text='Please Select a pose from the pose list and try again')
             return
 
         if not cmds.objExists(pose_name):
-            dialogs.info_prompt(title='Mesh Does Not Exist',
+            maya_dialogs.info_prompt(title='Mesh Does Not Exist',
                                 text=f'The mesh, "{pose_name}" does not exist in the scene.\n'
                                         f'Please import all poses first.')
             return
 
-        result = dialogs.question_prompt(title='Mirror Pose?',
+        result = maya_dialogs.question_prompt(title='Mirror Pose?',
                                         text=f'Do you wish mirror {pose_name} from {blendshape_mesh}?')
         if result != 'Yes':
             return
@@ -1876,7 +1870,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
                                                 mesh=blendshape_mesh,
                                                 pose_connection=pose_name,
                                                 asset_id=self.asset_id)
-        dialogs.display_view_message(text=f'Mirrored {pose_mesh} Successfully', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text=f'Mirrored {pose_mesh} Successfully', header='Face Staging', fade_time=220)
         if self.ui.auto_mirror_checkBox.isChecked():
             pm.select([mirror_mesh, pose_mesh])
             self._export_selected()
@@ -1909,7 +1903,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
                 if pose_side == side_to_mirror:
                     poses_to_mirror.append(pose)
 
-        result = dialogs.question_prompt(title='Mirror Pose?',
+        result = maya_dialogs.question_prompt(title='Mirror Pose?',
                                         text=f'Do you wish mirror all poses from {mesh.mesh}?')
 
         if result != 'Yes':
@@ -1935,7 +1929,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             meshes_to_export.append(mirror_mesh)
 
         prog_ui.update_status(100, 'Finished')
-        dialogs.display_view_message(text=f'Mirrored all {side_to_mirror} side poses successfully', header='Face Staging', fade_time=220)
+        maya_dialogs.display_view_message(text=f'Mirrored all {side_to_mirror} side poses successfully', header='Face Staging', fade_time=220)
 
         if self.ui.auto_mirror_checkBox.isChecked():
             pm.select(meshes_to_export)
@@ -1953,7 +1947,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         for blendshape in blendshape_list:
             blendshape = face_model.FaceModel(blendshape)
             blendshape.reconnect_shapes_to_rig(self.asset_id)
-            dialogs.display_view_message(text=f'{blendshape.mesh} Blend Shapes Successfully Reconnected',
+            maya_dialogs.display_view_message(text=f'{blendshape.mesh} Blend Shapes Successfully Reconnected',
                                             header='Face Staging',
                                             fade_time=170)
 
@@ -2014,13 +2008,13 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         """
 
         if self._get_percent() and self._get_percent() < 100.0:
-            dialogs.info_prompt(title='Pose Not At 100%',
+            maya_dialogs.info_prompt(title='Pose Not At 100%',
                                 text='The pose needs to be completely set.\n'
                                         'Please make sure the Flag is set to the max.')
             return None
         frag_rigs = self.get_rigs()
         if not frag_rigs:
-            dialogs.info_prompt(title='No Rig', text='Cannot not find the FRAG Rig node.\nNo rig in the scene.')
+            maya_dialogs.info_prompt(title='No Rig', text='Cannot not find the FRAG Rig node.\nNo rig in the scene.')
             return frag_rigs
         return frag_rigs[0]
 
@@ -2048,14 +2042,14 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             return
         if not edit_node:
             self.single_pose_edit_start(frag_rig)
-            dialogs.display_view_message(text='Entered Single Pose Edit', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Entered Single Pose Edit', header='Face Staging Tool', fade_time=220)
         elif edit_node and edit_node.edit_inst.single_pose and not edit_node.edit_inst.paint_neutral:
             edit_node.pose_edit_end(due_mirror=self.ui.auto_mirror_checkBox.isChecked(),
                                     due_export=self.ui.export_bs_checkBox.isChecked(),
                                     transfer_jnts = self.ui.edit_transfer_joints_checkBox.isChecked())
             self.reset_pose_edit_buttons()
             self.reparent_rivet_group()
-            dialogs.display_view_message(text='Single Pose Edit Successful!', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Single Pose Edit Successful!', header='Face Staging Tool', fade_time=220)
         elif edit_node and edit_node.edit_inst.single_pose and edit_node.edit_inst.paint_neutral:
             edit_node.paint_neutral_end()
             edit_node.pose_edit_end(due_mirror=self.ui.auto_mirror_checkBox.isChecked(),
@@ -2063,10 +2057,10 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
                                     transfer_jnts=self.ui.edit_transfer_joints_checkBox.isChecked())
             self.reset_pose_edit_buttons()
             self.reparent_rivet_group()
-            dialogs.display_view_message(text='Paint Neutral Successful!', header='Face Staging Tool', fade_time=220)
-            dialogs.display_view_message(text='Single Pose Edit Successful!', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Paint Neutral Successful!', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Single Pose Edit Successful!', header='Face Staging Tool', fade_time=220)
 
-    @decorators.track_fnc
+    
     def single_pose_edit_start(self, frag_rig):
         """
         Starts the Single pose edit.
@@ -2080,7 +2074,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         pose_name = self._get_pose_from_listwidget()
         if not pose_name:
-            dialogs.info_prompt(title='No Pose Selected', text='Please select a pose from the active pose list.')
+            maya_dialogs.info_prompt(title='No Pose Selected', text='Please select a pose from the active pose list.')
             return
 
         edit_node = face_pose_edit.FacePoseEdit.create(main_pose=pose_name, mesh=mesh, frag_node=frag_rig)
@@ -2106,7 +2100,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
                 return
             self.ui.multi_pose_edit_pushButton.setStyleSheet(STAGING_BUTTON_ACTIVE_COLORS)
             self.ui.multi_pose_edit_frame.setStyleSheet(STAGING_BACKGROUND_GREY)
-            dialogs.display_view_message(text='Entered Multi Pose Edit', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Entered Multi Pose Edit', header='Face Staging Tool', fade_time=220)
         elif edit_node and edit_node.edit_inst.multi_pose and not edit_node.edit_inst.paint_neutral:
             edit_node.pose_edit_end(multi_edit=True,
                                     due_mirror=self.ui.auto_mirror_checkBox.isChecked(),
@@ -2114,9 +2108,9 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
                                     transfer_jnts=self.ui.edit_transfer_joints_checkBox.isChecked())
             self.reset_pose_edit_buttons()
             self.reparent_rivet_group()
-            dialogs.display_view_message(text='Multi Pose Edit Successful!', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Multi Pose Edit Successful!', header='Face Staging Tool', fade_time=220)
 
-    @decorators.track_fnc
+    
     def multi_pose_edit_start(self, frag_rig):
         """
         Starts the Single pose edit.
@@ -2129,7 +2123,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             return False
         pose_name = self._get_pose_from_listwidget()
         if not pose_name:
-            dialogs.info_prompt(title='No Pose Selected', text='Please select a pose from the active pose list.')
+            maya_dialogs.info_prompt(title='No Pose Selected', text='Please select a pose from the active pose list.')
             return False
         edit_node = face_pose_edit.FacePoseEdit.create(main_pose=pose_name, mesh=mesh, frag_node=frag_rig)
         edit_node.pose_edit_start(multi_edit=True,
@@ -2153,7 +2147,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         if edit_node.edit_inst.paint_neutral and not edit_node.edit_inst.multi_pose:
             edit_node.paint_neutral_cancel()
             self.reset_pose_edit_buttons(keep_single=True)
-            dialogs.display_view_message(text='Paint Neutral Canceled', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Paint Neutral Canceled', header='Face Staging Tool', fade_time=220)
         else:
             if self.ui.edit_transfer_joints_checkBox.isChecked():
                 blendshape = face_model.FaceModel(mesh)
@@ -2164,7 +2158,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             self.ui.pose_list_listWidget.clear()
             self.ui.edit_percent_listWidget.clear()
             self.ui.pose_flag_listWidget.clear()
-            dialogs.display_view_message(text='Pose Edit Canceled', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Pose Edit Canceled', header='Face Staging Tool', fade_time=220)
 
     ####### Paint Neutral ##########
     def paint_neutral_toggle(self):
@@ -2179,30 +2173,30 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             return
         pose_name = self._get_pose_from_listwidget()
         if not pose_name:
-            dialogs.info_prompt(title='No Pose Selected', text='Please select a pose from the active pose list.')
+            maya_dialogs.info_prompt(title='No Pose Selected', text='Please select a pose from the active pose list.')
             return
 
         if not edit_node:
             self.single_pose_edit_start(frag_rig)
-            dialogs.display_view_message(text='Entered Single Pose Edit', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Entered Single Pose Edit', header='Face Staging Tool', fade_time=220)
             edit_node = self._get_edit_node()
             self.paint_neutral_start(edit_node)
             # set button color
             self.set_edit_buttons_active(self.ui.paint_neutral_pushButton, self.ui.paint_neutral_frame)
-            dialogs.display_view_message(text='Entered Paint Neutral Pose', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Entered Paint Neutral Pose', header='Face Staging Tool', fade_time=220)
 
         elif edit_node and edit_node.edit_inst.single_pose and not edit_node.edit_inst.paint_neutral:
             self.paint_neutral_start(edit_node)
-            dialogs.display_view_message(text='Entered Paint Neutral Pose', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Entered Paint Neutral Pose', header='Face Staging Tool', fade_time=220)
             self.set_edit_buttons_active(self.ui.paint_neutral_pushButton, self.ui.paint_neutral_frame)
 
         elif edit_node and edit_node.edit_inst.single_pose and edit_node.edit_inst.paint_neutral:
             edit_node = self._get_edit_node()
             edit_node.paint_neutral_end()
             self.reset_pose_edit_buttons(keep_single=True)
-            dialogs.display_view_message(text='Paint Neutral Successful!', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Paint Neutral Successful!', header='Face Staging Tool', fade_time=220)
 
-    @decorators.track_fnc
+    
     def paint_neutral_start(self, edit_node):
         """
         Blend Shape mode refers to "Paint Neutral Pose" on the UI.
@@ -2225,7 +2219,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         edit_node = self._get_edit_node()
         frag_rig = self.get_rig()
         if not frag_rig:
-            dialogs.info_prompt(title='No Rig', text='Cannot not find the FRAG Rig node.\nNo rig in the scene.')
+            maya_dialogs.info_prompt(title='No Rig', text='Cannot not find the FRAG Rig node.\nNo rig in the scene.')
 
         if not frag_rig:
             return
@@ -2234,10 +2228,10 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             self.base_edit_start(frag_rig)
             self.ui.base_edit_pushButton.setStyleSheet(STAGING_BUTTON_ACTIVE_COLORS)
             self.ui.base_color_edit_frame.setStyleSheet(STAGING_BACKGROUND_GREY)
-            dialogs.display_view_message(text='Entered Base Edit Mode', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Entered Base Edit Mode', header='Face Staging Tool', fade_time=220)
         elif edit_node and edit_node.edit_inst.base_edit:
             if not skip_dialog:
-                result = dialogs.question_prompt(title='Finish Editing?',
+                result = maya_dialogs.question_prompt(title='Finish Editing?',
                                                     text=f'Do you wish to continue?  The changes will be propagated out '
                                                             'to all of the blend shapes.')
                 if result != 'Yes':
@@ -2249,9 +2243,9 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             edit_node.edit_inst.set_all_flag_block_values()
             pm.delete(edit_node.edit_inst.pynode)
             self.reset_pose_edit_buttons()
-            dialogs.display_view_message(text='Base Edit Successful!', header='Face Staging Tool', fade_time=220)
+            maya_dialogs.display_view_message(text='Base Edit Successful!', header='Face Staging Tool', fade_time=220)
 
-    @decorators.track_fnc
+    
     def base_edit_start(self, frag_rig):
         """
         Starts the editing process where the base mesh can be edited.
@@ -2280,28 +2274,28 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         edit_node.base_edit_cancel()
         self.reset_pose_edit_buttons()
-        dialogs.display_view_message(text='Base Edit Mode Canceled', header='Face Staging Tool', fade_time=220)
+        maya_dialogs.display_view_message(text='Base Edit Mode Canceled', header='Face Staging Tool', fade_time=220)
 
-    @decorators.track_fnc
+    
     def replace_base_mesh(self):
         """
         Replaces the base mesh with a newer mesh with the same vert count.
         """
-        result = dialogs.question_prompt(title='Replace Base Mesh?',
+        result = maya_dialogs.question_prompt(title='Replace Base Mesh?',
                                         text='Do you wish to continue?')
         if result != 'Yes':
             return
 
         selection = pm.selected()
         if not selection and not selection[0].listRelatives(s=True):
-            dialogs.info_prompt(title='Select a Mesh', text='Please select a valid mesh')
+            maya_dialogs.info_prompt(title='Select a Mesh', text='Please select a valid mesh')
             return
 
         replacement_mesh = selection[0]
 
         frag_rig = self.get_rig()
         if not frag_rig:
-            dialogs.info_prompt(title='No Rig', text='Cannot not find the FRAG Rig node.\n'
+            maya_dialogs.info_prompt(title='No Rig', text='Cannot not find the FRAG Rig node.\n'
                                                         'No rig in the scene.')
             return
         mesh = self._get_blendshape_mesh_from_qlistwidget()
@@ -2401,15 +2395,15 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             else:
                 QLabelTextButtonQWidget.create(self.ui.blendshape_skin_listWidget, mesh, color=STAGING_COLOR_RED)
 
-    @decorators.track_fnc
+    
     def restore_skinning(self):
         """
         Restores skinning from saved skin weights in a .sknr file.
         """
 
-        result = dialogs.question_prompt(title='Restore Skinning?',
+        result = maya_dialogs.question_prompt(title='Restore Skinning?',
                                         text='Restore Skinning?')
-        if result != QDialogButtonBox.StandardButton.Yes:
+        if result != qtwidgets.QDialogButtonBox.StandardButton.Yes:
             return
 
         meshes = self.get_rigging_selected_meshes()
@@ -2422,20 +2416,20 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         if not_skinned:
             message = ', '.join(not_skinned)
-            dialogs.info_prompt(title='Meshes were not skinned',
+            maya_dialogs.info_prompt(title='Meshes were not skinned',
                                 text='These meshes were not skinned\n'
                                         f'{message}')
 
         self.ui.engine_meshes_listWidget.clearSelection()
         self.ui.blendshape_skin_listWidget.clearSelection()
 
-    @decorators.track_fnc
+    
     def export_skinning(self, all_meshes=False):
         """
         Export the skin weights to a .json file.
         """
 
-        result = dialogs.question_prompt(title='Export Skinning?',
+        result = maya_dialogs.question_prompt(title='Export Skinning?',
                                         text='Export Skinning?')
         if result != 'Yes':
             return
@@ -2451,7 +2445,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
                 not_exported.append(mesh)
         if not_exported:
             message = ', '.join(not_exported)
-            result = dialogs.info_prompt(title='Meshes were not skinned',
+            result = maya_dialogs.info_prompt(title='Meshes were not skinned',
                                             text=f'These meshes were not skinned\n'
                                             f'{message}')
 
@@ -2459,7 +2453,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         self.ui.blendshape_skin_listWidget.clearSelection()
         self._populate_skinning_meshes()
 
-    @decorators.track_fnc
+    
     def export_all_skinning(self):
         self.export_skinning(all_meshes=True)
 
@@ -2484,7 +2478,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
 
         message = str(display_names)[1:-1]
         if not skip_dialog:
-            result = dialogs.question_prompt(title='Process Skinning?',
+            result = maya_dialogs.question_prompt(title='Process Skinning?',
                                             text=f'Process skinning for:\n{message}')
             if result != 'Yes':
                 return
@@ -2533,7 +2527,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
                 frag_rigs = self.get_rigs()
                 frag_rig = frag_rigs[0]
                 root_joint = frag.get_root_joint(frag_rig)
-                wrapped_root = chain_markup.ChainMarkup(root_joint)
+                wrapped_root = joint_utils.JointMarkup(root_joint)
 
                 face_skinning.post_lsd_face_cleanup(skin_mesh.mesh,
                                                     region_data,
@@ -2551,12 +2545,12 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
                     pm.skinCluster(skin_mesh.mesh.getShape(), e=True, ub=True)
                 pm.skinCluster(skinned_joints, skin_mesh.mesh, tsb=True)
 
-            dialogs.display_view_message(text=f'{skin_mesh.mesh} Skinned Successfully',
+            maya_dialogs.display_view_message(text=f'{skin_mesh.mesh} Skinned Successfully',
                                          header='Face Staging Tool',
                                          fade_time=220)
         prog_ui.update_status(100, 'Finished')
 
-    @decorators.track_fnc
+    
     def all_meshes_process_skinning(self, skip_dialog=False):
         """
         Processes the skinning for all tagged skinned face meshes.
@@ -2573,7 +2567,7 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         meshes = self.get_text_from_list_widget(self.ui.engine_meshes_listWidget)
         self.process_skinning(meshes, delete_decomp_mesh=False)
 
-    @decorators.track_fnc
+    
     def process_skinning_delete_mesh(self):
         """
         Processes the skinning and then deletes the mesh that the LSD gives after the process.
@@ -2593,19 +2587,19 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
             dnt_group = frag_rig.getAttr('doNotTouch')
             rivet_group.setParent(dnt_group)
 
-    @decorators.track_fnc
+    
     def finish_save_rig(self):
         """
         Saves and cleans up the final rig file.
         """
 
-        result = dialogs.question_prompt(title='Save Rig?', text='Clean up the File and Save Rig?')
-        if result != QDialogButtonBox.StandardButton.Yes:
+        result = maya_dialogs.question_prompt(title='Save Rig?', text='Clean up the File and Save Rig?')
+        if result != qtwidgets.QDialogButtonBox.StandardButton.Yes:
             return
 
         face_util.clean_and_save_face_rig(self.asset_id)
         pm.select(cl=True)
-        dialogs.display_view_message(text='Rig File Saved Successfully', header='Face Staging Tool', fade_time=220)
+        maya_dialogs.display_view_message(text='Rig File Saved Successfully', header='Face Staging Tool', fade_time=220)
 
     def create_flags_from_common(self):
         flag_path = os.path.join(paths.get_asset_rig_path(self.asset_id), 'Flags')
@@ -2614,25 +2608,25 @@ class FaceStagingUI(mayawindows.MCAMayaWindow):
         if not os.listdir(flag_path):
             common_flag_path = os.path.join(paths.get_common_face(), 'Flags')
             frag_rig = self.get_rig()
-            flags = frag_rig.get_flags()
-            frag_flag.swap_flags(flags, common_flag_path)
+            flags_list = frag_rig.get_flags()
+            flags.swap_flags(flags_list, common_flag_path)
             frag_rig.color_flags()
-            list(map(lambda x: serialize_flag.export_flag(pm.PyNode(x), flag_path), flags))
+            list(map(lambda x: flags.export_flag(pm.PyNode(x), flag_path), flags))
             return True
         else:
             return False
 
-class QLabelTextQWidget(QWidget):
+class QLabelTextQWidget(qtwidgets.QWidget):
     def __init__(self, parent=None):
         super(QLabelTextQWidget, self).__init__(parent)
-        self.text_QHBoxLayout = QHBoxLayout()
-        self.text_QLabel = QLabel()
+        self.text_QHBoxLayout = qtwidgets.QHBoxLayout()
+        self.text_QLabel = qtwidgets.QLabel()
         self.text_QHBoxLayout.addWidget(self.text_QLabel)
-        self.text_QHBoxLayout.setSizeConstraint(QLayout.SetMinimumSize)
+        self.text_QHBoxLayout.setSizeConstraint(qtwidgets.QLayout.SetMinimumSize)
         self.setLayout(self.text_QHBoxLayout)
 
         self.text_QHBoxLayout.setContentsMargins(1, 1, 1, 1)
-        self.text_QLabel.setAlignment(Qt.AlignLeft)
+        self.text_QLabel.setAlignment(qtcore.Qt.AlignLeft)
 
     def set_text(self, text, color=STAGING_COLOR_GREEN):
         """
@@ -2657,8 +2651,8 @@ class QLabelTextQWidget(QWidget):
 
         myQCustomQWidget = cls()
         myQCustomQWidget.set_text(text, color)
-        # Create QListWidgetItem
-        myQListWidgetItem = QListWidgetItem(qlist_widget)
+        # Create qtwidgets.QListWidgetItem
+        myQListWidgetItem = qtwidgets.QListWidgetItem(qlist_widget)
         myQListWidgetItem.setData(0, myQCustomQWidget.text_QLabel)
         # Set size hint
         myQListWidgetItem.setSizeHint(myQCustomQWidget.minimumSizeHint())
@@ -2667,26 +2661,26 @@ class QLabelTextQWidget(QWidget):
         qlist_widget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
 
 
-class QLabelTextButtonQWidget(QWidget):
+class QLabelTextButtonQWidget(qtwidgets.QWidget):
     def __init__(self, parent=None):
         super(QLabelTextButtonQWidget, self).__init__(parent)
-        self.text_QHBoxLayout = QHBoxLayout()
-        self.text_QLabel = QLabel()
-        self.button = QPushButton()
+        self.text_QHBoxLayout = qtwidgets.QHBoxLayout()
+        self.text_QLabel = qtwidgets.QLabel()
+        self.button = qtwidgets.QPushButton()
         self.text_QHBoxLayout.addWidget(self.text_QLabel)
         self.text_QHBoxLayout.addWidget(self.button)
-        self.text_QHBoxLayout.setSizeConstraint(QLayout.SetMinimumSize)
+        self.text_QHBoxLayout.setSizeConstraint(qtwidgets.QLayout.SetMinimumSize)
         self.setLayout(self.text_QHBoxLayout)
 
         self.text_QHBoxLayout.setContentsMargins(1, 1, 1, 1)
-        self.text_QHBoxLayout.setAlignment(Qt.AlignLeft)
+        self.text_QHBoxLayout.setAlignment(qtcore.Qt.AlignLeft)
 
         self.button.setMaximumSize(18, 14)
         self.button.setContentsMargins(1, 1, 1, 1)
 
-        self.text_QLabel.setAlignment(Qt.AlignLeft)
-        self.text_QLabel.setAlignment(Qt.AlignVCenter)
-        self.text_QLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self.text_QLabel.setAlignment(qtcore.Qt.AlignLeft)
+        self.text_QLabel.setAlignment(qtcore.Qt.AlignVCenter)
+        self.text_QLabel.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Preferred)
         self.text_QLabel.setContentsMargins(1, 1, 1, 1)
         self.text_QLabel.setMinimumHeight(14)
 
@@ -2729,7 +2723,7 @@ class QLabelTextButtonQWidget(QWidget):
 
     def set_text(self, text, color=STAGING_COLOR_WHITE):
         """
-        Sets the text for the QLabel
+        Sets the text for the qtwidgets.QLabel
 
         :param str text: The text to be entered into the Qlabel
         :param str color: The RBG color code
@@ -2739,14 +2733,14 @@ class QLabelTextButtonQWidget(QWidget):
 
     def set_button_text(self, text, color=STAGING_COLOR_WHITE):
         """
-        Sets the text for the QPushButton
+        Sets the text for the qtwidgets.QPushButton
 
-        :param str text: The text put onto the QPushButton
+        :param str text: The text put onto the qtwidgets.QPushButton
         :param str color: The RBG color code
         """
 
         self.button.setStyleSheet(f'''color: rgb{color};''')
-        self.button.setFont(QFont('Arial', 7))
+        self.button.setFont(qtgui.QFont('Arial', 7))
         self.button.setStyleSheet("text-align: Center;")
         self.button.setText(text)
 
@@ -2767,8 +2761,8 @@ class QLabelTextButtonQWidget(QWidget):
         obj = myQCustomQWidget.check_obj()
         if obj:
             myQCustomQWidget.check_button_text(obj.v.get())
-        # Create QListWidgetItem
-        myQListWidgetItem = QListWidgetItem(qlist_widget)
+        # Create qtwidgets.QListWidgetItem
+        myQListWidgetItem = qtwidgets.QListWidgetItem(qlist_widget)
         myQListWidgetItem.setData(0, myQCustomQWidget.text_QLabel)
         myQListWidgetItem.setData(1, myQCustomQWidget.button)
         # Set size hint

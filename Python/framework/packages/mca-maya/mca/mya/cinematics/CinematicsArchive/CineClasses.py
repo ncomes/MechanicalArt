@@ -12,7 +12,7 @@ import os
 import maya.cmds as cmds
 # mca python imports
 from mca.common.modifiers import decorators
-from mca.common.paths import project_paths
+from mca.common.project import project_paths
 
 
 class CineStaticClass:
@@ -26,7 +26,7 @@ class CineStaticClass:
     cameraPath = r'{}{}'.format(projectPath,'\\Cinematics\\Assets\\camera\\shotCam_2point35_30fps_v1.ma')
     scriptsPath = r'{}{}'.format(projectPath, '\\Python\\framework_2-1-0\\packages\\mca-mya\\mca\\mya\\cinematics')
 
-    @decorators.track_fnc
+    
     @staticmethod    
     def setProjectPaths():
         #print('setting project paths')

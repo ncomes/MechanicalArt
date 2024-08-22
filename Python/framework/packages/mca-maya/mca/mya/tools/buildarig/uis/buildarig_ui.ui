@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>rigbuilder_Form</class>
+ <widget class="QWidget" name="rigbuilder_Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>639</width>
+    <height>818</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>500</width>
+    <height>269</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Build A Rig Workshop</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_3">
+   <item>
+    <layout class="QVBoxLayout" name="tabs_and_save_verticalLayout">
+     <item>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="build_a_rig_tab">
+        <attribute name="title">
+         <string>Build A Rig</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QGroupBox" name="component_groupBox">
+           <property name="title">
+            <string>Component Editor</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QTabWidget" name="component_list_tabWidget"/>
+            </item>
+            <item>
+             <widget class="QFrame" name="rig_info_frame">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <property name="leftMargin">
+                <number>2</number>
+               </property>
+               <property name="topMargin">
+                <number>2</number>
+               </property>
+               <property name="rightMargin">
+                <number>2</number>
+               </property>
+               <property name="bottomMargin">
+                <number>2</number>
+               </property>
+               <item>
+                <widget class="QCheckBox" name="mirror_component_checkBox">
+                 <property name="toolTip">
+                  <string>If enabled this will attempt to find and mirror any new components when they're built.</string>
+                 </property>
+                 <property name="text">
+                  <string>Mirror New Components</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QPushButton" name="remove_component_pushButton">
+                <property name="toolTip">
+                 <string>Remove a component by selection from its rig.</string>
+                </property>
+                <property name="text">
+                 <string>Remove Component</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="add_component_pushButton">
+                <property name="toolTip">
+                 <string>Add the component via the drop down to all selected skeletal chains.</string>
+                </property>
+                <property name="text">
+                 <string>Add Component</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="attach_component_groupBox">
+           <property name="title">
+            <string>Attach Options</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <layout class="QHBoxLayout" name="attach_options_horizontalLayout">
+              <item>
+               <widget class="QCheckBox" name="attach_translation_checkBox">
+                <property name="toolTip">
+                 <string>If the component should be attached via position.</string>
+                </property>
+                <property name="text">
+                 <string>Translation</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="attach_rotation_checkBox">
+                <property name="toolTip">
+                 <string>If the component should be attached via rotation.</string>
+                </property>
+                <property name="text">
+                 <string>Rotation</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QPushButton" name="attach_pushButton">
+              <property name="toolTip">
+               <string>In reverse order all driver objects for the attachment to the last selected component.</string>
+              </property>
+              <property name="text">
+               <string>Attach Component</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="flag_utils_tab">
+        <attribute name="title">
+         <string>Flag Editor</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_9">
+         <item>
+          <widget class="QGroupBox" name="flag_lock_groupBox">
+           <property name="title">
+            <string>Flag Axis Lock</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <layout class="QGridLayout" name="lock_axis_gridLayout">
+              <item row="0" column="1">
+               <widget class="QCheckBox" name="translate_y_checkBox">
+                <property name="text">
+                 <string>Translate Y</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QCheckBox" name="translate_z_checkBox">
+                <property name="text">
+                 <string>Translate Z</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="translate_x_checkBox">
+                <property name="text">
+                 <string>Translate X</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QCheckBox" name="rotate_y_checkBox">
+                <property name="text">
+                 <string>Rotate Y</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QCheckBox" name="rotate_x_checkBox">
+                <property name="text">
+                 <string>Rotate X</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QCheckBox" name="rotate_z_checkBox">
+                <property name="text">
+                 <string>Rotate Z</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="scale_lock_checkBox">
+              <property name="text">
+               <string>Scale</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="lock_axis_pushButton">
+              <property name="toolTip">
+               <string>Lock all selected flag channels based on the toggles above.</string>
+              </property>
+              <property name="text">
+               <string>Set Flag Axis Attributes</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="flag_toggle_groupBox">
+           <property name="title">
+            <string>Flag Toggles</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <layout class="QHBoxLayout" name="flag_toggle_options_horizontalLayout">
+              <item>
+               <widget class="QCheckBox" name="flag_isdetail_checkBox">
+                <property name="text">
+                 <string>Detail</string>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="flag_isutil_checkBox">
+                <property name="text">
+                 <string>Utility</string>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="flag_issub_checkBox">
+                <property name="text">
+                 <string>Sub</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="flag_iscontact_checkBox">
+                <property name="text">
+                 <string>Contact</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QPushButton" name="flag_toggle_pushButton">
+              <property name="toolTip">
+               <string>Toggle organization types for all selected flags.</string>
+              </property>
+              <property name="text">
+               <string>Set Flag Type Toggles</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="flag_rotate_ordergroupBox">
+           <property name="title">
+            <string>Flag Rotation Order</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QComboBox" name="flag_rotate_order_comboBox"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="flag_rotate_order_pushButton">
+              <property name="toolTip">
+               <string>For each selected flag, set the rotation order to the selected.</string>
+              </property>
+              <property name="text">
+               <string>Set Flag Rotate Order</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="multiconstraint_groupBox">
+           <property name="title">
+            <string>Multiconstraints</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <item>
+             <widget class="QCheckBox" name="translation_multiconstraint_checkBox">
+              <property name="text">
+               <string>Translation</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="rotation_multiconstraint_checkBox">
+              <property name="text">
+               <string>Rotation</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="multiconstraint_horizontalLayout">
+              <item>
+               <widget class="QPushButton" name="add_multiconstraint_pushButton">
+                <property name="toolTip">
+                 <string>Add a new multi constraint in order of selection, ending with the flag to own the new constraint.</string>
+                </property>
+                <property name="text">
+                 <string>Add Multiconstraint</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="remove_multiconstraint_pushButton">
+                <property name="toolTip">
+                 <string>Remove multiconstraints from all selected flags.</string>
+                </property>
+                <property name="text">
+                 <string>Remove Multiconstraint</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="flag_shapes_groupBox">
+           <property name="title">
+            <string>Flag Shape</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <layout class="QHBoxLayout" name="flag_shapes_horizontalLayout">
+              <item>
+               <widget class="QPushButton" name="save_new_flag_pushButton">
+                <property name="toolTip">
+                 <string>Save a new default flag shape by name.</string>
+                </property>
+                <property name="text">
+                 <string>Save New Flag Shape</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="delete_flag_shape_pushButton">
+                <property name="toolTip">
+                 <string>Delete the currently selected default flag shape.</string>
+                </property>
+                <property name="text">
+                 <string>Delete Flag Shape</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="import_flag_horizontalLayout">
+              <item>
+               <widget class="QLabel" name="import_flag_label">
+                <property name="text">
+                 <string>Flag Shape Selector:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="import_flag_comboBox"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QPushButton" name="copy_shape_pushButton">
+              <property name="toolTip">
+               <string>For every flag selected, import parent and zero transforms of the default flag shape selected.</string>
+              </property>
+              <property name="text">
+               <string>Import Shape to Selected Flags</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="replace_shape_pushButton">
+              <property name="toolTip">
+               <string>For all transforms with a curve, swap their shape nodes with their parent flag.</string>
+              </property>
+              <property name="text">
+               <string>Replace Flags with Selected Shapes</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="mirror_shape_pushButton">
+              <property name="toolTip">
+               <string>For each flag selected, attempt to find their counterpart, then mechanically mirror the shape across the X axis.</string>
+              </property>
+              <property name="text">
+               <string>Mirror Selected Flag Shapes</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="import_export_rig_flags_groupBox">
+           <property name="title">
+            <string>Import/Export Rig Flags</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QPushButton" name="export_rig_flags_pushButton">
+              <property name="toolTip">
+               <string>Serialize the shape of all flags on the selected rigs.</string>
+              </property>
+              <property name="text">
+               <string>Export Rig Flags</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="refresh_rig_flags_pushButton">
+              <property name="toolTip">
+               <string>Reload rig shapes for all selected rigs.</string>
+              </property>
+              <property name="text">
+               <string>Refresh Rig Flags</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="rigio_horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="create_new_rig_pushButton">
+         <property name="toolTip">
+          <string>Create a new blank rig with just a world component.</string>
+         </property>
+         <property name="text">
+          <string>Create Rig</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="save_rig_pushButton">
+         <property name="toolTip">
+          <string>Serialize the rig and choose a location to save it.</string>
+         </property>
+         <property name="text">
+          <string>Save Rig</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="load_rig_pushButton">
+         <property name="toolTip">
+          <string>Deserialize a rig and build it on either a selected, or new frag rig.</string>
+         </property>
+         <property name="text">
+          <string>Load Rig</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="finish_rig_pushButton">
+         <property name="toolTip">
+          <string>Color flags, and organize them into display layers.</string>
+         </property>
+         <property name="text">
+          <string>Finish Rig</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="sidebar_verticalLayout">
+     <item>
+      <layout class="QVBoxLayout" name="component_info_verticalLayout">
+       <property name="leftMargin">
+        <number>9</number>
+       </property>
+       <property name="topMargin">
+        <number>9</number>
+       </property>
+       <property name="rightMargin">
+        <number>9</number>
+       </property>
+       <property name="bottomMargin">
+        <number>9</number>
+       </property>
+       <item>
+        <widget class="QPlainTextEdit" name="component_info_plainTextEdit">
+         <property name="minimumSize">
+          <size>
+           <width>240</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+         <property name="plainText">
+          <string>Default information about the rig component will go here.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="picture_horizontalLayout"/>
+       </item>
+       <item>
+        <spacer name="component_info_verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="additional_ops_verticalLayout"/>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

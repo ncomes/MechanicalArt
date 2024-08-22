@@ -15,13 +15,13 @@ import pymel.core as pm
 import maya.cmds as cmds
 import maya.mel as mel
 # mca python imports
-from mca.common.paths import paths
-from mca.common.utils import lists
+from mca.common.project import paths
+from mca.common.utils import list_utils
 from mca.mya.utils.om import om_utils
 from mca.mya.modeling import vert_utils
 from mca.mya.utils import naming
-from mca.mya.rigging import chain_markup
-from mca.mya.deformations import skin_utils
+from mca.mya.rigging import joint_utils
+from mca.mya.rigging import skin_utils
 from mca.common.tools.progressbar import progressbar_ui
 
 
@@ -72,7 +72,7 @@ def skin_to_head_joint(mesh_to_skin, root_joint):
     :param list(pm.nt.Transform or pm.general.MeshVertex) mesh_to_skin: The mesh that the skinning will get applied.
     :param pm.nt.Joint root_joint:  The root joint of the skeleton.
     """
-    markup = chain_markup.ChainMarkup(root_joint)
+    markup = joint_utils.JointMarkup(root_joint)
     head_joint = markup.get_end('neck', 'center')
 
     if isinstance(mesh_to_skin[0], pm.nt.Transform):
@@ -152,7 +152,7 @@ def face_skinning_converter_cmd(blendshape_mesh, skin_mesh, joints, start_frame,
     if not decomp_grp:
         return
 
-    decomp_mesh = lists.get_first_in_list(cmds.listRelatives(decomp_grp, c=True))
+    decomp_mesh = list_utils.get_first_in_list(cmds.listRelatives(decomp_grp, c=True))
     if not decomp_mesh:
         return
 

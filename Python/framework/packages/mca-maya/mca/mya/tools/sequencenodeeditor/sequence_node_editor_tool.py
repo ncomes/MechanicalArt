@@ -1,7 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
-
 """
 UI to create or edit Sequence Nodes for Cinematics
 """
@@ -9,19 +5,13 @@ UI to create or edit Sequence Nodes for Cinematics
 
 # python imports
 import os
-from PySide2.QtWidgets import QButtonGroup
-from PySide2.QtGui import QIntValidator
 # software specific imports
-import pymel.core as pm
 # mca python imports
-from mca.common import log
-from mca.common.utils import process
-from mca.common.modifiers import decorators
-from mca.common.tools.dcctracking import dcc_tracking
 from mca.mya.pyqt import mayawindows
 from mca.mya.cinematics import cine_sequence_nodes, cine_file_utils
-from mca.mya.rigging.frag import cine_sequence_component
-from mca.common.paths import paths
+from mca.common.project import paths
+
+from mca.common import log
 logger = log.MCA_LOGGER
 
 
@@ -34,9 +24,8 @@ class CineSequenceNodeEditor(mayawindows.MCAMayaWindow):
 		super().__init__(title='Sequence Node Editor',
 						 ui_path=ui_path,
 						 version=CineSequenceNodeEditor.VERSION)
-		self.seq_node = cine_sequence_component.find_cine_seq_component()
+		self.seq_node = None #cine_sequence_component.find_cine_seq_component()
 
-		process.cpu_threading(dcc_tracking.ddc_tool_entry(CineSequenceNodeEditor))
 		self.ui.stage_comboBox.addItems(['layout', 'animation'])
 
 		if self.seq_node:
@@ -53,8 +42,6 @@ class CineSequenceNodeEditor(mayawindows.MCAMayaWindow):
 		self.ui.save_pushButton.clicked.connect(self._on_save_button_clicked)
 		self.ui.cancel_pushButton.clicked.connect(self._on_cancel_button_clicked)
 
-
-	@decorators.track_fnc
 	def _on_save_button_clicked(self):
 		stage = self.ui.stage_comboBox.currentText().lower()
 		seq_code = self.ui.sequence_code_lineEdit.text()
@@ -76,7 +63,7 @@ class CineSequenceNodeEditor(mayawindows.MCAMayaWindow):
 																		stage,
 																		scene_name=scene_name)
 			seq_node_data.fill_cine_shot_data()
-			self.seq_node = cine_sequence_component.CineSequenceComponent.create(seq_node_data.data)
+			self.seq_node = None #cine_sequence_component.CineSequenceComponent.create(seq_node_data.data)
 		seq_dir = os.path.join(paths.get_cine_seq_path(), seq_code)
 		if not os.path.exists(seq_dir):
 			cine_file_utils.make_initial_folder_structure(seq_dir)

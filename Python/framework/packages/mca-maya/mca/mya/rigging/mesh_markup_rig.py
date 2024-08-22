@@ -8,15 +8,15 @@ A way to interact with joint chains in rigs.
 import json
 # Software specific imports
 import pymel.core as pm
-#  python imports
+# CPG python imports
 from mca.common import log
-from mca.mya.utils import namespace
+from mca.mya.utils import namespace_utils
 
 
 logger = log.MCA_LOGGER
 
 
-_MESH_MARKUP = 'mcaMeshMarkup'
+CPG_MESH_MARKUP = 'cpgMeshMarkup'
 
 
 class MeshMarkup:
@@ -31,7 +31,7 @@ class MeshMarkup:
 				side,
 				**kwargs):
 		"""
-		Creates the "matMeshMarkup" attribute on a mesh and adds the markup.
+		Creates the "cpgMeshMarkup" attribute on a mesh and adds the markup.
 		
 		:param pm.nt.Transform mesh: A mesh that will be tagged with data.
 		:param str type_name: a key word on what type of meshes are in this region.  Examples: head_mesh, jaw_mesh, etc...
@@ -43,9 +43,9 @@ class MeshMarkup:
 		:rtype: MeshMarkup
 		"""
 		
-		if not mesh.hasAttr(_MESH_MARKUP):
-			mesh.addAttr(MCA_MESH_MARKUP, dt='string')
-		mesh.attr(MCA_MESH_MARKUP).set('')
+		if not mesh.hasAttr(CPG_MESH_MARKUP):
+			mesh.addAttr(CPG_MESH_MARKUP, dt='string')
+		mesh.attr(CPG_MESH_MARKUP).set('')
 		
 		mesh_dict = {}
 		mesh_dict.update({'type_name': type_name})
@@ -290,7 +290,7 @@ class MeshMarkup:
 		
 		if mesh_dict:
 			mesh_dump = json.dumps(mesh_dict)
-			self.mesh.attr(MCA_MESH_MARKUP).set(mesh_dump)
+			self.mesh.attr(CPG_MESH_MARKUP).set(mesh_dump)
 			
 	def update_entry(self, entry, value):
 		"""
@@ -312,7 +312,7 @@ class MeshMarkup:
 		:rtype: dict
 		"""
 		
-		return eval(self.mesh.attr(MCA_MESH_MARKUP).get())
+		return eval(self.mesh.attr(CPG_MESH_MARKUP).get())
 	
 	def get_mesh_entry(self, entry):
 		"""
@@ -331,16 +331,16 @@ class MeshMarkup:
 		Removes the markup and the attribute.
 		"""
 		
-		if self.mesh.hasAttr(MCA_MESH_MARKUP):
-			pm.deleteAttr(MCA_MESH_MARKUP)
+		if self.mesh.hasAttr(CPG_MESH_MARKUP):
+			pm.deleteAttr(CPG_MESH_MARKUP)
 	
 	def clear_markup(self):
 		"""
 		Keeps the attribute, but clears the data.
 		"""
 		
-		if self.mesh.hasAttr(MCA_MESH_MARKUP):
-			self.mesh.attr(MCA_MESH_MARKUP).set('')
+		if self.mesh.hasAttr(CPG_MESH_MARKUP):
+			self.mesh.attr(CPG_MESH_MARKUP).set('')
 			
 
 class RigMeshMarkup:
@@ -360,9 +360,9 @@ class RigMeshMarkup:
 		:rtype: RigMeshMarkup
 		"""
 		
-		all_nodes = namespace.get_all_nodes_in_namespace(ns)
+		all_nodes = namespace_utils.get_all_nodes_in_namespace(ns)
 		mesh_shapes = pm.ls(all_nodes, geometry=True)
-		mesh_list = list(set([x.getParent() for x in mesh_shapes if x.getParent().hasAttr(MCA_MESH_MARKUP)]))
+		mesh_list = list(set([x.getParent() for x in mesh_shapes if x.getParent().hasAttr(CPG_MESH_MARKUP)]))
 		return cls(mesh_list)
 		
 	def get_mesh_markups(self, mesh_list=None):

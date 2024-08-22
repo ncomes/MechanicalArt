@@ -1,16 +1,10 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 These are the Maya menus that get loaded
 """
 
 # python imports
-
 # software specific imports
-from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import QTimer
-
+from mca.common.pyqt.pygui import qtwidgets, qtcore
 # mca python imports
 from mca.mya.pyqt.utils import ma_main_window
 from mca.common.startup import startup_menus
@@ -19,7 +13,7 @@ from mca.common.resources import resources
 from mca.common.tools.toolbox import toolbox_data
 
 from mca.mya.tools.toolbox import ma_toolbox_ui
-from mca.mya.tools.helios import helios_ui
+#from mca.mya.tools.helios import helios_ui
 from mca.mya.tools.summoner import summoner
 from mca.mya.tools.reanimator import reanimator
 from mca.mya.tools.animationexporter import animationexporter_ui
@@ -83,7 +77,7 @@ def menu_mca_tools(maya_window):
     for toolbox_name, toolbox_class in toolbox_data.ToolboxRegistry().TOOLBOX_NAME_DICT.items():
         menu_toolbars.add_action(toolbox_name,
                              lambda sacrificial=False, toolbox_class=toolbox_class: ma_toolbox_ui.MayaToolBox(toolbox_class=toolbox_class),
-                             icon=resources.icon(r'logos\mech-art-white.png'))
+                             icon=resources.icon(r'logos\mca.png'))
 
 
 def menu_mca_quick_tools(maya_window):
@@ -93,30 +87,30 @@ def menu_mca_quick_tools(maya_window):
     :param QMainWindow maya_window: Maya's main window
     """
     
-    menu_tools_inst = qt_menus.MainWindowsMenus.create(MENU_MCA_TOOLS, maya_window, icon=resources.icon(r'logos\mech-art-white.png'))
+    menu_tools_inst = qt_menus.MainWindowsMenus.create(MENU_MCA_TOOLS, maya_window, icon=resources.icon(r'logos\mca.png'))
     menu_toolbars = qt_menus.MainWindowsMenus(menu_tools_inst.menu, maya_window)
     menu_toolbars.add_menu('General')
     menu_toolbars.add_action('Plastic Check Out', ma_fileio.touch_and_checkout_cmd, icon=resources.icon(r'software\plasticscm_logo.png'))
     menu_tools_inst = qt_menus.MainWindowsMenus.create(MENU_MCA_TOOLS, maya_window)
     menu_toolbars = qt_menus.MainWindowsMenus(menu_tools_inst.menu, maya_window)
     menu_toolbars.add_menu('Modeling')
-    menu_toolbars.add_action('Helios', helios_ui.Helios, icon=resources.icon(r'logos\mech-art-white.png'))
+    #menu_toolbars.add_action('Helios', helios_ui.Helios, icon=resources.icon(r'logos\mech-art-white.png'))
     menu_tools_inst = qt_menus.MainWindowsMenus.create(MENU_MCA_TOOLS, maya_window)
     menu_toolbars = qt_menus.MainWindowsMenus(menu_tools_inst.menu, maya_window)
     menu_toolbars.add_menu('Animation')
-    menu_toolbars.add_action('Summoner', summoner.Summoner, icon=resources.icon(r'logos\mech-art-white.png'))
-    menu_toolbars.add_action('Re-Animator', reanimator.Reanimator, icon=resources.icon(r'logos\mech-art-white.png'))
-    menu_toolbars.add_action('Export Animations', animationexporter_ui.AnimationExporter, icon=resources.icon(r'logos\mech-art-white.png'))
+    menu_toolbars.add_action('Summoner', summoner.Summoner, icon=resources.icon(r'logos\mca.png'))
+    menu_toolbars.add_action('Re-Animator', reanimator.Reanimator, icon=resources.icon(r'logos\mca.png'))
+    menu_toolbars.add_action('Export Animations', animationexporter_ui.AnimationExporter, icon=resources.icon(r'logos\mca.png'))
     menu_toolbars = qt_menus.MainWindowsMenus(menu_tools_inst.menu, maya_window)
     menu_toolbars.add_menu('ToolBox')
     menu_toolbars.add_action('Toolbox Editor',
                                lambda sacrificial=False, maya_window=maya_window: ma_toolbox_ui.MayaToolboxEditor(),
-                               icon=resources.icon(r'logos\mech-art-white.png'))
+                               icon=resources.icon(r'logos\mca.png'))
     for toolbox_name, toolbox_class in toolbox_data.ToolboxRegistry().TOOLBOX_NAME_DICT.items():
         menu_toolbars.add_action(toolbox_name,
                                  lambda sacrificial=False, toolbox_class=toolbox_class: ma_toolbox_ui.MayaToolBox(
                                      toolbox_class=toolbox_class),
-                                 icon=resources.icon(r'logos\mech-art-white.png'))
+                                 icon=resources.icon(r'logos\mca.png'))
 
 
 def create_menus():
@@ -131,7 +125,7 @@ def create_menus():
             force_remove_actions()
             break
     # Give the UI a second to think
-    QTimer.singleShot(1000, lambda: QApplication.activeWindow())
+    qtcore.QTimer.singleShot(1000, lambda: qtwidgets.QApplication.activeWindow())
     
     # Get the main window and menu bar.
     maya_window = ma_main_window.get_maya_window()

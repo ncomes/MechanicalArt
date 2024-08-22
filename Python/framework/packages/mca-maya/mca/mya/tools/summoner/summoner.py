@@ -1,180 +1,223 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains the mca decorators at a base python level
 """
 
 # python imports
 import os
+# Qt imports
+from mca.common.pyqt.pygui import qtcore, qtgui
 # software specific imports
+import pymel.all as pm
 # mca python imports
-from mca.common.assetlist import assetlist
-from mca.common.tools.dcctracking import dcc_tracking
+from mca.common.assetlist import assetlist, archetype_assetlist
+from mca.common.resources import resources
+from mca.common.utils import list_utils
 
-from mca.mya.pyqt import dialogs, mayawindows
-from mca.mya.rigging import rig_utils, skel_utils
-from mca.mya.utils import optionvars
-from mca.mya.tools.helios import helios_registry, helios_utils
+from mca.mya.modifiers import ma_decorators
+from mca.mya.pyqt import maya_dialogs, mayawindows
+from mca.mya.rigging import frag, rig_utils
+from mca.mya.utils import namespace_utils
+from mca.mya.tools.helios import helios_utils
 
+from mca.common import log
+logger = log.MCA_LOGGER
 
-class MCASummonerOptionVars(optionvars.MCAOptionVars):
-    """
-    This handles keeping track of Summoner's last UI values to be restored or used during various UI functions.
-    """
-    
-    MCALastSummonerCategory = {'default_value': '', 'docstring': 'Last opened category in Summoner.'}
-    MCALastRig = {'default_value': '', 'docstring': 'Last selected rig in Summoner.'}
-    MCASMCheckBox = {'default_value': False, 'docstring': 'If SM was checked.'}
-    MCASKCheckBox = {'default_value': False, 'docstring': 'If SK was checked.'}
-
+MISSING_ICON = resources.icon(r'color\question.png')
 
 class Summoner(mayawindows.MCAMayaWindow):
-    VERSION = '1.0.3'
+    _version = 1.0
+    tab_organization_dict = {}
+    entry = None
 
     def __init__(self):
         root_path = os.path.dirname(os.path.realpath(__file__))
-        ui_path = os.path.join(root_path, 'ui', 'summoner_small_ui.ui')
+        ui_path = os.path.join(root_path, 'ui', 'summoner_ui.ui')
         super().__init__(title='Summoner',
                          ui_path=ui_path,
-                         version=Summoner.VERSION)
-
-        self.setMinimumHeight(110)
-        self.setMinimumWidth(300)
+                         version=self._version)
         
-        
-        self.optionvars = MCASummonerOptionVars()
-        
-        self.DISPLAY_TO_ASSET_ID_DICT = {}
+        self.entry = qtgui.QStandardItemModel()
+        self.ui.asset_list_listView.setModel(self.entry)
+        self.ui.asset_list_listView.setSpacing(2)
+        self.ui.asset_list_listView.setIconSize(qtcore.QSize(64, 64))
 
-        mca_asset_list = assetlist.AssetListRegistry()
-        mca_asset_list.reload()
-
-        self.setup_category_combobox()
         self.setup_signals()
+        self.initialize_lists()
+    
+    class AssetItem(qtgui.QStandardItem):
+        ASSET_ENTRY = None
+        def __init__(self, asset_entry):
+            super().__init__()
+            self.ASSET_ENTRY = asset_entry
 
-        # Sets up checkboxes
-        self.ui.as_sk_checkBox.blockSignals(True)
-        self.ui.as_sm_checkBox.blockSignals(True)
-        self.ui.as_sk_checkBox.setChecked(self.optionvars.MCASKCheckBox)
-        self.ui.as_sm_checkBox.setChecked(self.optionvars.MCASMCheckBox)
-        self.ui.as_sk_checkBox.blockSignals(False)
-        self.ui.as_sm_checkBox.blockSignals(False)
-        
+            self.setEditable(False)
+
+            self.setText(asset_entry.asset_name)
+            asset_icon = None
+            if asset_entry.mesh_path:
+                asset_icon_path = f'{asset_entry.mesh_path[:-3]}jpg'
+                if os.path.exists(asset_icon_path):
+                    asset_icon = qtgui.QIcon(asset_icon_path)
+            self.setIcon(asset_icon or MISSING_ICON)
+
     def setup_signals(self):
-        self.ui.type_comboBox.currentTextChanged.connect(self._category_changed)
-        self.ui.rig_comboBox.currentTextChanged.connect(self._rig_changed)
-        self.ui.as_sm_checkBox.stateChanged.connect(self._sm_checkbox)
-        self.ui.as_sk_checkBox.stateChanged.connect(self._sk_checkbox)
-        self.ui.import_pushButton.clicked.connect(self.import_asset)
+        self.ui.filter_lineEdit.textChanged.connect(self.filter_list)
+        self.ui.asset_list_listView.clicked.connect(self.rig_entry_selected)
+        self.ui.rigs_list_listWidget.itemDoubleClicked.connect(self.import_rig_clicked)
+        self.ui.import_rig_pushButton.clicked.connect(self.import_rig_clicked)
 
-    def setup_category_combobox(self):
-        """
-        Adds each category into the type combo box of the UI.
+    def initialize_lists(self):
+        self.ui.category_select_comboBox.clear()
 
-        """
-        mca_asset_list = assetlist.AssetListRegistry()
+        asset_registry = assetlist.get_registry()
+        archetype_registry = archetype_assetlist.get_archetype_registry()
 
-        self.ui.type_comboBox.clear()
-        self.DISPLAY_TO_ASSET_ID_DICT = {}
-        category_list = []
-        for sub_category, entry_dict in mca_asset_list.CATEGORY_DICT.get('model', {}).items():
-            if sub_category in assetlist.NON_RIG_ASSETS:
+        self.tab_organization_dict = {}
+        for _, archetype_entry in archetype_registry.NAME_REGISTRY.items():            
+            organization_dict = archetype_entry.organization
+            if not organization_dict:
                 continue
-            category_list.append(sub_category)
-            for asset_id, mca_asset in entry_dict.items():
-                self.DISPLAY_TO_ASSET_ID_DICT[mca_asset.asset_name] = mca_asset
+            
+            # Should catch "rig" and "rigged_model" types.
+            if not any(True if 'rig' in x else False for x in organization_dict.get('type', [])):
+                continue
 
-        self.ui.type_comboBox.addItems(list(sorted(category_list)))
+            if organization_dict:
+                tab_name = organization_dict.get('tab_name')
+                if tab_name not in self.tab_organization_dict:
+                    self.tab_organization_dict[tab_name] = {'name': tab_name, 'type': [], 'asset_list': []}
 
-        if self.optionvars.MCALastSummonerCategory in category_list:
-            self.ui.type_comboBox.setCurrentText(self.optionvars.MCALastSummonerCategory)
+                for tab_type_filter in organization_dict.get('type'):
+                    if tab_type_filter not in self.tab_organization_dict[tab_name]['type']:
+                        self.tab_organization_dict[tab_name]['type'].append(tab_type_filter)
 
-        self._category_changed()
+                subtype_list = organization_dict.get('subtype')
+                if subtype_list and len(subtype_list) == 1:
+                    self.tab_organization_dict[tab_name]['subtype'] = subtype_list[0]
 
-    def _category_changed(self):
-        """
-        When the category is changed refresh the rig list combo box.
+        for asset_entry in asset_registry.ASSET_ID_DICT.values():
+            # Iterate through all known assets.
+            for _, tab_dict in self.tab_organization_dict.items():
+                # If they match our type filter, and subtype filter add them to the importable asset list.
+                if asset_entry.asset_type not in tab_dict.get('type', []):
+                    continue
+                if not all(True if x in asset_entry.asset_subtype else False for x in tab_dict.get('subtype', [])):
+                    continue
+                tab_dict['asset_list'].append(asset_entry)
+        self.ui.category_select_comboBox.addItems(sorted([x for x, y in self.tab_organization_dict.items() if y.get('asset_list')]))
+        self.filter_list()
+    
+    def filter_list(self):
+        filter_string = self.ui.filter_lineEdit.text()
 
-        """
-        category = self.ui.type_comboBox.currentText()
-        mca_asset_list = assetlist.AssetListRegistry()
+        inclusive_list = []
+        exclusive_list = []
+        split_string = filter_string.split(' ')
+        if split_string != ['']:
+            for x in split_string:
+                if x.startswith('-'):
+                    exclusive_list.append(x[1:].lower())
+                else:
+                    inclusive_list.append(x.lower())
 
-        self.ui.rig_comboBox.clear()
-        rig_list = []
-        if category in mca_asset_list.CATEGORY_DICT.get('model', {}):
-            for asset_id, mca_asset in mca_asset_list.CATEGORY_DICT.get('model', {}).get(category, {}).items():
-                rig_list.append(mca_asset.asset_name)
+        current_rig_type = self.ui.category_select_comboBox.currentText()
+        asset_entry_list =self.tab_organization_dict.get(current_rig_type, {}).get('asset_list', [])
 
-        self.ui.rig_comboBox.blockSignals(True)
-        self.ui.rig_comboBox.addItems(list(sorted(rig_list)))
-        self.ui.rig_comboBox.blockSignals(False)
+        self.entry.clear()
+        filtered_list = []
+        if inclusive_list or exclusive_list:
+            for asset_entry in asset_entry_list:
+                if all(True if x in asset_entry.asset_name.lower() else False for x in inclusive_list) and all(True if x not in asset_entry.asset_name.lower() else False for x in exclusive_list):
+                    filtered_list.append(self.AssetItem(asset_entry))
 
-        if self.optionvars.MCALastRig in rig_list:
-            self.ui.rig_comboBox.blockSignals(True)
-            self.ui.rig_comboBox.setCurrentText(self.optionvars.MCALastRig)
-            self.ui.rig_comboBox.blockSignals(False)
-
-        self.optionvars.MCALastSummonerCategory = self.ui.type_comboBox.currentText()
-
-    def _rig_changed(self):
-        """
-        Whenever a new rig is selected from the rig list combo box save the value in the user's option vars.
-
-        """
-        self.optionvars.MCALastRig = self.ui.rig_comboBox.currentText()
-
-    def _sk_checkbox(self):
-        """
-        Checks if SM is checked or not and unchecks SK accordingly.
-
-        """
-        sm_status = self.ui.as_sm_checkBox.isChecked()
-        if sm_status == True:
-            self.ui.as_sm_checkBox.blockSignals(True)
-            self.ui.as_sm_checkBox.setChecked(False)
-            self.ui.as_sm_checkBox.blockSignals(False)
+            if filtered_list:
+                for item in filtered_list:
+                    self.entry.appendRow(item)
         else:
-            pass
+            for asset_entry in asset_entry_list:
+                self.entry.appendRow(self.AssetItem(asset_entry))
 
-        self.optionvars.MCASKCheckBox = self.ui.as_sk_checkBox.isChecked()
-        self.optionvars.MCASMCheckBox = self.ui.as_sm_checkBox.isChecked()
+    def rig_entry_selected(self):
+        asset_entry = None
+        for index in self.ui.asset_list_listView.selectedIndexes():
+            asset_entry = self.ui.asset_list_listView.model().itemFromIndex(index).ASSET_ENTRY
+            break
 
-    def _sm_checkbox(self):
-        """
-        Checks if SK is checked or not and unchecks SM accordingly.
+        if asset_entry:
+            rig_path = asset_entry.rig_path
+            self.ui.rigs_list_listWidget.clear()
+            if rig_path:
+                self.ui.rigs_list_listWidget.addItems([x for x in os.listdir(rig_path) if x.lower().endswith('.rig')])
 
-        """
-        sk_status = self.ui.as_sk_checkBox.isChecked()
-        if sk_status == True:
-            self.ui.as_sk_checkBox.blockSignals(True)
-            self.ui.as_sk_checkBox.setChecked(False)
-            self.ui.as_sk_checkBox.blockSignals(False)
-        else:
-            pass
-
-        self.optionvars.MCASKCheckBox = self.ui.as_sk_checkBox.isChecked()
-        self.optionvars.MCASMCheckBox = self.ui.as_sm_checkBox.isChecked()
-
-    def import_asset(self):
+    @ma_decorators.keep_namespace_decorator
+    def import_rig_clicked(self, *args, **kwargs):
         """
         From the displayname get our asset ID from our saved dict, then import an asset based on it.
 
         """
-        display_name = self.ui.rig_comboBox.currentText()
-        mca_asset = self.DISPLAY_TO_ASSET_ID_DICT[display_name]
-        result = dialogs.question_prompt(title='Import Asset', text=f'Import {display_name} in the scene?')
-        if result != 'Yes':
-            return
+        selection = pm.selected()
 
-        if self.ui.as_sk_checkBox.isChecked():
-            _, skel_dict = helios_utils.import_helios_asset(mca_asset)
-            bind_root = skel_dict[mca_asset.skel_path]
-            skel_utils.import_merge_skeleton(mca_asset.skel_path, bind_root)
-        elif self.ui.as_sm_checkBox.isChecked():
-            helios_utils.import_helios_asset(mca_asset, with_skinning=False)
+        asset_entry = None
+        for index in self.ui.asset_list_listView.selectedIndexes():
+            asset_entry = self.ui.asset_list_listView.model().itemFromIndex(index).ASSET_ENTRY
+            break
+        selected_qwidget_item = self.ui.rigs_list_listWidget.currentItem()
+
+        if not self.ui.with_namespace_checkBox.isChecked():
+            namespace_utils.set_namespace('')
         else:
-            rig_utils.import_asset(mca_asset.asset_id)
+            namespace_str = asset_entry.asset_namespace or asset_entry.asset_name[:3]
+            namespace_utils.set_namespace(namespace_str)
 
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(fn=self.import_asset, asset_name=mca_asset.asset_name, asset_id=mca_asset.asset_id)
+        # do import
+        if self.ui.geo_only_checkBox.isChecked():
+            logger.debug('geo only')
+            helios_utils.import_asset(asset_entry, with_skinning=True)
+
+        else:
+            logger.debug('import rig')
+            import_path = os.path.join(asset_entry.rig_path, selected_qwidget_item.text())
+            cached_path = import_path.replace('.rig', '.ma')
+            if self.ui.cached_checkBox.isChecked():
+                logger.debug('using cached path')
+                if not os.path.exists(cached_path):
+                    result = maya_dialogs.question_prompt('Cached Rig is Missing', 'Would you like to regenerate the rig? \nRegenerating the rig will use the rig file and asset data to rebuild the rig.')
+                    if result != 'Yes':
+                        return
+                else:
+                    import_path = cached_path
+                    
+            logger.debug(import_path)
+            frag_root = None
+            if import_path.endswith('.ma'):
+                imported_node_list = pm.importFile(import_path, returnNewNodes=True)
+                for network_node in pm.ls(imported_node_list, type=pm.nt.Network):
+                    frag_node = frag.FRAGNode(network_node)
+                    if isinstance(frag_node, frag.FRAGRoot):
+                        frag_root=frag_node
+                        break
+                if frag_root:
+                    frag_rig = frag_root.frag_rig
+                    if frag_rig:
+                        rig_result = frag_rig.validate_rig()
+                        if not rig_result:
+                            result = maya_dialogs.question_prompt('Cached Rig is Out of Date', 'Would you like to regenerate the rig? \nRegenerating the rig will use the rig file and asset data to rebuild the rig.')
+                            if result != 'Yes':
+                                return
+                            frag_root.remove()
+                            import_path = import_path.replace('.ma', '.rig')
+            if import_path.endswith('rig'):
+                frag_root = rig_utils.import_rig(asset_entry, import_path, self.ui.with_namespace_checkBox.isChecked())
+
+            if frag_root and self.ui.equip_weapons_checkBox.isChecked() and 'weapon' in asset_entry.asset_subtype:
+                if selection:
+                    logger.debug('equipping weapon')
+                    frag_rig = frag.get_frag_rig(selection[0])
+                    if frag_rig:
+                        weapon_component = list_utils.get_first_in_list(frag_rig.get_frag_children(frag.FKComponent, 'right', 'weapon'))
+                        if weapon_component:
+                            imported_world_component = list_utils.get_first_in_list(frag_root.frag_rig.get_frag_children(frag.WorldComponent))
+                            if imported_world_component:
+                                world_flag = imported_world_component.pynode.getAttr('world_flag')
+                                pm.parentConstraint(weapon_component.flags[0].pynode, world_flag)
+

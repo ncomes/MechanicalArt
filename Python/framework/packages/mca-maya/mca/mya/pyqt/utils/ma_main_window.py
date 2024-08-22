@@ -1,30 +1,10 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains functions and classes related with Maya GUI
 """
 
-from __future__ import print_function, division, absolute_import
-
 import sys
-
-from PySide2.QtCore import QObject
-from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QMenuBar
-from PySide2 import QtGui
-try:
-    import shiboken2 as shiboken
-except ImportError:
-    try:
-        from PySide2 import shiboken2 as shiboken
-    except ImportError:
-        try:
-            import shiboken
-        except ImportError:
-            try:
-                from Shiboken import shiboken
-            except ImportError:
-                pass
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets, qtcore, qtgui, shiboken
 
 import maya.mel as mel
 import pymel.core as pm
@@ -44,11 +24,11 @@ def get_main_window():
 
 def to_qt_object(maya_name, qobj=None):
     """
-    Returns an instance of the Maya UI element as a QWidget
+    Returns an instance of the Maya UI element as a qtwidgets.QWidget
     """
 
     if not qobj:
-        qobj = QWidget
+        qobj = qtwidgets.QWidget
     ptr = OpenMayaUI.MQtUtil.findControl(maya_name)
     if ptr is None:
         ptr = OpenMayaUI.MQtUtil.findLayout(maya_name)
@@ -63,7 +43,7 @@ def to_maya_object(qobj):
     """
     Converts given Qt object to a Maya object.
 
-    :param QObject qobj: Qt object to convert.
+    :param qtcore.QObject qobj: Qt object to convert.
     :return: Maya object name.
     :rtype: str
     """
@@ -86,16 +66,16 @@ def get_maya_window(window_name=None, wrap_instance=True):
                     return qt_obj
             ptr = OpenMayaUI.MQtUtil.findControl(window_name)
             if ptr is not None:
-                return wrapinstance(ptr, QMainWindow)
+                return wrapinstance(ptr, qtwidgets.QMainWindow)
         else:
             ptr = OpenMayaUI.MQtUtil.mainWindow()
             if ptr is not None:
-                return wrapinstance(ptr, QMainWindow)
+                return wrapinstance(ptr, qtwidgets.QMainWindow)
 
-    if isinstance(window_name, (QWidget, QMainWindow)):
+    if isinstance(window_name, (qtwidgets.QWidget, qtwidgets.QMainWindow)):
         return window_name
     search = window_name or 'MayaWindow'
-    for obj in QApplication.topLevelWidgets():
+    for obj in qtwidgets.QApplication.topLevelWidgets():
         if obj.objectName() == search:
             return obj
 
@@ -105,13 +85,13 @@ def get_main_menu_menubar():
     Returns Maya main menu bar object.
 
     :return: found Maya menu bar Qt widget.
-    :rtype: QMenuBar
+    :rtype: qtwidgets.QMenuBar
     """
 
     win = get_maya_window()
     main_menu_bar = None
     for child in win.children():
-        if isinstance(child, QMenuBar):
+        if isinstance(child, qtwidgets.QMenuBar):
             main_menu_bar = child
 
     return main_menu_bar
@@ -124,23 +104,23 @@ def wrapinstance(ptr, base=None):
         ptr = int(ptr)
         if 'shiboken' in globals():
             if base is None:
-                qobj = shiboken.wrapInstance(int(ptr), QObject)
+                qobj = shiboken.wrapInstance(int(ptr), qtcore.QObject)
                 meta_obj = qobj.metaObject()
                 cls = meta_obj.className()
                 super_cls = meta_obj.superClass().className()
-                if hasattr(QtGui, cls):
-                    base = getattr(QtGui, cls)
-                elif hasattr(QtGui, super_cls):
-                    base = getattr(QtGui, super_cls)
+                if hasattr(qtgui, cls):
+                    base = getattr(qtgui, cls)
+                elif hasattr(qtgui, super_cls):
+                    base = getattr(qtgui, super_cls)
                 else:
-                    base = QWidget
+                    base = qtwidgets.QWidget
             try:
                 return shiboken.wrapInstance(int(ptr), base)
             except Exception:
-                from PySide.shiboken import wrapInstance
+                from shiboken import wrapInstance
                 return wrapInstance(int(ptr), base)
         elif 'sip' in globals():
-            base = QObject
+            base = qtcore.QObject
             return shiboken.wrapinstance(int(ptr), base)
         else:
             print('Failed to wrap object ...')

@@ -11,7 +11,7 @@ import pymel.core as pm
 import maya.cmds as cmds
 # mca python imports
 from mca.common import log
-from mca.common.utils import lists
+from mca.common.utils import list_utils
 from mca.mya.utils import attr_utils, naming
 from mca.mya.animation import anim_curves, baking
 
@@ -163,7 +163,7 @@ def map_anim_layers(anim_blend_layer):
     # Get the Animation Layer
     while nested_layers:
         anim_layer = list(set(anim_blend_layer.listConnections(type=pm.nt.AnimLayer)))
-        anim_layer = lists.get_first_in_list(anim_layer)
+        anim_layer = list_utils.get_first_in_list(anim_layer)
         mapping.append([anim_blend_layer, anim_layer])
 
         if anim_blend_layer.inputA.isCompound():

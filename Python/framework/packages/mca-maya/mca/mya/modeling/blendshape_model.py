@@ -14,7 +14,7 @@ import pymel.core as pm
 
 # mca python imports
 from mca.common import log
-from mca.common.utils import lists
+from mca.common.utils import list_utils
 from mca.mya.utils import attr_utils
 
 logger = log.MCA_LOGGER
@@ -137,7 +137,7 @@ def get_all_blendnodes(mesh):
 	mesh_shapes = mesh.getShapes()
 	blendnodes = [x.listConnections(type=(pm.nt.BlendShape)) for x in mesh_shapes]
 	
-	blendnodes = list(set(lists.flatten_list(blendnodes)))
+	blendnodes = list(set(list_utils.flatten_list(blendnodes)))
 	for blendnode in blendnodes:
 		if not blendnode.hasAttr('blendNodeType'):
 			other_blendnodes = blendnode.listConnections(type=pm.nt.BlendShape)
@@ -162,7 +162,7 @@ def get_first_blendnode(mesh):
 	if isinstance(mesh, pm.nt.BlendShape):
 		return mesh
 	# if a mesh is passed in, return the 1st blend node.
-	blendnode = lists.get_first_in_list(get_all_blendnodes(mesh))
+	blendnode = list_utils.get_first_in_list(get_all_blendnodes(mesh))
 	if not blendnode:
 		logger.warning('No blend node was found connected to {0}.'.format(mesh))
 		return
@@ -181,7 +181,7 @@ def create_parallel_blendnode(diff_mesh, pose_mesh, last_mesh, name='parallel_bl
 	:rtype: pm.nt.BlendShape
 	"""
 	
-	parallel_node = lists.get_first_in_list(pm.blendShape(diff_mesh, pose_mesh, last_mesh, parallel=True, n=name))
+	parallel_node = list_utils.get_first_in_list(pm.blendShape(diff_mesh, pose_mesh, last_mesh, parallel=True, n=name))
 	parallel_node.weight[0].set(1)
 	parallel_node.weight[1].set(1)
 	return parallel_node
@@ -202,7 +202,7 @@ def duplicate_mesh(mesh, label=None, remove_attrs=(), remove_user_attrs=False):
 	if not label:
 		label = str(mesh)
 	dup_mesh = pm.duplicate(mesh, n=label)[0]
-	attr_utils.unlock_all_attrs(dup_mesh)
+	attr_utils.set_attr_state(dup_mesh, False)
 	if remove_user_attrs:
 		attr_utils.purge_user_defined_attrs([dup_mesh])
 	

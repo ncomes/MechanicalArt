@@ -2,18 +2,15 @@
 # python imports
 import os
 import math
-from PySide2.QtGui import QIntValidator
 
 # Software specific imports
 import pymel.core as pm
-
+# Qt imports
+from mca.common.pyqt.pygui import qtgui
 # mca Python imports
 from mca.common import log
-from mca.common.paths import project_paths
+from mca.common.project import project_paths
 from mca.common.pyqt import messages
-from mca.common.tools.dcctracking import dcc_tracking
-from mca.common.utils import process
-from mca.common.modifiers import decorators
 from mca.mya.pyqt import mayawindows
 from mca.mya.animation import time_utils, baking
 from mca.mya.rigging.frag import frag_rig
@@ -63,14 +60,13 @@ class FacialMocapProcessor(mayawindows.MCAMayaWindow):
 						 ui_path=ui_path,
 						 version=FacialMocapProcessor.VERSION)
 		self.optionvars = MCAFacialMocapProcessor()
-		process.cpu_threading(dcc_tracking.ddc_tool_entry(FacialMocapProcessor))
 
 		for head in os.listdir(POSE_LIB_PATH):
 			file_name = os.path.basename(head)
 			display_name = file_name.split('_MocapX_PoseLib.ma')
 			self.ui.heads_comboBox.addItem(display_name[0])
 
-		self.ui.audio_offset_lineEdit.setValidator(QIntValidator())
+		self.ui.audio_offset_lineEdit.setValidator(qtgui.QIntValidator())
 		audio_node = pm.ls(type=pm.nt.Audio)
 		if audio_node:
 			self.ui.audio_offset_lineEdit.setText(str(int(audio_node[0].offset.get())))
@@ -132,7 +128,7 @@ class FacialMocapProcessor(mayawindows.MCAMayaWindow):
 
 		self.optionvars.MCABakeAnimation = self.ui.bake_animation_checkBox.isChecked()
 
-	@decorators.track_fnc
+	
 	def _on_process_mocap_button_clicked(self):
 		"""
 		Loads mocap and audio based on user selections.
@@ -166,7 +162,7 @@ class FacialMocapProcessor(mayawindows.MCAMayaWindow):
 		sound_node = shot_utils.load_facial_mocap(sounds_path, mocap_path, bake_anim=bake_anim)
 		self.ui.audio_offset_lineEdit.setText(str(int(sound_node.offset.get())))
 
-	@decorators.track_fnc
+	
 	def _on_export_file_button_clicked(self):
 		"""
 		Exports face animation as FBX.
@@ -176,7 +172,7 @@ class FacialMocapProcessor(mayawindows.MCAMayaWindow):
 		export_path = cine_file_utils.export_face_anim_cmd()
 		messages.info_message('Export FBX', f'Face animation exported to:\n{export_path}.')
 
-	@decorators.track_fnc
+	
 	def _on_batch_export_button_clicked(self):
 		"""
 		Batch exports selected CDW
@@ -212,7 +208,7 @@ class FacialMocapProcessor(mayawindows.MCAMayaWindow):
 		audio_node[0].offset.setLocked(False)
 		audio_node[0].offset.set(int(new_offset))
 
-	@decorators.track_fnc
+	
 	def _on_smooth_curves_button_clicked(self):
 		"""
 		Smooths animation curves using an AnimBot command.
@@ -229,7 +225,7 @@ class FacialMocapProcessor(mayawindows.MCAMayaWindow):
 			logger.warning('AnimBot module not found.')
 			return
 
-	@decorators.track_fnc
+	
 	def _on_bake_visible_range_button_clicked(self):
 		"""
 		Bakes the visible range of a head rig.
@@ -243,7 +239,7 @@ class FacialMocapProcessor(mayawindows.MCAMayaWindow):
 			range = time_utils.get_visible_range()
 			baking.bake_objects(head_flags, bake_range=range)
 
-	@decorators.track_fnc
+	
 	def _on_frame_audio_button_clicked(self):
 		"""
 		Frames the range on the audio file with a 30 frame handle on either side in the timeline.

@@ -1,6 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains the mca decorators at a base python level
 """
@@ -8,15 +5,11 @@ Module that contains the mca decorators at a base python level
 # System global imports
 import os
 # software specific imports
-import pymel.core as pm
-# PySide2 imports
-
 # mca python imports
-from mca.common.modifiers import decorators
-from mca.common.tools.dcctracking import dcc_tracking
-from mca.mya.utils import optionvars
-from mca.mya.rigging import rig_utils
+from mca.mya.animation import time_utils
 from mca.mya.pyqt import mayawindows
+from mca.mya.tools.toolbar import rig_tools
+from mca.mya.utils import optionvars
 
 
 class MCAOverDriverOptionVars(optionvars.MCAOptionVars):
@@ -89,16 +82,14 @@ class OverDriverSmall(mayawindows.MCAMayaWindow):
         if not self.ui.translate_y_checkBox.isChecked(): skip_translate_attrs.append('y')
         if not self.ui.translate_z_checkBox.isChecked(): skip_translate_attrs.append('z')
     
-        asset_id = rig_utils.create_overdriver_cmd(skip_rotate_attrs, skip_translate_attrs)
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(self._on_add_overdriver_clicked, asset_id=asset_id, ui_type='toolbox')
+        rig_tools.create_overdriver_cmd(skip_rotate_attrs, skip_translate_attrs)
 
-    @decorators.track_fnc
+
+    
     def _on_remove_overdriver_clicked(self):
-        rig_utils.bake_overdriver_cmd(False)
+        rig_tools.bake_overdriver_cmd(False)
 
-    @decorators.track_fnc
+    
     def _on_remove_and_bake_overdriver_clicked(self):
-        start_frame = pm.playbackOptions(q=True, min=True)
-        end_frame = pm.playbackOptions(q=True, max=True)
-        rig_utils.bake_overdriver_cmd(True, start_frame, end_frame)
+        start_frame, end_frame = time_utils.get_scene_range()
+        rig_tools.bake_overdriver_cmd(True, start_frame, end_frame)

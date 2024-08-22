@@ -13,7 +13,7 @@ import pymel.core as pm
 from mca.mya.utils import attr_utils
 from mca.mya.modeling import blendshape_model
 from mca.mya.animation import time_utils
-from mca.mya.rigging.flags import flag_utils
+#from mca.mya.rigging.flags import flag_utils
 
 
 class BlendShapeNode(object):

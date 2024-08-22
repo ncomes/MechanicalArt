@@ -1,34 +1,30 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
-Module that contains Test tool implementation.
+Module that contains reanimator UI fncs.
 
 """
 
 # System global imports
 import os
+
 # Software specific imports
 import pymel.all as pm
+# Qt imports
+from mca.common.pyqt.pygui import qtcore
 # mca python imports
-from mca.common import log
-from mca.common.utils import process
-from mca.common.modifiers import decorators
-from mca.common.tools.dcctracking import dcc_tracking
-from mca.mya.utils import optionvars
+from mca.common.resources import resources
 from mca.mya.animation import time_utils, baking
 from mca.mya.modifiers import ma_decorators
 from mca.mya.pyqt import mayawindows
-
-from mca.mya.rigging import rig_utils
-
+from mca.mya.tools.toolbar import rig_tools
+from mca.mya.utils import optionvars
+from mca.common import log
 logger = log.MCA_LOGGER
+
 
 BAKE_OPTION_VARS = baking.MCABakeOptionVars()
 
 
 class MCAReanimatorOptionVars(optionvars.MCAOptionVars):
-    # Helios Misc
     MCAReanimatorTX = {'default_value': True, 'docstring': 'Overdiver should constrain translate X.'}
     MCAReanimatorTY = {'default_value': True, 'docstring': 'Overdiver should constrain translate Y.'}
     MCAReanimatorTZ = {'default_value': True, 'docstring': 'Overdiver should constrain translate Z.'}
@@ -44,7 +40,7 @@ REANIMATOR_OPTION_VARS = MCAReanimatorOptionVars()
 
 
 class Reanimator(mayawindows.MCAMayaWindow):
-    VERSION = '1.0.1'
+    VERSION = '2.0.0'
 
     def __init__(self):
         root_path = os.path.dirname(os.path.realpath(__file__))
@@ -89,7 +85,11 @@ class Reanimator(mayawindows.MCAMayaWindow):
         self.ui.bake_and_remover_overdriver_pushButton.clicked.connect(self._on_remove_and_bake_overdriver_clicked)
 
         self.ui.bake_to_rig_pushButton.clicked.connect(self._on_bake_to_rig_clicked)
+        self.ui.bake_to_rig_pushButton.setIcon(resources.icon(r'tools\player_run_pose_long.png'))
+        self.ui.bake_to_rig_pushButton.setIconSize(qtcore.QSize(300, 40))
         self.ui.bake_to_skeleton_pushButton.clicked.connect(self._on_bake_to_skeleton_clicked)
+        self.ui.bake_to_skeleton_pushButton.setIcon(resources.icon(r'tools\player_run_pose2_long.png'))
+        self.ui.bake_to_skeleton_pushButton.setIconSize(qtcore.QSize(300, 40))
     
     # ==============================
     # Slots
@@ -134,7 +134,7 @@ class Reanimator(mayawindows.MCAMayaWindow):
     @ma_decorators.undo_decorator
     @ma_decorators.keep_autokey_decorator
     @ma_decorators.keep_current_frame_decorator
-    @decorators.track_fnc
+    
     def _on_bake_selected_clicked(self):
         selection = pm.selected()
         if not selection:
@@ -149,14 +149,10 @@ class Reanimator(mayawindows.MCAMayaWindow):
         baking.bake_objects(selection, custom_attrs=custom_attrs, bake_range=bake_range)
 
     def _on_attach_selected_rigs_clicked(self):
-        asset_id = rig_utils.attach_rigs_cmd()
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(self._on_attach_selected_rigs_clicked, asset_id=asset_id)
+        rig_tools.attach_rigs_cmd()
 
     def _on_detach_selected_rig_clicked(self):
-        asset_id = rig_utils.detach_rig_cmd()
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(self._on_detach_selected_rig_clicked, asset_id=asset_id)
+        rig_tools.detach_rig_cmd()
 
     @ma_decorators.keep_selection_decorator
     @ma_decorators.undo_decorator
@@ -166,9 +162,8 @@ class Reanimator(mayawindows.MCAMayaWindow):
         logger.warning('Baking animation to rig.')
         start_frame, end_frame = self._get_ui_time_range()
 
-        asset_id = rig_utils.detach_rig_cmd(True, start_frame, end_frame)
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(self._on_bake_and_detach_selected_rig_clicked, asset_id=asset_id)
+        rig_tools.detach_rig_cmd(True, start_frame, end_frame)
+
 
     def _on_add_overdriver_clicked(self):
 
@@ -182,18 +177,17 @@ class Reanimator(mayawindows.MCAMayaWindow):
         if not self.ui.translate_y_checkBox.isChecked(): skip_translate_attrs.append('y')
         if not self.ui.translate_z_checkBox.isChecked(): skip_translate_attrs.append('z')
 
-        asset_id = rig_utils.create_overdriver_cmd(skip_rotate_attrs, skip_translate_attrs)
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(self._on_add_overdriver_clicked, asset_id=asset_id)
+        rig_tools.create_overdriver_cmd(skip_rotate_attrs, skip_translate_attrs)
 
-    @decorators.track_fnc
+
+    
     def _on_remove_overdriver_clicked(self):
-        rig_utils.bake_overdriver_cmd(False)
+        rig_tools.bake_overdriver_cmd(False)
 
-    @decorators.track_fnc
+    
     def _on_remove_and_bake_overdriver_clicked(self):
         start_frame, end_frame = self._get_ui_time_range()
-        rig_utils.bake_overdriver_cmd(True, start_frame, end_frame)
+        rig_tools.bake_overdriver_cmd(True, start_frame, end_frame)
 
     @ma_decorators.keep_selection_decorator
     @ma_decorators.undo_decorator
@@ -202,13 +196,14 @@ class Reanimator(mayawindows.MCAMayaWindow):
     def _on_bake_to_rig_clicked(self):
         logger.debug('Baking animation to rig.')
         start_frame, end_frame = self._get_ui_time_range()
-        asset_id = rig_utils.animate_rig_from_skeleton_cmd(start_frame=start_frame, end_frame=end_frame,
-                                                  append=self.ui.append_checkBox.isChecked(),
-                                                  motion_encode=self.ui.motion_encode_checkBox.isChecked())
+        append=self.ui.append_checkBox.isChecked()
+        motion_encode=self.ui.motion_encode_checkBox.isChecked()
+
+        frag_rig = rig_tools.bake_skeleton_to_rig_cmd(start_frame, end_frame, append, motion_encode)
+        if not frag_rig:
+            return
 
         time_utils.reframe_visible_range()
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(self._on_bake_to_rig_clicked, asset_id=asset_id)
 
     @ma_decorators.keep_selection_decorator
     @ma_decorators.undo_decorator
@@ -217,10 +212,11 @@ class Reanimator(mayawindows.MCAMayaWindow):
     def _on_bake_to_skeleton_clicked(self):
         logger.debug('Baking rig to skeleton')
         start_frame, end_frame = self._get_ui_time_range()
-        asset_id = rig_utils.bake_skeleton_from_rig_cmd(start_frame=start_frame, end_frame=end_frame,
-                                               set_to_zero=self.ui.start_at_zero_checkBox.isChecked())
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(self._on_bake_to_skeleton_clicked, asset_id=asset_id)
+        set_to_zero=self.ui.start_at_zero_checkBox.isChecked()
+        
+        frag_rig = rig_tools.bake_rig_to_skeleton_cmd(start_frame, end_frame, set_to_zero)
+        if not frag_rig:
+            return
 
     @ma_decorators.keep_selection_decorator
     @ma_decorators.undo_decorator
@@ -229,9 +225,9 @@ class Reanimator(mayawindows.MCAMayaWindow):
     def _on_mirror_rig_clicked(self):
         logger.debug('Baking rig to skeleton')
         start_frame, end_frame = self._get_ui_time_range()
-        asset_ids = rig_utils.mirror_rig_cmd(start_frame=start_frame, end_frame=end_frame)
-        if asset_ids:
-            asset_ids = list(set(asset_ids))
-            for asset_id in asset_ids:
-                # dcc data
-                dcc_tracking.ddc_tool_entry_thead(self._on_mirror_rig_clicked, asset_id=asset_id)
+
+        frag_rig = rig_tools.mirror_rig_cmd(start_frame, end_frame)
+
+        if not frag_rig:
+            return
+

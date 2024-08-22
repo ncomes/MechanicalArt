@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains Test tool implementation.
 """
@@ -10,28 +7,21 @@ import os
 # Software specific imports
 import pymel.core as pm
 # PySide2 imports
-from PySide2.QtWidgets import QAction, QMenu, QPushButton, QHBoxLayout, QSizePolicy, QTreeWidgetItem
-from PySide2.QtCore import Qt, QSize
-from PySide2 import QtWidgets, QtGui
-
-from PySide2.QtWidgets import QFileDialog
-from PySide2.QtGui import QPalette, QColor
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets
 # mca python imports
 from mca.common import log
-from mca.common.paths import paths, project_paths, path_utils
-from mca.common.modifiers import decorators
-from mca.common.assetlist import assetlist
-from mca.mya.deformations import skin_utils
+from mca.common.project import project_paths
+
 from mca.mya.pyqt import mayawindows
 from mca.mya.thirdpartytools.MetaHumanDNACalibrationmain import dna_viewer
 from mca.mya.thirdpartytools.MetaHumanDNACalibrationmain.lib.Maya2022.windows import dna, dnacalib
-from mca.mya.thirdpartytools.MetaHumanDNACalibrationmain.dna_viewer.builder.maya import mesh
 from mca.mya.modeling import vert_utils
-from mca.mya.utils import dag, naming
 
 from mca.mya.tools.metafaceeditor import metafaceeditor_utils
 
 logger = log.MCA_LOGGER
+
 
 class MetaFaceEditor(mayawindows.MCAMayaWindow):
     VERSION = '1.0.0'
@@ -386,7 +376,7 @@ class MetaFaceEditor(mayawindows.MCAMayaWindow):
                 parent_index = self.calibrated_data.getJointParentIndex(x)
                 parent_name = self.calibrated_data.getJointName(parent_index)
 
-            tree_item = QtWidgets.QTreeWidgetItem([joint_name])
+            tree_item = qtwidgets.QTreeWidgetItem([joint_name])
             if parent_name:
                 if self.item_name_dict.get(parent_name):
                     self.item_name_dict[parent_name][0].addChild(tree_item)

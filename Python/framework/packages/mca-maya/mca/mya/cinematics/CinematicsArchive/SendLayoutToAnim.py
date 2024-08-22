@@ -15,13 +15,13 @@ from mca.common.modifiers import decorators
 import mca.mya.cinematics.CinematicsArchive.BreakoutProcess as bp
 import mca.mya.cinematics.CinematicsArchive.CineSequenceNodes as csn
 import mca.mya.cinematics.CinematicsArchive.CineClasses as cc
-from mca.mya.pyqt import dialogs
+from mca.mya.pyqt import maya_dialogs
 
 
 logger = log.MCA_LOGGER
 
 
-@decorators.track_fnc
+
 def layoutToAnim(*args):
     if cmds.ls('*Sequence_Node'):
         mayaNode = cmds.ls('*Sequence_Node')[0]
@@ -45,5 +45,5 @@ def layoutToAnim(*args):
                 bp.breakOut(cineScene, cineSeqNode, mayaNode, cleanAnim=True)
     else:
         logger.warning("No Sequence Node in Scene, Create a Sequence Node to Break Out Shots")
-        dialogs.info_prompt('No Sequence', 'No Sequence Node in Scene, Create a Sequence Node to Break Out Shots')
+        maya_dialogs.info_prompt('No Sequence', 'No Sequence Node in Scene, Create a Sequence Node to Break Out Shots')
 

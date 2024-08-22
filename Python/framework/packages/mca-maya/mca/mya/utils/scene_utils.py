@@ -15,7 +15,7 @@ import maya.mel as mel
 import maya.OpenMaya as om
 #  python imports
 from mca.common import log
-from mca.mya.utils import maya_utils, node_util
+from mca.mya.utils import maya_utils, node_utils
 from mca.common.utils import fileio
 from mca.mya.modifiers import ma_decorators
 
@@ -112,7 +112,7 @@ def delete_garbage():
     for connection_node in check_connection_nodes:
         if (not connection_node or not pm.objExists(connection_node)) or connection_node in nodes_to_skip:
             continue
-        if node_util.is_empty(connection_node):
+        if node_utils.is_empty(connection_node):
             pm.lockNode(connection_node, lock=False)
             try:
                 pm.delete(connection_node)

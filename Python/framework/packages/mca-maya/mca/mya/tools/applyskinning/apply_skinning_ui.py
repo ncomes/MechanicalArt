@@ -13,11 +13,11 @@ import pymel.core as pm
 # mca python imports
 from mca.common import log
 from mca.mya.pyqt import mayawindows
-from mca.common.paths import paths
-from mca.mya.deformations import skin_utils
+from mca.common.project import paths
+from mca.mya.rigging import skin_utils
 from mca.common.textio import jsonio
-from mca.common.utils import lists, fileio
-from mca.mya.pyqt import dialogs
+from mca.common.utils import list_utils, fileio
+from mca.mya.pyqt import maya_dialogs
 
 logger = log.MCA_LOGGER
 
@@ -65,7 +65,7 @@ class ApplySkinningUi(mayawindows.MCAMayaWindow):
         selected_nodes = pm.selected()
         if not selected_nodes:
             logger.warning('Please select a mesh to save skinning from')
-            dialogs.info_prompt('Selection Error', 'Please select a mesh to save skinning from')
+            maya_dialogs.info_prompt('Selection Error', 'Please select a mesh to save skinning from')
             return
 
         folderPath = paths.get_local_tools_prefs_folder('mya', 'applySkinning')
@@ -88,17 +88,17 @@ class ApplySkinningUi(mayawindows.MCAMayaWindow):
         """
 
         selected_nodes = pm.selected(fl=True)
-        first_node = lists.get_first_in_list(selected_nodes)
+        first_node = list_utils.get_first_in_list(selected_nodes)
         if not first_node:
             logger.warning('Please select meshes or vertices to apply skinning to')
-            dialogs.info_prompt('Selection Error', 'Please select either vertices or mesh to apply weights on')
+            maya_dialogs.info_prompt('Selection Error', 'Please select either vertices or mesh to apply weights on')
             return
         first_type = type(first_node)
         is_same_type = all(isinstance(item, first_type) for item in selected_nodes)
         if not is_same_type and (isinstance(first_node, pm.MeshVertex)
                                  or isinstance(first_node, pm.nt.Transform)):
             logger.warning('Please select either vertices or meshes to apply weights on')
-            dialogs.info_prompt('Selection Error', 'Please select either vertices or mesh to apply weights on')
+            maya_dialogs.info_prompt('Selection Error', 'Please select either vertices or mesh to apply weights on')
             return
 
         if first_type == pm.MeshVertex:

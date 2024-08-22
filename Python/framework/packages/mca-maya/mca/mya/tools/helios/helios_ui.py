@@ -1,376 +1,39 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
-Module that contains Helios main UI.
+Module that contains UI functions for Helios, and the wizard.
 """
 
-# System global imports
+# python imports
+import inspect
 import os
 import random
-# PySide2 imports
-from PySide2.QtWidgets import QFileDialog
+import re
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets, qtcore, qtgui
 # software specific imports
 import pymel.all as pm
-# mca python imports
+# Project python imports
+from mca.mya.rigging import joint_utils
+from mca.mya.pyqt import maya_dialogs, mayawindows
+from mca.mya.tools.helios import helios_utils
+from mca.mya.utils import dag_utils
+
+from mca.common.assetlist import assetlist, archetype_assetlist
+from mca.common.pyqt.qt_utils import general_utils
+from mca.common.resources import resources
+from mca.common.utils import fileio, list_utils, path_utils
+
 from mca.common import log
-from mca.common.assetlist import assetlist
-from mca.common.paths import paths, path_utils
-from mca.common.pyqt import messages
-from mca.common.utils import lists, fileio
-from mca.common.modifiers import decorators
-from mca.common.tools.dcctracking import dcc_tracking
-
-from mca.mya.tools.helios import helios_registry, helios_utils
-from mca.mya.utils import dag as dag_utils
-from mca.mya.rigging import skel_utils
-from mca.mya.rigging.flags import frag_flag
-from mca.mya.pyqt import mayawindows
-
 logger = log.MCA_LOGGER
-
 
 WIZARD_LIST = ['Albus', 'Bigby', 'Strange', 'Elminster', 'Gandalf', 'Glinda', 'Howl', 'Jareth', 'Merlin', 'Frank',
                'Mordenkainen', 'Puck', 'Raistlin', 'Rasputin', 'Ravenna', 'Sauron', 'Tim', 'Vecna', 'Vivi', 'Zatanna']
 
 WIZARD = None
 
+MISSING_ICON = resources.icon(r'color\question.png')
 
-CURRENT_RELEASE_LIST = os.path.join(paths.get_asset_list_path(), 'release_list.yaml')
-HELIOS_OPTION_VARS = helios_utils.HELIOS_OPTION_VARS
+LOCAL_PATH = os.path.dirname(inspect.getabsfile(inspect.currentframe()))
 
-
-class Helios(mayawindows.MCAMayaWindow):
-    VERSION = '1.0.4'
-    
-    APPAREL_SLOTS = ['head', 'top', 'legs', 'shoes', 'backpack']
-
-    def __init__(self):
-        root_path = os.path.dirname(os.path.realpath(__file__))
-        ui_path = os.path.join(root_path, 'ui', 'heliosUI.ui')
-        super().__init__(title='Helios',
-                            ui_path=ui_path,
-                            version=Helios.VERSION)
-
-        hardware_globals_node = lists.get_first_in_list(pm.ls(type=pm.nt.HardwareRenderingGlobals))
-        hardware_globals_node.transparencyAlgorithm.set(3)
-
-        self.setup_signals()
-
-    # =================================================================================================================
-    # OVERRIDES
-    # =================================================================================================================
-
-    def setup_signals(self):
-        """
-        Connect all buttons and initialize all lists.
-
-        """
-        self._initialize_lists()
-
-        # restore UI
-        self.ui.performance_materials_checkBox.setChecked(HELIOS_OPTION_VARS.MCAPerfMaterials)
-
-        self.ui.with_skinning_checkBox.setChecked(HELIOS_OPTION_VARS.MCAWithSkinning)
-        self.ui.to_selected_checkBox.setChecked(HELIOS_OPTION_VARS.MCAToSelected)
-
-        self.ui.save_source_ma_checkBox.setChecked(HELIOS_OPTION_VARS.MCAExportSourceMa)
-        self.ui.update_skn_checkBox.setChecked(HELIOS_OPTION_VARS.MCAExportSkn)
-
-        tab_order = HELIOS_OPTION_VARS.MCALastOpenTab
-        try:
-            # Don't do a blind "if" test, the value can be 0 which gets you got.
-            if tab_order != []:
-                self.ui.import_tabWidget.setCurrentIndex(int(tab_order[0]))
-                if int(tab_order[0]) == 1:
-                    self.ui.apparel_tabWidget.setCurrentIndex(int(tab_order[-1]))
-        except:
-            logger.warning('There was an error recovering the last open tab, resetting to default open.')
-            HELIOS_OPTION_VARS.MCALastOpenTab = '0'
-            self.ui.import_tabWidget.setCurrentIndex(0)
-
-        self.ui.filter_lineEdit.textChanged.connect(self._filter_lists)
-        self.ui.remove_entry_pushButton.clicked.connect(self.remove_entry_clicked)
-        self.ui.import_pushButton.clicked.connect(self.import_selected_clicked)
-
-        self.ui.open_source_pushButton.clicked.connect(self.open_source_clicked)
-        self.ui.wizard_pushButton.clicked.connect(summon_the_wizard)
-
-        self.ui.export_pushButton.clicked.connect(self.export_selected_clicked)
-        
-    # =================================================================================================================
-    # Initialization
-    # =================================================================================================================
-
-    def _initialize_lists(self):
-        """
-        Refresh each of Helios' import lists.
-
-        """
-        # $TODO FSchorsch there might be a better way to register all of these lists automatically from the archetype registry
-        self.APPAREL_PARTS_DICT = {}
-        self.APPAREL_COLLECTIONS_DICT = {}
-
-        self.CHARACTER_DICT = {}
-
-        self.WEAPONS_DICT = {}
-
-        self.PROPS_DICT = {}
-
-        self.REFERENCE_DICT = {}
-
-        asset_registry = assetlist.AssetListRegistry()
-        asset_registry.reload()
-        for asset_id, mca_asset in asset_registry.ASSET_ID_DICT.items():
-            if mca_asset.asset_type == 'collection':
-                self.APPAREL_COLLECTIONS_DICT[mca_asset.asset_name] = mca_asset
-            elif any(x in mca_asset.asset_type.lower() for x in self.APPAREL_SLOTS):
-                self.APPAREL_PARTS_DICT[mca_asset.asset_name] = mca_asset
-            elif mca_asset.asset_subtype.lower() in ['enemies', 'npc', 'player', 'attachment']:
-                self.CHARACTER_DICT[mca_asset.asset_name] = mca_asset
-            elif mca_asset.asset_subtype.lower() == 'weapon':
-                self.WEAPONS_DICT[mca_asset.asset_name] = mca_asset
-            elif mca_asset.asset_subtype.lower() == 'props':
-                self.PROPS_DICT[mca_asset.asset_name] = mca_asset
-            elif mca_asset.asset_subtype.lower() == 'reference':
-                self.REFERENCE_DICT[mca_asset.asset_name] = mca_asset
-
-        self._filter_lists()
-
-    def _filter_lists(self):
-        """
-        For each import list filter them based on whatever is put in the filter line edit.
-        This includes multiple lookups based on white space and negative lookups preceded by a hyphen.
-
-        :return:
-        """
-
-        filter_string_raw = self.ui.filter_lineEdit.text()
-        required_str_list = []
-        excluded_str_list = []
-        for filter_string in filter_string_raw.split(' '):
-            if filter_string.startswith('-'):
-                if filter_string != '-':
-                    excluded_str_list.append(filter_string[1:].lower())
-            else:
-                required_str_list.append(filter_string.lower())
-
-        logger.debug(f'required: {required_str_list} \nexcluded: {excluded_str_list}')
-
-        ui_dict_pairs = [(self.APPAREL_PARTS_DICT, self.ui.apparel_parts_listWidget),
-                         (self.APPAREL_COLLECTIONS_DICT, self.ui.apparel_collections_listWidget),
-                         (self.CHARACTER_DICT, self.ui.characters_listWidget),
-                         (self.WEAPONS_DICT, self.ui.weapons_listWidget),
-                         (self.PROPS_DICT, self.ui.props_listWidget),
-                         (self.REFERENCE_DICT, self.ui.reference_listWidget)]
-
-        for asset_dict, ui_element in ui_dict_pairs:
-            ui_element.clear()
-            for index, asset_name in enumerate(sorted(asset_dict)):
-                if required_str_list and not all(x in asset_name.lower() for x in required_str_list):
-                    # if we don't find all our expected filters in the name
-                    continue
-
-                if excluded_str_list and any(x in asset_name.lower() for x in excluded_str_list):
-                    # if we find any of our exclusions in the name
-                    continue
-
-                ui_element.addItem(asset_name)
-
-    def _find_active_list(self):
-        """
-        This looks up which tab is active and saves it allowing the user to quickly return when reopening Helios.
-
-        """
-
-        active_list = None
-        asset_dict = {}
-        active_tab = ''
-        if self.ui.import_tabWidget.currentIndex() == 0:
-            # Characters
-            active_list = self.ui.characters_listWidget
-            asset_dict = self.CHARACTER_DICT
-            active_tab += '0'
-        elif self.ui.import_tabWidget.currentIndex() == 1:
-            # Apparel
-            active_tab += '1'
-            if self.ui.apparel_tabWidget.currentIndex() == 0:
-                active_list = self.ui.apparel_collections_listWidget
-                asset_dict = self.APPAREL_COLLECTIONS_DICT
-                active_tab += '0'
-            elif self.ui.apparel_tabWidget.currentIndex() == 1:
-                active_list = self.ui.apparel_parts_listWidget
-                asset_dict = self.APPAREL_PARTS_DICT
-                active_tab += '1'
-        elif self.ui.import_tabWidget.currentIndex() == 2:
-            # Weapons
-            active_tab += '2'
-            active_list = self.ui.weapons_listWidget
-            asset_dict = self.WEAPONS_DICT
-        elif self.ui.import_tabWidget.currentIndex() == 3:
-            # Props
-            active_tab += '3'
-            active_list = self.ui.props_listWidget
-            asset_dict = self.PROPS_DICT
-        elif self.ui.import_tabWidget.currentIndex() == 4:
-            # References
-            active_tab += '4'
-            active_list = self.ui.reference_listWidget
-            asset_dict = self.REFERENCE_DICT
-
-        HELIOS_OPTION_VARS.MCALastOpenTab = active_tab
-        return active_list, asset_dict
-
-    @decorators.track_fnc
-    def remove_entry_clicked(self):
-        """
-        Remove the selected entry from an import list.
-
-        """
-
-        active_list, asset_dict = self._find_active_list()
-        if not active_list:
-            return
-
-        selected_items = active_list.selectedItems()
-        if not selected_items:
-            return
-
-        for item in selected_items:
-            asset_name = item.text()
-            mca_asset = asset_dict[asset_name]
-
-            assetlist.AssetListRegistry().remove_entry(mca_asset.asset_id)
-
-        assetlist.AssetListRegistry().commit()
-        assetlist.AssetListRegistry().reload()
-
-        self._initialize_lists()
-
-    def import_selected_clicked(self):
-        """
-        From the selected assets import them into the current scene.
-
-        """
-
-        active_list, asset_dict = self._find_active_list()
-        if not active_list:
-            return
-
-        # Save UI settings
-        HELIOS_OPTION_VARS.MCAPerfMaterials = self.ui.performance_materials_checkBox.isChecked()
-
-        HELIOS_OPTION_VARS.MCAWithSkinning = self.ui.update_skn_checkBox.isChecked()
-        HELIOS_OPTION_VARS.MCAToSelected = self.ui.to_selected_checkBox.isChecked()
-        HELIOS_OPTION_VARS.MCAWithFullSkeleton = self.ui.with_full_skeleton_checkBox.isChecked()
-
-        import_list = []
-        for item in active_list.selectedItems():
-            asset_name = item.text()
-            import_list.append(asset_dict[asset_name])
-
-        bind_dict = {}
-        if self.ui.to_selected_checkBox.isChecked():
-            selection = pm.selected()
-            selected_joints = [x for x in pm.ls(selection, type=pm.nt.Joint) if not frag_flag.is_flag_node(x)]
-            bind_root_list = []
-            for joint_node in selected_joints:
-                bind_root = dag_utils.get_absolute_parent(joint_node, node_type=pm.nt.Joint)
-                if bind_root not in bind_root_list:
-                    bind_root_list.append(bind_root)
-                # need markup on root joint for where skel came from
-                continue
-
-            if not selection:
-                bind_root_list = pm.ls('|*', type=pm.nt.Joint)
-                # need markup on root joint for where skel came from
-
-            if len(selection) == 1:
-                bind_dict['default'] = selection[0]
-            elif len(bind_root_list) == 1:
-                bind_dict['default'] = bind_root_list[0]
-            else:
-                for bind_root in bind_root_list:
-                    # make a bind dict for asset_id lookups.
-                    if bind_root.hasAttr('asset_id'):
-                        bind_dict[bind_root.getAttr('asset_id')] = bind_root
-
-        for mca_asset in import_list:
-            _, skel_root_dict = helios_utils.import_helios_asset(mca_asset,
-                                                                 with_skinning=self.ui.with_skinning_checkBox.isChecked(),
-                                                                 skel_root_dict=bind_dict)
-            if self.ui.with_full_skeleton_checkBox.isChecked():
-                bind_root = skel_root_dict.get(mca_asset.skel_path)
-                if not bind_root:
-                    bind_root = skel_root_dict.get('default')
-                if bind_root:
-                    skel_path = mca_asset.skel_path
-                    skel_utils.import_merge_skeleton(skel_path, bind_root)
-            # dcc data
-            dcc_tracking.ddc_tool_entry_thead(fn=self.import_selected_clicked,
-                                              asset_id=mca_asset.asset_id,
-                                              asset_name=mca_asset.asset_name,
-                                              checkboxes=[self.ui.update_skn_checkBox,
-                                                          self.ui.to_selected_checkBox,
-                                                          self.ui.with_full_skeleton_checkBox,
-                                                          self.ui.performance_materials_checkBox])
-
-    def open_source_clicked(self):
-        """
-        Open the meshes folder for a selected asset.
-
-        """
-
-        selection = pm.selected()
-        if not selection:
-            messages.info_message('Selection Error', 'Please select an organization group.', icon='error')
-            return
-
-        organization_grp = selection[0]
-        if organization_grp.hasAttr('helios_path'):
-            fileio.explore_to_path(path_utils.to_full_path(organization_grp.getAttr('helios_path')))
-
-    def export_selected_clicked(self):
-        """
-        For each selected asset export their SK/SM and optionally save their source file.
-
-        """
-
-        selection = pm.selected()
-
-        if not selection:
-            messages.info_message('Failed to find.', 'Please select an organization group.')
-            return
-
-        # Save UI settings
-        HELIOS_OPTION_VARS.MCAExportSourceMa = self.ui.save_source_ma_checkBox.isChecked()
-        HELIOS_OPTION_VARS.MCAExportSkn = self.ui.update_skn_checkBox.isChecked()
-
-        helios_export_group_list = [x for x in selection if x.hasAttr('helios')]
-
-        helios_export_list = []
-        for export_group in helios_export_group_list:
-            # don't allow any children of a selected export group, use the parent only.
-            if not any(export_group in x.listRelatives(ad=True, type=pm.nt.Transform) for x in helios_export_group_list):
-                helios_export_list.append(export_group)
-
-        for export_group in helios_export_list:
-            helios_utils.export_helios_asset(export_group,
-                                             update_skn=self.ui.update_skn_checkBox.isChecked(),
-                                             save_source=self.ui.save_source_ma_checkBox.isChecked())
-            
-            # dcc data
-            checkboxes = [self.ui.update_skn_checkBox, self.ui.save_source_ma_checkBox]
-            dcc_tracking.ddc_tool_entry_thead(fn=self.export_selected_clicked,
-                                              asset_id=export_group.helios_asset_id.get(),
-                                              asset_name=export_group.helios_name.get(),
-                                              checkboxes=checkboxes)
-
-        self._initialize_lists()
-
-
-
-@decorators.track_fnc
 def summon_the_wizard():
     global WIZARD
     try:
@@ -378,148 +41,724 @@ def summon_the_wizard():
     except:
         pass
     WIZARD = Wizard()
-    WIZARD.ui.show()
+    WIZARD.show()
 
 
 class Wizard(mayawindows.MCAMayaWindow):
-    
-    def __init__(self):
-        root_path = os.path.dirname(os.path.realpath(__file__))
-        ui_path = os.path.join(root_path, 'ui', 'WizardUI.ui')
-        super().__init__(title='HeliosWizard',
-                            ui_path=ui_path,
-                            version=Helios.VERSION)
+    """
+    The wizard for setting up initial Assets and organizing your scene.
 
-        self.setWindowTitle(random.choice(WIZARD_LIST))
+    """
+    _version = 1.0
+
+    DYNAMIC_UI_ELEMENTS = []
+
+    def __init__(self):
+        ui_path = os.path.join(LOCAL_PATH, 'uis', f'wizard_ui.ui')
+        super().__init__(title='Wizard',
+                         ui_path=ui_path,
+                         version=str(self._version))
+        self.setWindowTitle(f'MCA {random.choice(WIZARD_LIST)} {self._version}')
 
         self.setup_signals()
-        self._initialize_lists()
-        self.preview_export_path()
-        self.ui.create_now_checkBox.setChecked(HELIOS_OPTION_VARS.MCACreateFolders)
-    # =================================================================================================================
-    # OVERRIDES
-    # =================================================================================================================
+        self.initialize_lists()
 
+    # Initialization/Core UI
     def setup_signals(self):
         """
         Connect all buttons to their fncs.
 
         """
 
-        self.ui.asset_select_comboBox.currentIndexChanged.connect(self.preview_export_path)
-        self.ui.name_lineEdit.textChanged.connect(self.preview_export_path)
+        self.ui.asset_select_comboBox.currentIndexChanged.connect(self.setup_dynamic_ui)
+        self.ui.name_lineEdit.textChanged.connect(self._title_name)
 
-        self.ui.organize_pushButton.clicked.connect(self.organize_scene)
+        self.ui.organize_pushButton.clicked.connect(self.organize_scene_pressed)
 
-        self.ui.export_dir_browse_pushButton.clicked.connect(self.browse_export_directory)
+        self.ui.export_dir_browse_pushButton.clicked.connect(self.browse_export_directory_pressed)
+        self.ui.explore_to_pushButton.clicked.connect(self.explore_to_directory_pressed)
 
-    def _initialize_lists(self):
+    def initialize_lists(self):
+        archetype_registry = archetype_assetlist.get_archetype_registry()
+        self.ui.asset_select_comboBox.addItems(sorted(archetype_registry.NAME_REGISTRY.keys()))
+
+    def setup_dynamic_ui(self):
+        self.clear_layout(self.ui.modular_ui_verticalLayout)
+        self.DYNAMIC_UI_ELEMENTS = []
+        archetype_registry = archetype_assetlist.get_archetype_registry()
+        current_archetype = self.ui.asset_select_comboBox.currentText()
+
+        archetype_entry = archetype_registry.NAME_REGISTRY.get(current_archetype, None)
+        for option_data in archetype_entry.options:
+            option_type = option_data['type']
+
+            new_choice = None
+            if option_type in ['choice', 'sorted_choice']:
+                new_choice = self.Choice(self, option_data, False if option_type == 'choice' else True)
+            elif option_type in ['nested_choice']:
+                new_choice = self.NestedChoice(self, option_data)
+            elif option_type in ['paired_choice']:
+                new_choice = self.PairedChoice(self, option_data)
+
+            if new_choice:
+                self.DYNAMIC_UI_ELEMENTS.append(new_choice)
+
+        self.preview_export_path()
+        ui_number = len(self.DYNAMIC_UI_ELEMENTS)
+        self.resize(600, 180 + (ui_number*100))
+
+    class Choice(object):
+        option_data = None
+        def __init__(self, parent, option_data, is_sorted=False):
+            self.option_data = option_data
+
+            self.parent_ui = parent
+            self.parent_layout = parent.ui.modular_ui_verticalLayout
+
+            vertical_layout = qtwidgets.QVBoxLayout()
+            self.parent_layout.addLayout(vertical_layout)
+
+            new_box = qtwidgets.QGroupBox()
+            vertical_layout.addWidget(new_box)
+            self.box_layout = qtwidgets.QVBoxLayout()
+            new_box.setLayout(self.box_layout)
+
+            horizontal_layout_choice = qtwidgets.QHBoxLayout()
+            #horizontal_layout_edit = qtwidgets.QHBoxLayout()
+            self.box_layout.addLayout(horizontal_layout_choice)
+            #self.box_layout.addLayout(horizontal_layout_edit)
+
+            self.option_name = self.option_data['name']
+            option_description = self.option_data['description']
+
+            option_list_values = []
+            for x in self.option_data['options']:
+                if isinstance(x, str):
+                    # If it's a regular list just append the str option
+                    option_list_values.append(x)
+                elif isinstance(x, dict):
+                    # If we have a dict it's a nested choice, get the new name value
+                    option_list_values.append(x.get('name', ''))
+                elif isinstance(x, list):
+                    # If it's a list we have a nicename, and other values associated with that choice.
+                    option_list_values.append(x[0])
+
+            new_label = qtwidgets.QLabel()
+            new_label.setText(option_description)
+            horizontal_layout_choice.addWidget(new_label)
+
+            choice_horizontal_spacer = qtwidgets.QSpacerItem(40, 20, qtwidgets.QSizePolicy.Expanding)
+            horizontal_layout_choice.addItem(choice_horizontal_spacer)
+
+            self.new_combobox = qtwidgets.QComboBox()
+            self.new_combobox.addItems(sorted(option_list_values) if is_sorted else option_list_values)
+            self.new_combobox.setEditable(True)
+            self.new_combobox.currentTextChanged.connect(self.parent_ui.preview_export_path)
+            self.new_combobox.setMinimumWidth(120)
+            horizontal_layout_choice.addWidget(self.new_combobox)
+
+            #edit_horizontal_spacer = qtwidgets.QSpacerItem(40, 20, qtwidgets.QSizePolicy.Expanding)
+            #horizontal_layout_edit.addItem(edit_horizontal_spacer)
+
+            #add_button = qtwidgets.QPushButton('Add Option')
+            #add_button.clicked.connect(self.add_archetype_option)
+            #horizontal_layout_edit.addWidget(add_button)
+
+            #remove_button = qtwidgets.QPushButton('Remove Option')
+            #remove_button.clicked.connect(self.remove_archetype_option)
+            #horizontal_layout_edit.addWidget(remove_button)
+
+        def add_archetype_option(self):
+            new_option_val = self.new_combobox.currentText()
+            current_archetype = self.parent_ui.ui.asset_select_comboBox.currentText()
+            archetype_registry = archetype_assetlist.get_archetype_registry()
+            archetype_entry = archetype_registry.NAME_REGISTRY.get(current_archetype, None)
+            options_list = archetype_entry.options
+            modified_list = []
+            for option in options_list:
+                if option['name'] == self.option_name and new_option_val not in option['options']:
+                    modified_list.append({'name': option['name'],
+                                          'type': option['type'],
+                                          'description': option['description'],
+                                          'options': option['options'] + [new_option_val]})
+
+                    archetype_entry.DIRTY = True
+                else :
+                    modified_list.append(option)
+
+            if archetype_entry.DIRTY:
+                archetype_entry.options = modified_list
+                archetype_entry.register(True)
+
+        def remove_archetype_option(self):
+            option_val_to_remove = self.new_combobox.currentText()
+            current_archetype = self.parent_ui.ui.asset_select_comboBox.currentText()
+            archetype_registry = archetype_assetlist.get_archetype_registry()
+            archetype_entry = archetype_registry.NAME_REGISTRY.get(current_archetype, None)
+            options_list = archetype_entry.options
+            modified_list = []
+            for option in options_list:
+                if option['name'] == self.option_name and option_val_to_remove in option['options']:
+                    local_options_list = option['options']
+                    local_options_list.remove(option_val_to_remove)
+                    modified_list.append({'name': option['name'],
+                                          'type': option['type'],
+                                          'description': option['description'],
+                                          'options': local_options_list})
+                    archetype_entry.DIRTY = True
+                else:
+                    modified_list.append(option)
+
+            if archetype_entry.DIRTY:
+                archetype_entry.options = modified_list
+                archetype_entry.register(True)
+
+        def get_option_val(self):
+            return {f'${self.option_name}': self.new_combobox.currentText()}
+
+    class PairedChoice(Choice):
+        def get_option_val(self):
+            current_option = self.new_combobox.currentText()
+            return_dict = {f'${self.option_name}': current_option}
+            for x in self.option_data['options']:
+                if x[0] == current_option:
+                    for i, pair_str in enumerate(x[1:]):
+                        return_dict[f'${i+1}{self.option_name}'] = pair_str
+            return return_dict
+
+    class NestedChoice(Choice):
+        sub_layout = None
+        sub_combobox = None
+
+        def __init__(self, parent, option_data, is_sorted=False):
+            super().__init__(parent, option_data, is_sorted)
+            # Grab the existing layout option.
+            self.new_combobox.currentTextChanged.connect(self._check_for_sub)
+            self._check_for_sub()
+
+        def _check_for_sub(self):
+            options_list = []
+            sub_options_list = {}
+            for option_val in self.option_data.get('options', []):
+                if isinstance(option_val, dict):
+                    sub_options_list[option_val.get('name')] = option_val
+                else:
+                    options_list.append(option_val)
+            current_option = self.new_combobox.currentText()
+            if current_option in options_list:
+                self._remove_sub_option()
+            elif current_option in sub_options_list:
+                self._remove_sub_option()
+                self._add_sub_option(sub_options_list.get(current_option, {}))
+
+        def _add_sub_option(self, option_data):
+            self.sub_layout = qtwidgets.QVBoxLayout()
+            self.box_layout.addLayout(self.sub_layout)
+
+            horizontal_layout_choice = qtwidgets.QHBoxLayout()
+            self.sub_layout.addLayout(horizontal_layout_choice)
+
+            option_description = option_data['description']
+
+            option_list_values = [x if not isinstance(x, dict) else x['name'] for x in option_data['options']]
+
+            new_label = qtwidgets.QLabel()
+            new_label.setText(option_description)
+            horizontal_layout_choice.addWidget(new_label)
+
+            choice_horizontal_spacer = qtwidgets.QSpacerItem(40, 20, qtwidgets.QSizePolicy.Expanding)
+            horizontal_layout_choice.addItem(choice_horizontal_spacer)
+
+            self.sub_combobox = qtwidgets.QComboBox()
+            self.sub_combobox.addItems(sorted(option_list_values) if 'sorted' in option_data.get('type', '') else option_list_values)
+            self.sub_combobox.setEditable(True)
+            self.sub_combobox.currentTextChanged.connect(self.parent_ui.preview_export_path)
+            self.sub_combobox.setMinimumWidth(100)
+            horizontal_layout_choice.addWidget(self.sub_combobox)
+
+            self.parent_ui.preview_export_path()
+
+        def _remove_sub_option(self):
+            if self.sub_layout:
+                general_utils.delete_layout_and_children(self.box_layout, self.sub_layout)
+                self.sub_combobox = None
+                self.parent_ui.preview_export_path()
+
+        def get_option_val(self):
+            return_dict = {f'${self.option_name}': self.new_combobox.currentText()}
+            if self.sub_combobox:
+                return_dict[f'$sub_{self.option_name}'] = self.sub_combobox.currentText()
+            else:
+                return_dict[f'$sub_{self.option_name}'] = ''
+            return return_dict
+
+
+    def clear_layout(self, layout):
         """
-        Update the drop downs in the Wizard from the archetype registry.
+        Removes all QWidgets from a QLayout
+
+        :param QLayout layout:
+        """
+
+        if layout is not None:
+            while layout.count():
+                child = layout.takeAt(0)
+                if child.widget() is not None:
+                    child.widget().close()
+                    child.widget().setParent(None)
+                elif child.layout() is not None:
+                    self.clear_layout(child.layout())
+
+    # Ui Helpers
+    def _title_name(self):
+        """
+        Forces the first letter of each word to be capitalized.
 
         """
-        helios_archetype_registry = helios_registry.HeliosArchetypeRegistry(force=True)
-        archetype_list = list(sorted(helios_archetype_registry.NAME_REGISTRY.keys()))
-        self.ui.asset_select_comboBox.insertItems(0, archetype_list)
-        previous_asset = HELIOS_OPTION_VARS.MCALastAssetType
-        if previous_asset in archetype_list:
-            self.ui.asset_select_comboBox.setCurrentIndex(archetype_list.index(previous_asset))
-    
-    def _format_name(self, string_name):
-        """
-        Conform our name to our naming conventions.
+        set_titles = False
+        cursor_pos = self.ui.name_lineEdit.cursorPosition()
+        start_len = len(self.ui.name_lineEdit.text())
+        if set_titles:
+            split_string = self.ui.name_lineEdit.text().split(' ')
+            titled_string = ''
+            if split_string != ['']:
+                titled_string = ' '.join(x[0].upper() + x[1:] if x else x for x in split_string)
+            
+        else:
+            titled_string = self.ui.name_lineEdit.text().lower()
         
-        :param str string_name: The original string name.
-        :return: The formatted string name.
+        #cleanup invalid characters.
+        pattern = re.compile('[^a-zA-Z0-9_ ]+')
+        titled_string = pattern.sub('', titled_string)
+
+        str_len = len(titled_string)
+        if str_len < start_len:
+            # If we remove characters adjust the cursor position.
+            cursor_pos = cursor_pos-1 if cursor_pos-1 >= 0 else 0
+
+        self.ui.name_lineEdit.setText(titled_string)
+        self.ui.name_lineEdit.setCursorPosition(cursor_pos) if str_len >= cursor_pos else self.ui.name_lineEdit.setCursorPosition(str_len)
+        self.preview_export_path()
+
+    def _get_remap_dict(self):
+        """
+        Querries each of the dynamic UI elements to get the current option values.
+
+        :return: The remap dictionary of option values.
+        :rtype: dict
+        """
+        remap_dict = {}
+        for option in self.DYNAMIC_UI_ELEMENTS:
+            remap_dict.update(option.get_option_val())
+        return remap_dict
+
+    def _get_export_path(self):
+        """
+        Grab's the archetype selected and modifies the base path with the current option values.
+
+        :return: Relative path to the export directory
         :rtype: str
         """
+        archetype_registry = archetype_assetlist.get_archetype_registry()
+        current_archetype = self.ui.asset_select_comboBox.currentText()
 
-        string_name = string_name.replace(' ', '_')
-        split_name = string_name.split('_')
-        return '_'.join([x[0].upper() + x[1:] if x else x for x in split_name])
+        archetype_entry = archetype_registry.NAME_REGISTRY.get(current_archetype, None)
+        remap_dict = {'$name': self.ui.name_lineEdit.text().replace(' ', '_')}
+        remap_dict.update(self._get_remap_dict())
+        asset_path = archetype_entry.base_dir
+        for search_str, replace_str in remap_dict.items():
+            asset_path = asset_path.replace(search_str, replace_str)
 
-    def browse_export_directory(self):
+        return os.path.normpath(asset_path)
+
+    def preview_export_path(self):
         """
-        Find an override directory and use that instead of the automatically generated field.
+        Update the preview directory text box with the current option values.
 
         """
+        self.ui.export_dir_lineEdit.setText(self._get_export_path())
 
-        helios_archetype_registry = helios_registry.HeliosArchetypeRegistry()
-        selected_archetype = self.ui.asset_select_comboBox.currentText()
-        helios_archetype = helios_archetype_registry.NAME_REGISTRY.get(selected_archetype, None)
+    def browse_export_directory_pressed(self):
+        """
+        Override the current preview directory by browsing for a new directory.
 
-        start_path = path_utils.to_full_path(helios_archetype.base_dir)
+        """
+        start_path = path_utils.to_full_path(self._get_export_path())
 
-        found_path = QFileDialog.getExistingDirectory(None, 'Select Directory', start_path)
+        found_path = qtwidgets.QFileDialog.getExistingDirectory(None, 'Select Directory', start_path)
         if not found_path:
             return
 
         self.ui.export_dir_lineEdit.setText(path_utils.to_relative_path(found_path))
-    
-    def preview_export_path(self):
+
+    def explore_to_directory_pressed(self):
         """
-        This updates the export preview path whenever one of the re-requisites is updated.
+        Open the current preview directory in a file explorer.
 
         """
+        asset_path = f'{path_utils.to_full_path(self._get_export_path())}\\'
 
-        # $HACK FSchorsch should really come up with a better way to identify this
-        #print(self.ui.asset_select_comboBox.currentText())
-        #print(self.ui.release_comboBox.currentText())
-        #print(self.ui.name_lineEdit.text())
+        fileio.touch_path(asset_path)
 
-        helios_archetype_registry = helios_registry.HeliosArchetypeRegistry()
-        selected_archetype = self.ui.asset_select_comboBox.currentText()
-        helios_archetype = helios_archetype_registry.NAME_REGISTRY.get(selected_archetype, None)
+        fileio.explore_to_path(asset_path)
 
-        if not helios_archetype:
-            return
-
-        export_path = ''
-        if helios_archetype:
-            export_path += helios_archetype.base_dir
-
-        asset_name = self._format_name(self.ui.name_lineEdit.text())
-        if asset_name:
-            export_path = os.path.join(export_path, asset_name)
-        else:
-            self.ui.export_dir_lineEdit.setText('')
-            self.ui.export_dir_lineEdit.setPlaceholderText('A name must be picked for this asset.')
-            logger.warning('A name must be picked for this asset.')
-            return
-        self.ui.export_dir_lineEdit.setText(export_path)
-    
-    @decorators.track_fnc
-    def organize_scene(self):
+    def organize_scene_pressed(self):
         """
-        From the selected archetype and name generate the new Helios Asset build structure for the scene
-        and optionally build out the working folder structure.
+        Convert the UI into an organized scene for exporting a model asset.
+        Optionally, create the folder structure for this asset.
 
         """
 
-        asset_name = self._format_name(self.ui.name_lineEdit.text())
+        asset_name = self.ui.name_lineEdit.text()
         if not asset_name:
-            logger.warning(f'{asset_name} is not a valid asset name')
+            raise ValueError('Please enter a name for the new asset, every asset deserves a name.')
+        remap_dict = self._get_remap_dict()
+
+        archetype_registry = archetype_assetlist.get_archetype_registry()
+        current_archetype = self.ui.asset_select_comboBox.currentText()
+
+        archetype_entry = archetype_registry.NAME_REGISTRY.get(current_archetype, None)
+
+        asset_entry = archetype_assetlist.create_new_assets_from_archetype(archetype_entry, asset_name, remap_dict, base_dir=self.ui.export_dir_lineEdit.text())
+        if 'model' not in archetype_entry.hierarchy.get('asset_data', {}).get('type'):
+            # If we don't have a model, punt on scene organization
+            # But do register the new asset based off the archetype.
+            asset_entry.register(True)
+
+        if self.ui.create_now_checkBox.isChecked() and 'model' in archetype_entry.hierarchy.get('asset_data', {}).get('type'):
+            # If we have a model asset and we want to organize the directory too
+            starting_directory = self.ui.export_dir_lineEdit.text()
+            for path_str in ['_source\\', 'meshes\\', 'textures\\']:
+                fileio.touch_path(os.path.join(path_utils.to_full_path(starting_directory), path_str))
+
+        # $TODO error checking for existing?
+        # We have a model, model's are designed to have vis mesh associated with them, so we'll organize the scene
+        helios_utils.import_asset(asset_entry)
+
+class Helios(mayawindows.MCAMayaWindow):
+    """
+    Helios is the Import/Export nexus for the asset environment.
+
+    """
+    _version = 1.0
+
+    DYNAMIC_UI_ELEMENTS = []
+
+    def __init__(self):
+        ui_path = os.path.join(LOCAL_PATH, 'uis', 'helios_ui.ui')
+        super().__init__(title='Helios',
+                         ui_path=ui_path,
+                         version=str(self._version))
+
+        self.setup_signals()
+
+        # Grab latest before we inititalize lists.
+        #sourcecontrol.sync_files(assetlist.REGISTRY_FILE_PATH)
+        self.initialize_lists()
+
+    class AssetItem(qtgui.QStandardItem):
+        ASSET_ENTRY = None
+        def __init__(self, asset_entry):
+            super().__init__()
+            self.ASSET_ENTRY = asset_entry
+
+            self.setEditable(False)
+
+            self.setText(asset_entry.asset_name)
+            asset_icon = None
+            if asset_entry.mesh_path:
+                asset_icon_path = f'{asset_entry.mesh_path[:-3]}jpg'
+                if os.path.exists(asset_icon_path):
+                    asset_icon = qtgui.QIcon(asset_icon_path)
+            self.setIcon(asset_icon or MISSING_ICON)
+
+
+    class FilterableListWidget(qtwidgets.QListView):
+        ITEM_LIST = None
+        def __init__(self, parent_layout, item_list):
+            super().__init__()
+            parent_layout.addWidget(self)
+            self.entry = qtgui.QStandardItemModel()
+            self.setModel(self.entry)
+            self.setSpacing(2)
+            self.setIconSize(qtcore.QSize(64, 64))
+
+            self.ITEM_LIST = item_list
+
+            self.filterList('')
+
+        def filterList(self, filter_string):
+            inclusive_list = []
+            exclusive_list = []
+            split_string = filter_string.split(' ')
+            if split_string != ['']:
+                for x in split_string:
+                    if x.startswith('-'):
+                        exclusive_list.append(x[1:].lower())
+                    else:
+                        inclusive_list.append(x.lower())
+
+            filtered_list = []
+            if inclusive_list or exclusive_list:
+                self.entry.clear()
+                for item in self.ITEM_LIST:
+                    if all(True if x in item.text().lower() else False for x in inclusive_list) and all(True if x not in item.text().lower() else False for x in exclusive_list):
+                        filtered_list.append(item)
+
+                if filtered_list:
+                    for item in filtered_list:
+                        self.entry.appendRow(item)
+            else:
+                self.entry.clear()
+                for item in self.ITEM_LIST:
+                    self.entry.appendRow(item)
+
+    def setup_signals(self):
+        self.ui.wizard_pushButton.clicked.connect(summon_the_wizard)
+
+        self.ui.filter_lineEdit.textChanged.connect(self._filter_lists)
+
+        self.ui.open_source_pushButton.clicked.connect(self.open_source_directory_pushed)
+        self.ui.remove_entry_pushButton.clicked.connect(self.remove_entry_pushed)
+
+        self.ui.import_pushButton.clicked.connect(self.import_button_pressed)
+        self.ui.export_pushButton.clicked.connect(self.export_button_pressed)
+        self.ui.export_all_pushButton.clicked.connect(lambda: self.export_button_pressed(True))
+
+    def initialize_lists(self):
+        self.DYNAMIC_UI_ELEMENTS = []
+
+        main_tab_widget = self.ui.import_tabWidget
+        for i in reversed(range(main_tab_widget.count())):
+            main_tab_widget.removeTab(i)
+
+        asset_registry = assetlist.get_registry()
+        archetype_registry = archetype_assetlist.get_archetype_registry()
+        tab_organization_dict = {}
+        for _, archetype_entry in archetype_registry.NAME_REGISTRY.items():
+            organization_dict = archetype_entry.organization
+            if not organization_dict:
+                continue
+            
+            tab_name = organization_dict.get('tab_name')
+            if tab_name not in tab_organization_dict:
+                tab_organization_dict[tab_name] = {'name': tab_name, 'type': [], 'sub_tabs': []}
+            for tab_type_filter in organization_dict.get('type'):
+                if tab_type_filter not in tab_organization_dict[tab_name]['type']:
+                    tab_organization_dict[tab_name]['type'].append(tab_type_filter)
+
+            organization_list = archetype_entry.get_archetype_options()
+            subtype_list = organization_dict.get('subtype')
+            if len(subtype_list) == 1:
+                # If we have a single subtype we won't be making sub tabs, this could also be a list of subtypes to a filter a type list.
+                # IE: [npc]
+                tab_organization_dict[tab_name]['subtype'] = subtype_list[0]
+            elif subtype_list:
+                # Order is important here check it later.
+                tab_organization_dict[tab_name]['sub_tabs'] = self._organize_subtype_tab(organization_list, subtype_list)
+        
+        main_set = list(asset_registry.ASSET_ID_DICT.values())
+        for _, tab_dict in tab_organization_dict.items():
+            type_filter = tab_dict.get('type')
+            subtype_filter = tab_dict.get('subtype', [])
+
+            current_set = []
+            if type_filter:
+                for asset_entry in main_set[:]:
+                    if asset_entry.asset_type not in type_filter:
+                        continue
+
+                    if subtype_filter:
+                        if not all(True if x in asset_entry.asset_subtype else False for x in subtype_filter):
+                            continue
+                    
+                    current_set.append(asset_entry)
+
+            if not current_set:
+                continue
+
+            self._fill_sub_tabs(current_set, [tab_dict], main_tab_widget, True)
+                
+    def _organize_subtype_tab(self, organization_list, subtype_list):
+        tab_dict_list = []
+        if subtype_list:
+            lookup = subtype_list[0]
+            if not isinstance(lookup, list):
+                if lookup.startswith('$'):
+                    lookup = organization_list.get(lookup[1:])
+            for subtype_name in lookup:
+                tab_dict = {'name': subtype_name, 'sub_tabs': []}
+                tab_dict_list.append(tab_dict)
+                if len(subtype_list) > 1:
+                    tab_dict['sub_tabs'] += self._organize_subtype_tab(organization_list, subtype_list[1:])
+        return tab_dict_list
+    
+    def _fill_sub_tabs(self, current_set, tab_list, current_tab_widget, ignore_filter=False):
+        if not current_set:
+            return
+        
+        for sub_tab in tab_list:
+            # Add our new tab
+            sub_tab_name = sub_tab.get('name')
+
+            if not ignore_filter:
+                # Filter by the subtype, and also pitch anything with 'mirror' in the subtype.
+                filtered_set = [x for x in current_set[:] if sub_tab_name in x.asset_subtype and 'left' not in x.asset_subtype]
+            else:
+                filtered_set = current_set[:]
+
+            if not filtered_set:
+                continue
+
+            new_widget = qtwidgets.QWidget()
+            current_tab_widget.addTab(new_widget, sub_tab_name)
+            # Filter the current set, and set it or pass it down.
+
+            new_tab_layout = qtwidgets.QVBoxLayout()
+            new_widget.setLayout(new_tab_layout)
+
+            sub_tab_list = sub_tab.get('sub_tabs')
+            if sub_tab_list:
+                # if we have a sub_tab_list we're going deeper.
+                new_tab_widget = qtwidgets.QTabWidget()
+                new_tab_layout.addWidget(new_tab_widget)
+                self._fill_sub_tabs(filtered_set, sub_tab_list, new_tab_widget)
+            else:
+                # If we don't have any sub_tabs we've hit our depth limit and we can add items straight away.
+                # create new list widget
+                item_list = []
+                for asset_entry in sorted(filtered_set, key=lambda x: x.asset_name):
+                    # Sort by name to create a new AssetItem list.
+                    new_item = self.AssetItem(asset_entry)
+                    item_list.append(new_item)
+
+                if item_list:
+                    new_list_widget = self.FilterableListWidget(new_tab_layout, item_list)
+                    self.DYNAMIC_UI_ELEMENTS.append(new_list_widget)
+
+    def _filter_lists(self):
+        filter_string = self.ui.filter_lineEdit.text()
+        for list_ui in self.DYNAMIC_UI_ELEMENTS:
+            list_ui.filterList(filter_string)
+
+    def _get_selected(self):
+        selected = []
+        for list_ui in self.DYNAMIC_UI_ELEMENTS:
+            if list_ui.isVisible():
+                for index in list_ui.selectedIndexes():
+                    selected.append(list_ui.model().itemFromIndex(index).ASSET_ENTRY)
+        return selected
+
+    def open_source_directory_pushed(self):
+        selected_assets = self._get_selected()
+        selection = pm.selected()
+        if not selected_assets and not selection:
+            logger.error('Select an asset or an export group to preview the source directory')
             return
 
-        original_path = self.ui.export_dir_lineEdit.text()
-        if not original_path:
-            logger.warning(f'{original_path} is not a valid export directory')
+        asset_entry = list_utils.get_first_in_list(selected_assets)
+        if not asset_entry and selection:
+            asset_entry = helios_utils.get_asset_from_group(selection[0])
+
+        if asset_entry:
+            fileio.touch_path(asset_entry.model_path)
+            fileio.explore_to_path(asset_entry.model_path)
+
+    def remove_entry_pushed(self):
+        selected_assets = self._get_selected()
+        if not selected_assets:
+            logger.error('Something needs to be selected to be removed.')
             return
 
-        # Save UI settings
-        HELIOS_OPTION_VARS.MCALastAssetType = self.ui.asset_select_comboBox.currentText()
-        HELIOS_OPTION_VARS.MCACreateFolders = self.ui.create_now_checkBox.isChecked()
+        asset_names = []
+        for asset_entry in selected_assets:
+            asset_names.append(asset_entry.asset_name)
 
-        helios_archetype_registry = helios_registry.HeliosArchetypeRegistry()
-        selected_archetype = self.ui.asset_select_comboBox.currentText()
-        helios_archetype = helios_archetype_registry.NAME_REGISTRY.get(selected_archetype, None)
+        msg_str = '\n'.join(['Are you sure you wish to remove:'] + asset_names)
+        result = maya_dialogs.question_prompt('Confirm Delete', msg_str)
+        if result != 'Yes':
+            logger.debug('Op cancelled by user')
+            return
 
-        base_dir, dir_name = os.path.split(original_path)
+        asset_registry = assetlist.get_registry()
+        for asset_entry in selected_assets:
+            if 'right' in asset_entry.asset_subtype:
+                # mirrored assets are nested with their pair. And only one side will be shown in the import lists.
+                for local_asset in asset_entry.local_asset_list:
+                    asset_registry.remove_entry(local_asset.asset_id if isinstance(local_asset, assetlist.Asset) else local_asset)
+            asset_registry.remove_entry(asset_entry.asset_id)
 
-        if dir_name == asset_name:
-            modified_base_dir = False
+        if asset_registry.DIRTY:
+            #cl_num = sourcecontrol.p4_create_cl('Maya - Helios: Delete entry')
+            #sourcecontrol.checkout(cl_num, assetlist.REGISTRY_FILE_PATH)
+            asset_registry.commit()
+
+            self.initialize_lists()
+
+
+    def import_button_pressed(self):
+        selected_assets = self._get_selected()
+        if not selected_assets:
+            logger.error('Make a selection to continue')
+            return
+
+        simple_materials = self.ui.performance_materials_checkBox.isChecked()
+        with_skinning = self.ui.with_skinning_checkBox.isChecked()
+        to_selected = self.ui.to_selected_checkBox.isChecked()
+
+        root_joint_dict = {}
+        if with_skinning and to_selected:
+            selection = pm.selected()
+            found_roots = []
+            for node in selection:
+                if isinstance(node, pm.nt.Joint):
+                    root_joint = dag_utils.get_absolute_parent(node)
+                else:
+                    root_joint = joint_utils.get_hierarchy_bind_roots(node)
+                if root_joint and root_joint not in found_roots:
+                    found_roots.append(root_joint)
+
+            if not found_roots:
+                found_roots = [x.node() for x in pm.ls('*.skel_path')]
+
+            for root_joint in found_roots:
+                skel_path = root_joint.getAttr('skel_path') if root_joint.hasAttr('skel_path') else None
+                if skel_path:
+                    root_joint_dict[skel_path] = root_joint
+
+        for asset_entry in selected_assets:
+            _, root_joint_dict = helios_utils.import_asset(asset_entry, simple_materials, with_skinning, root_joint_dict)
+
+    def export_button_pressed(self, export_all=False):
+        if export_all:
+            exportable_group_list = helios_utils.get_all_exportable_groups()
         else:
-            modified_base_dir = True
-            base_dir = original_path
-        helios_utils.organize_scene_from_archetype(helios_archetype, asset_name, base_dir, modified_base_dir, self.ui.create_now_checkBox.isChecked())
+            selection = pm.selected()
+            if not selection:
+                logger.error('Select export groups from the outliner, or use export all, we failed to find any export groups.')
+                return
+            exportable_group_list = []
+            for node in selection:
+                for export_group in helios_utils.get_all_exportable_groups(node):
+                    if export_group not in exportable_group_list:
+                        exportable_group_list.append(export_group)
 
+        if not exportable_group_list:
+            logger.error('Select export groups from the outliner, or use export all, we failed to find any export groups.')
+            return
+
+        # grab latest on the registry before we export.
+        #sourcecontrol.sync_files(assetlist.REGISTRY_FILE_PATH)
+
+        save_source = self.ui.save_source_ma_checkBox.isChecked()
+        update_skn = self.ui.update_skn_checkBox.isChecked()
+        update_thumbnail = self.ui.update_thumbnail_checkBox.isChecked()
+
+        exported_file_list = helios_utils.export_asset(exportable_group_list, update_skn=update_skn, save_source=save_source, update_thumbnail=update_thumbnail)
+
+        # Source control stuff.
+        #cl_description = 'Maya - Helios Export'
+        #cl_num = sourcecontrol.p4_create_cl(cl_description)
+        #sourcecontrol.checkout(cl_num, exported_file_list, False)
+
+        self.initialize_lists()

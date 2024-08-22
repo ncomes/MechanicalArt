@@ -14,7 +14,7 @@ import pymel.core as pm
 # mca python imports
 from mca.common import log
 from mca.common.textio import yamlio
-from mca.mya.utils import maya_paths
+from mca.mya.utils import maya_utils
 
 
 logger = log.MCA_LOGGER
@@ -431,14 +431,14 @@ class MayaDefaultStartOptions:
 		:rtype: MayaDefaultStartOptions
 		"""
 
-		default_prefs = maya_paths.get_default_preferences_file()
+		default_prefs = maya_utils.get_default_preferences_file()
 		if not os.path.exists(default_prefs):
 			logger.warning("No preferences file was found.  Returning default settings.")
 			default_cls = cls()
 			if save_data:
-				yamlio.write_to_yaml_file(default_cls.data, default_prefs)
+				yamlio.write_yaml(default_prefs, default_cls.data)
 			return default_cls
-		prefs = yamlio.read_yaml_file(default_prefs)
+		prefs = yamlio.read_yaml(default_prefs)
 		return cls(prefs)
 
 	def save(self):
@@ -446,6 +446,6 @@ class MayaDefaultStartOptions:
 		Saves the default settings to a yaml file in the preferences folder.
 		"""
 
-		default_prefs = maya_paths.get_default_preferences_file()
-		yamlio.write_to_yaml_file(self._data, default_prefs)
+		default_prefs = maya_utils.get_default_preferences_file()
+		yamlio.write_yaml(default_prefs, self._data)
 

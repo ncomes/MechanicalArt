@@ -1,18 +1,11 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Tool for working with cinematic shots and sequences
-
 """
 
 # python imports
 import os
-from PySide2.QtWidgets import QVBoxLayout, QToolButton, QSizePolicy, QSpacerItem, QFrame
-from PySide2.QtWidgets import QWidget, QScrollArea
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QIntValidator
-
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets, qtcore, qtgui
 # software specific imports
 import pymel.core as pm
 import maya.cmds as cmds
@@ -20,16 +13,14 @@ import maya.cmds as cmds
 # mca python imports
 from mca.common import log
 from mca.common.pyqt import common_windows, messages
-from mca.common.tools.dcctracking import dcc_tracking
 from mca.common.resources import resources
-from mca.common.utils import fileio, process
-from mca.common.modifiers import decorators
+from mca.common.utils import fileio
 
-from mca.mya.animation import time_utils
+from mca.mya.animation import camera_utils, time_utils
 from mca.mya.cinematics import cine_sequence_nodes, shot_utils, cine_file_utils
 from mca.mya.rigging.frag import cine_sequence_component
 from mca.mya.pyqt.utils import ma_main_window
-from mca.mya.utils import namespace, camera_utils
+from mca.mya.utils import namespace_utils
 
 logger = log.MCA_LOGGER
 MAYA_MAIN_WINDOW = ma_main_window.get_maya_window()
@@ -44,9 +35,8 @@ class CineShotEditor(common_windows.MCADockableWindow):
 						 ui_path=ui_path,
 						 version=CineShotEditor.VERSION,
 						 parent=MAYA_MAIN_WINDOW,
-						 area=Qt.RightDockWidgetArea)
-		MAYA_MAIN_WINDOW.addDockWidget(Qt.RightDockWidgetArea, self)
-		process.cpu_threading(dcc_tracking.ddc_tool_entry(CineShotEditor))
+						 area=qtcore.Qt.RightDockWidgetArea)
+		MAYA_MAIN_WINDOW.addDockWidget(qtcore.Qt.RightDockWidgetArea, self)
 		self.vertical_spacer = None
 		self.cine_seq_data = None
 		self.container_layout = None
@@ -75,18 +65,18 @@ class CineShotEditor(common_windows.MCADockableWindow):
 		self.shot_widgets_dict = {}
 		self.clear_layout(self.ui.main_verticalLayout)
 
-		scroll_area = QScrollArea()
+		scroll_area = qtwidgets.QScrollArea()
 		scroll_area.setObjectName('MainScrollFrame')
-		scroll_area.setFrameStyle(QFrame.WinPanel | QFrame.Sunken)
+		scroll_area.setFrameStyle(qtwidgets.QFrame.WinPanel | qtwidgets.QFrame.Sunken)
 		scroll_area.setContentsMargins(0, 0, 4, 0)
-		scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-		scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		scroll_area.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Expanding)
+		scroll_area.setVerticalScrollBarPolicy(qtcore.Qt.ScrollBarAsNeeded)
+		scroll_area.setHorizontalScrollBarPolicy(qtcore.Qt.ScrollBarAlwaysOff)
 		scroll_area.setWidgetResizable(True)
-		scroll_area_widget_contents = QWidget()
+		scroll_area_widget_contents = qtwidgets.QWidget()
 		scroll_area.setWidget(scroll_area_widget_contents)
 
-		self.container_layout = QVBoxLayout(scroll_area_widget_contents)
+		self.container_layout = qtwidgets.QVBoxLayout(scroll_area_widget_contents)
 
 		if cine_seq_node:
 			scene_shot_list = cine_seq_node.shots()
@@ -97,7 +87,7 @@ class CineShotEditor(common_windows.MCADockableWindow):
 				shot_widget = self.add_shot(self.container_layout, shot_data=shot_data)
 				self.shot_widgets_dict[shot_widget] = shot_data
 
-		self.vertical_spacer = QSpacerItem(0, 2000, QSizePolicy.Expanding, QSizePolicy.Expanding)
+		self.vertical_spacer = qtwidgets.QSpacerItem(0, 2000, qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Expanding)
 		self.container_layout.addItem(self.vertical_spacer)
 		self.ui.main_verticalLayout.addWidget(scroll_area)
 
@@ -194,7 +184,7 @@ class CineShotEditor(common_windows.MCADockableWindow):
 				shot_data_list.append(shot_data)
 		return shot_data_list
 
-	@decorators.track_fnc
+
 	def _on_playblast_sequence_button_pressed(self, skip_dialog=False):
 		"""
 		Playblasts selected shots.
@@ -226,7 +216,7 @@ class CineShotEditor(common_windows.MCADockableWindow):
 				broken_out_shots = shot_data_list[0].shot_name
 			messages.info_message('Playblast Selected Shots', f'Shots playblasted: \n{broken_out_shots}.')
 
-	@decorators.track_fnc
+	
 	def _on_break_out_selected_button_pressed(self):
 		"""
 		Breaks out selected shots.
@@ -244,7 +234,7 @@ class CineShotEditor(common_windows.MCADockableWindow):
 	def clear_layout(self, layout):
 		"""
 		Removes all items from the given layout.
-		:param QVBoxLayout layout: Layout to clear.
+		:param qtwidgets.QVBoxLayout layout: Layout to clear.
 
 		"""
 
@@ -256,7 +246,7 @@ class CineShotEditor(common_windows.MCADockableWindow):
 			else:
 				self.clear_layout(item.layout())
 
-	@decorators.track_fnc
+	
 	def _on_ubercam_button_pressed(self):
 		"""
 		Creates ubercam.
@@ -265,7 +255,7 @@ class CineShotEditor(common_windows.MCADockableWindow):
 
 		camera_utils.create_mca_ubercam_cmd()
 
-	@decorators.track_fnc
+	
 	def _on_remove_ubercam_button_pressed(self):
 		"""
 		Removes ubercam.
@@ -274,7 +264,7 @@ class CineShotEditor(common_windows.MCADockableWindow):
 
 		camera_utils.remove_ubercam_cmd()
 
-	@decorators.track_fnc
+	
 	def _on_look_thru_button_pressed(self):
 		"""
 		Looks through ubercam in active viewport.
@@ -296,11 +286,11 @@ class CineShotEditor(common_windows.MCADockableWindow):
 		"""
 		if self.vertical_spacer:
 			self.container_layout.removeWidget(self.vertical_spacer.widget())
-		new_vertical_spacer = QSpacerItem(0, 2000, QSizePolicy.Expanding, QSizePolicy.Expanding)
+		new_vertical_spacer = qtwidgets.QSpacerItem(0, 2000, qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Expanding)
 		self.container_layout.addItem(new_vertical_spacer)
 		self.vertical_spacer = new_vertical_spacer
 
-	@decorators.track_fnc
+	
 	def _new_shot_button_pressed(self):
 		"""
 		Adds a new shot to the sequence.
@@ -322,7 +312,7 @@ class CineShotEditor(common_windows.MCADockableWindow):
 		"""
 		Add a new shot widget to the given layout.
 
-		:param QVBoxLayout layout: Layout to add the new shot widget to.
+		:param qtwidgets.QVBoxLayout layout: Layout to add the new shot widget to.
 		:param CineShotData shot_data: Data class for the new shot.
 		:return: The widget that represents the new shot that was added.
 		:rtype: CineShotWidget
@@ -338,7 +328,7 @@ class CineShotEditor(common_windows.MCADockableWindow):
 		return sequence_widget
 
 
-class ShotFrameButton(QFrame):
+class ShotFrameButton(qtwidgets.QFrame):
 	def __init__(self, parent=None, parent_layout=None, shot_data=None, parent_class=None):
 		super().__init__(parent=parent)
 		self.main_ui = parent
@@ -349,19 +339,19 @@ class ShotFrameButton(QFrame):
 				self.shot_camera_list.append(cam.getTransform().name())
 		self.shot_data = shot_data
 		self.setContentsMargins(1, 0, 0, 1)
-		self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Fixed)
+		self.setSizePolicy(qtwidgets.QSizePolicy.MinimumExpanding, qtwidgets.QSizePolicy.Fixed)
 		self.setMinimumHeight(210)
 		self.setMaximumHeight(210)
 		self.setMinimumWidth(195)
 
-		self.tool_v_layout = QVBoxLayout(self)
+		self.tool_v_layout = qtwidgets.QVBoxLayout(self)
 		self.tool_v_layout.setContentsMargins(0, 0, 0, 0)
 
-		self.tool_button = QToolButton(self)
-		self.tool_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Expanding)
-		self.tool_button.setArrowType(Qt.RightArrow)
+		self.tool_button = qtwidgets.QToolButton(self)
+		self.tool_button.setSizePolicy(qtwidgets.QSizePolicy.MinimumExpanding, qtwidgets.QSizePolicy.Expanding)
+		self.tool_button.setArrowType(qtcore.Qt.RightArrow)
 		self.tool_button.setText(self.shot_data.shot_name)
-		self.tool_button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+		self.tool_button.setToolButtonStyle(qtcore.Qt.ToolButtonTextBesideIcon)
 		self.tool_button.setContentsMargins(2, 0, 0, 1)
 		self.tool_button.setMaximumHeight(25)
 		self.tool_button.setMinimumHeight(25)
@@ -369,15 +359,15 @@ class ShotFrameButton(QFrame):
 		self.tool_button.setParent(self)
 		self.tool_v_layout.addWidget(self.tool_button)
 
-		self.q_frame = QFrame(self)
+		self.q_frame = qtwidgets.QFrame(self)
 		self.q_frame.setContentsMargins(2, 0, 1, 0)
 		self.q_frame.setMinimumHeight(25)
 		self.tool_v_layout.addWidget(self.q_frame)
 		self.q_frame.setVisible(0)
-		self.q_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+		self.q_frame.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Fixed)
 
-		self.sequence_layout = QVBoxLayout(self.q_frame)
-		self.q_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		self.sequence_layout = qtwidgets.QVBoxLayout(self.q_frame)
+		self.q_frame.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Expanding)
 
 		self.sequence_widget = CineShotWidget(parent, self, shot_data=self.shot_data, parent_class=parent_class)
 		self.sequence_layout.addWidget(self.sequence_widget.ui)
@@ -418,7 +408,7 @@ class ShotFrameButton(QFrame):
 
 		"""
 
-		self.tool_button.setArrowType(Qt.DownArrow)
+		self.tool_button.setArrowType(qtcore.Qt.DownArrow)
 		self.q_frame.setVisible(1)
 		self.setMinimumHeight(195)
 
@@ -428,7 +418,7 @@ class ShotFrameButton(QFrame):
 
 		"""
 
-		self.tool_button.setArrowType(Qt.RightArrow)
+		self.tool_button.setArrowType(qtcore.Qt.RightArrow)
 		self.q_frame.setVisible(0)
 		self.setMinimumHeight(25)
 
@@ -439,14 +429,13 @@ class CineShotWidget(common_windows.ParentableWidget):
 		ui_path = os.path.join(root_path, 'ui', 'cine_shot_editor_ui_sub.ui')
 		super().__init__(parent=parent,
 						 ui_path=ui_path)
-		process.cpu_threading(dcc_tracking.ddc_tool_entry(CineShotWidget))
 		self.shot_data = shot_data
 		self.parent_frame = parent_frame
-		int_validator = QIntValidator()
+		int_validator = qtgui.QIntValidator()
 		self.ui.start_frame_lineEdit.setValidator(int_validator)
 		self.ui.end_frame_lineEdit.setValidator(int_validator)
 		self.ui.shot_number_lineEdit.setValidator(int_validator)
-		self.ui.camera_comboBox.setFocusPolicy(Qt.ClickFocus)
+		self.ui.camera_comboBox.setFocusPolicy(qtcore.Qt.ClickFocus)
 
 		eye_icon = resources.icon(r'default\eye.png')
 		visible_range_button = self.ui.set_timeline_pushButton
@@ -474,7 +463,7 @@ class CineShotWidget(common_windows.ParentableWidget):
 		self.ui.break_out_pushButton.pressed.connect(self._on_break_out_button_pressed)
 		self.ui.lock_camera_pushButton.pressed.connect(self._on_lock_camera_button_pressed)
 
-	@decorators.track_fnc
+	
 	def _on_break_out_button_pressed(self):
 		"""
 		Breaks out the shot.
@@ -505,7 +494,7 @@ class CineShotWidget(common_windows.ParentableWidget):
 		shot_number = self.shot_data.shot_number
 		cine_file_utils.break_out(shot_node, shot_number, cine_seq_node)
 
-	@decorators.track_fnc
+	
 	def _on_playblast_shot_button_pressed(self):
 		"""
 		Playblasts the shot.
@@ -527,7 +516,7 @@ class CineShotWidget(common_windows.ParentableWidget):
 										 [self.shot_data.shot_start, self.shot_data.shot_end],
 										 pm.PyNode(self.shot_data.shot_camera))
 
-	@decorators.track_fnc
+	
 	def _on_frame_timeline_button_pressed(self):
 		"""
 		Sets the timeline range.
@@ -536,7 +525,7 @@ class CineShotWidget(common_windows.ParentableWidget):
 
 		time_utils.set_timeline_range(int(self.ui.start_frame_lineEdit.text()), int(self.ui.end_frame_lineEdit.text()))
 
-	@decorators.track_fnc
+	
 	def _on_remove_shot_button_pressed(self):
 		"""
 		Removes a shot from the sequence and deletes the widget for it.
@@ -565,7 +554,7 @@ class CineShotWidget(common_windows.ParentableWidget):
 		if pm.objExists(self.shot_data.node_name):
 			pm.delete(self.shot_data.node_name)
 		if pm.namespace(exists=self.shot_data.shot_name):
-			namespace.purge_namespace(self.shot_data.shot_name)
+			namespace_utils.purge_namespace(self.shot_data.shot_name)
 		del self.parent_class.shot_widgets_dict[self]
 		ubercam = [x for x in pm.ls(type=pm.nt.Camera) if x.getTransform().hasAttr('MCAUberCam')]
 		if ubercam:
@@ -645,7 +634,7 @@ class CineShotWidget(common_windows.ParentableWidget):
 		self.shot_data = new_shot_data
 		self.parent_class.initialize_shot_widgets()
 
-	@decorators.track_fnc
+	
 	def _on_lock_camera_button_pressed(self):
 		"""
 		Locks or unlocks the camera combobox.

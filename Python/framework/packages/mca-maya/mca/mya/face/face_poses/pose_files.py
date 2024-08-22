@@ -14,7 +14,7 @@ import os
 import pymel.core as pm
 # mca python imports
 from mca.mya.animation import time_utils
-from mca.mya.rigging import frag, rig_utils, chain_markup
+from mca.mya.rigging import frag, joint_utils
 from mca.mya.utils import fbx_utils
 from mca.mya.face.face_utils import face_util
 from mca.mya.modeling import face_model
@@ -40,7 +40,7 @@ def create_face_pose_file(create_skeleton=True):
 		frag_rig = frag.get_frag_rig(face_components[0])
 		start_frame = pm.playbackOptions(q=True, min=True)
 		end_frame = pm.playbackOptions(q=True, max=True)
-		return rig_utils.bake_skeleton_from_rig(frag_rig=frag_rig,
+		return frag.bake_skeleton_from_rig(frag_rig=frag_rig,
 												start_frame=start_frame,
 												end_frame=end_frame)
 	return
@@ -65,7 +65,7 @@ def export_face_pose_file(folder_path, delete_root=True):
 	deletable_joints = [x for x in pm.listRelatives(root_joint, ad=True, type=pm.nt.Joint) if 'null' in x.name()]
 	pm.delete(deletable_joints)
 	# Get rid of eye flag curves, eye poses for pose file should be taken from root
-	wrapped_root = chain_markup.ChainMarkup(root_joint)
+	wrapped_root = joint_utils.SkeletonHierarchy(root_joint)
 	for side in ['left', 'right']:
 		eye_jnt = wrapped_root.get_start('eye', side)
 		eye_anim = eye_jnt.listConnections(type='animCurve')

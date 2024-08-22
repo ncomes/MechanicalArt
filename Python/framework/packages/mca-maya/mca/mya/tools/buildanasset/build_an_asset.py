@@ -1,25 +1,14 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Toolbox for streamlining pipeline.
 """
+
 # python imports
 import os
-from PySide2.QtGui import QPixmap
-from PySide2.QtWidgets import QVBoxLayout, QPushButton, QLabel
-
 # software specific imports
-import maya.cmds as cmds
-import pymel.core as pm
-
 # mca python imports
-from mca.mya.pyqt import dialogs, mayawindows
-from mca.mya.utils import optionvars
-from mca.common.resources import resources
-
-# mca tool imports
-from mca.mya.tools.helios import helios_ui, helios_utils
+from mca.mya.pyqt import mayawindows
+# mca imports
+#from mca.mya.tools.helios import helios_ui, helios_utils
 from mca.mya.tools.buildarig import buildarig_ui
 # from mca.mya.tools.flagrotationordereditor import flagrotationordereditor
 

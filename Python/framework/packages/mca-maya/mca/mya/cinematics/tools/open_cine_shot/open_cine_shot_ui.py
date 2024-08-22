@@ -8,9 +8,8 @@ UI for opening, exporting, saving, adding, and editing cinematic sequences and s
 # System global imports
 import os
 # software specific imports
-import pymel.core as pm
-# PySide2 imports
-from PySide2.QtCore import QSize
+# Qt imports
+from mca.common.pyqt.pygui import qtcore
 # mca python imports
 from mca.common import log
 from mca.common.modifiers import decorators
@@ -21,8 +20,8 @@ from mca.mya.utils import optionvars
 from mca.mya.cinematics import cine_file_utils, shot_utils, cine_sequence_nodes
 from mca.mya.tools.sequencenodeeditor import sequence_node_editor_tool
 from mca.common.pyqt import messages
-from mca.common.paths import paths
-from mca.mya.rigging.frag import cine_sequence_component
+from mca.common.project import paths
+#from mca.mya.rigging.frag import cine_sequence_component
 
 logger = log.MCA_LOGGER
 
@@ -86,7 +85,7 @@ class CineOpenShotWindow(mayawindows.MCAMayaWindow):
 		self.ui.rename_sequence_pushButton.setIcon(rename_icon)
 		rnm_file_button = self.ui.rename_file_pushButton
 		rnm_file_button.setIcon(rename_icon)
-		rnm_file_button.setIconSize(QSize(rnm_file_button.width() - 10, rnm_file_button.height() - 10))
+		rnm_file_button.setIconSize(qtcore.QSize(rnm_file_button.width() - 10, rnm_file_button.height() - 10))
 
 		clapperboard_icon = resources.icon(r'white\clapperboard.png')
 		self.ui.playblast_sequence_pushButton.setIcon(clapperboard_icon)
@@ -95,17 +94,17 @@ class CineOpenShotWindow(mayawindows.MCAMayaWindow):
 		self.ui.export_sequence_pushButton.setIcon(export_icon)
 		expt_file_button = self.ui.export_file_pushButton
 		expt_file_button.setIcon(export_icon)
-		expt_file_button.setIconSize(QSize(expt_file_button.width() - 10, expt_file_button.height() - 10))
+		expt_file_button.setIconSize(qtcore.QSize(expt_file_button.width() - 10, expt_file_button.height() - 10))
 
 		open_file_icon = resources.icon(r'white\open.png')
 		open_file_button = self.ui.open_file_pushButton
 		open_file_button.setIcon(open_file_icon)
-		open_file_button.setIconSize(QSize(open_file_button.width() - 10, open_file_button.height() - 10))
+		open_file_button.setIconSize(qtcore.QSize(open_file_button.width() - 10, open_file_button.height() - 10))
 
 		save_file_icon = resources.icon(r'white\save.png')
 		save_file_button = self.ui.save_new_version_pushButton
 		save_file_button.setIcon(save_file_icon)
-		save_file_button.setIconSize(QSize(save_file_button.width() - 10, save_file_button.height() - 10))
+		save_file_button.setIconSize(qtcore.QSize(save_file_button.width() - 10, save_file_button.height() - 10))
 
 	####################################
 	# Slots
@@ -117,7 +116,7 @@ class CineOpenShotWindow(mayawindows.MCAMayaWindow):
 
 		self.optionvars.MCASelectedStage = self.ui.stage_comboBox.currentIndex()
 
-	@decorators.track_fnc
+	
 	def _on_playblast_sequence_button_clicked(self):
 		"""
 		Playblasts latests versions of selected shots in selected sequence
@@ -139,7 +138,7 @@ class CineOpenShotWindow(mayawindows.MCAMayaWindow):
 			if selected_shots:
 				shot_utils.batch_playblast(selected_sequence, selected_shots, stage)
 
-	@decorators.track_fnc
+	
 	def _on_export_file_button_clicked(self):
 		"""
 		Exports selected shot file
@@ -169,7 +168,7 @@ class CineOpenShotWindow(mayawindows.MCAMayaWindow):
 					messages.info_message('Export Shot', f'Error encountered when opening {selected_shot_file}\n'
 														 f'Please ensure file exported correctly.')
 
-	@decorators.track_fnc
+	
 	def _on_export_sequence_button_clicked(self):
 		"""
 		Exports the latest versions of selected shots in selected sequence
@@ -195,7 +194,7 @@ class CineOpenShotWindow(mayawindows.MCAMayaWindow):
 			exported_shots = ',\n'.join(exported_shots_sorted)
 			messages.info_message('Export Sequence', f'Shots exported from {selected_sequence}:\n{exported_shots}.')
 
-	@decorators.track_fnc
+	
 	def _on_make_new_sequence_button_clicked(self):
 		"""
 		Opens sequence node editor
@@ -204,7 +203,7 @@ class CineOpenShotWindow(mayawindows.MCAMayaWindow):
 
 		sequence_node_editor_tool.CineSequenceNodeEditor()
 
-	@decorators.track_fnc
+	
 	def _on_rename_shot_button_clicked(self):
 		"""
 		Renames files in selected shot directory
@@ -221,7 +220,7 @@ class CineOpenShotWindow(mayawindows.MCAMayaWindow):
 				selected_shot = selected_shot[0]
 				cine_file_utils.rename_shot_files(selected_shot, new_shot_num, os.path.normpath(self.shot_dir))
 
-	@decorators.track_fnc
+	
 	def _on_rename_sequence_button_clicked(self):
 		"""
 		Renames files in selected sequence directory
@@ -235,7 +234,7 @@ class CineOpenShotWindow(mayawindows.MCAMayaWindow):
 				old_name = selected_sequence[0]
 				cine_file_utils.rename_sequence_files(old_name, new_name)
 
-	@decorators.track_fnc
+	
 	def _on_rename_file_button_clicked(self):
 		"""
 		Renames selected file
@@ -248,14 +247,14 @@ class CineOpenShotWindow(mayawindows.MCAMayaWindow):
 			if selected_file:
 				cine_file_utils.rename_file(self.version_dir, selected_file[0], new_name)
 
-	@decorators.track_fnc
+	
 	def _on_save_new_version_button_clicked(self):
 		"""
 		Saves new version of current file
 
 		"""
 
-		cine_seq_node = cine_sequence_component.find_cine_seq_component()
+		cine_seq_node = None #cine_sequence_component.find_cine_seq_component()
 		if cine_seq_node:
 			cine_seq_data = cine_sequence_nodes.CineSequenceData.get_cine_seq_data(cine_seq_node.pynode)
 			cine_seq_data.fill_cine_shot_data()
@@ -317,7 +316,7 @@ class CineOpenShotWindow(mayawindows.MCAMayaWindow):
 			if file_list:
 				self.ui.file_listWidget.addItems(file_list)
 
-	@decorators.track_fnc
+	
 	def _on_open_button_press(self):
 		"""
 		Opens a selected file

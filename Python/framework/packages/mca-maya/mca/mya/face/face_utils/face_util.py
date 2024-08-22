@@ -12,16 +12,14 @@ import maya.cmds as cmds
 import os
 # mca python imports
 from mca.common import log
-from mca.common.paths import paths
-from mca.common.textio import jsonio
+from mca.common.project import paths
+from mca.common.assetlist import assetlist
 from mca.mya.face import source_data
 from mca.mya.modeling import blendshape_model, face_model, rivets
-from mca.mya.utils import namespace, display_layers, fbx_utils, naming, groups, attr_utils
-from mca.mya.rigging import mesh_markup_rig, chain_markup
-from mca.mya.rigging.flags import flag_utils
-from mca.mya.rigging import frag, rig_utils, skel_utils
+from mca.mya.utils import display_layers, fbx_utils, namespace_utils, naming, attr_utils
+from mca.mya.rigging import frag, joint_utils, mesh_markup_rig, flag_utils
 from mca.mya.face.face_utils import face_skinning
-from mca.mya.deformations import skin_utils
+from mca.mya.rigging import skin_utils
 
 logger = log.MCA_LOGGER
 
@@ -71,7 +69,7 @@ def set_common_flag_positions(mesh, wrapped_root):
             pm.delete(pm.pointConstraint(locator, jnt, mo=False))
             current = jnt.ty.get()
             jnt.ty.set(current-1)
-            wrapped_joint = chain_markup.JointMarkup(jnt)
+            wrapped_joint = joint_utils.JointMarkup(jnt)
             # Mirror position to right side
             if wrapped_joint.side == 'left':
                 skel_region = wrapped_joint.region
@@ -257,7 +255,7 @@ def get_all_scene_face_meshes(ns=''):
     :rtype: list(pm.nt.Transform)
     """
 
-    all_nodes = namespace.get_all_nodes_in_namespace(ns)
+    all_nodes = namespace_utils.get_all_nodes_in_namespace(ns)
     mesh_shapes = pm.ls(all_nodes, geometry=True)
     mesh_list = list(set([x.getParent() for x in mesh_shapes if x.getParent().hasAttr(mesh_markup_rig.MCA_MESH_MARKUP)]))
     return mesh_list
@@ -321,7 +319,7 @@ def face_scene_setup(focus_object, rig_node=None):
     if rig_node:
         flag_utils.zero_flags([rig_node])
     # Remove unused name spaces
-    namespace.delete_empty_namespaces()
+    namespace_utils.delete_empty_namespaces()
 
     # Turn off joints and turn textures on
     model_panel = cmds.getPanel(wf=True)
@@ -416,7 +414,7 @@ def export_head_sk(meshes, root_joint, sk_path):
         dup_mesh.v.set(1)
 
     root_name = naming.get_basename(root_joint)
-    entire_skel = chain_markup.ChainMarkup(root_joint).joints
+    entire_skel = joint_utils.ChainMarkup(root_joint).joints
 
     # Get skin data for original meshes
     skins = {}
@@ -431,10 +429,10 @@ def export_head_sk(meshes, root_joint, sk_path):
 
     # Create a temp namespace for original skeleton so we don't have duplicate joint names when setting weights
     head_sk_namespace = pm.namespace(addNamespace='TEMP_HEAD_SK')
-    list(map(lambda x: namespace.move_node_to_namespace(x, head_sk_namespace), entire_skel))
-    list(map(lambda x: namespace.move_node_to_namespace(x, head_sk_namespace), meshes))
+    list(map(lambda x: namespace_utils.move_node_to_namespace(x, head_sk_namespace), entire_skel))
+    list(map(lambda x: namespace_utils.move_node_to_namespace(x, head_sk_namespace), meshes))
 
-    dup_skel_markup = chain_markup.ChainMarkup(dup_root)
+    dup_skel_markup = joint_utils.ChainMarkup(dup_root)
 
     # Set weights
     for temp_mesh in temp_meshes:
@@ -469,8 +467,8 @@ def export_head_sk(meshes, root_joint, sk_path):
     finally:
         pm.delete(temp_meshes)
         pm.delete(dup_root)
-        list(map(lambda x: namespace.move_node_to_namespace(x, ''), entire_skel))
-        list(map(lambda x: namespace.move_node_to_namespace(x, ''), meshes))
+        list(map(lambda x: namespace_utils.move_node_to_namespace(x, ''), entire_skel))
+        list(map(lambda x: namespace_utils.move_node_to_namespace(x, ''), meshes))
         pm.namespace(removeNamespace=head_sk_namespace)
 
 
@@ -489,14 +487,14 @@ def set_head_rig_jnts(head_asset_id, wrapped_head_root):
     body_asset_id = head_asset_id.split('_head')[0]
 
     # Create temp namespace to import body skeleton into
-    namespace.set_namespace('headtmp')
-    body_skel_path = rig_utils.get_asset_skeleton(body_asset_id)
-    body_root_joint = skel_utils.import_skeleton(body_skel_path)
+    namespace_utils.set_namespace('headtmp')
+    body_skel_path = assetlist.get_asset_skeleton(body_asset_id)
+    body_root_joint = joint_utils.import_skeleton(body_skel_path)
     if not body_root_joint:
         logger.warning(f'Could not find .skl file for {body_asset_id}')
         return
-    wrapped_body_root = chain_markup.ChainMarkup(body_root_joint)
-    namespace.set_namespace('')
+    wrapped_body_root = joint_utils.JointMarkup(body_root_joint)
+    namespace_utils.set_namespace('')
 
     # Look for matching regions between skeletons
     for region in wrapped_head_root.chain.keys():
@@ -513,6 +511,6 @@ def set_head_rig_jnts(head_asset_id, wrapped_head_root):
                         continue
                 pm.parentConstraint(body_jnt, head_jnt, mo=False)
     # Get rid of body joints now that head joints are positioned and freeze transforms on head skeleton
-    namespace.purge_namespace('headtmp')
+    namespace_utils.purge_namespace('headtmp')
     pm.makeIdentity(wrapped_head_root.joints, a=True)
 

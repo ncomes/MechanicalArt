@@ -7,9 +7,9 @@ from mca.mya.thirdpartytools.MetaHumanDNACalibrationmain.lib.Maya2022.windows im
 import maya.cmds as cmds
 import pymel.core as pm
 import maya.OpenMaya as om1
-from mca.common.paths import paths, project_paths
+from mca.common.project import paths, project_paths
 from mca.mya.modeling import vert_utils
-from mca.mya.deformations import skin_utils
+from mca.mya.rigging import skin_utils
 from mca.common import log
 logger = log.MCA_LOGGER
 

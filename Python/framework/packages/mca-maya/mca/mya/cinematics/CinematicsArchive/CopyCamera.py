@@ -15,7 +15,7 @@ import mca.mya.cinematics.CinematicsArchive.MatchObjs as mo
 from mca.mya.cinematics.CinematicsArchive.CineClasses import CineStaticClass as csc
 
 
-@decorators.track_fnc
+
 def copyCamera(*args):
     sel = cmds.ls(sl=True)
     if len(sel)>1:

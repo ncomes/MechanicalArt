@@ -1,6 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Utils for working with Cinematic shots
 """
@@ -18,21 +15,19 @@ import pymel.core as pm
 import maya.mel as mel
 
 # mca python imports
-from mca.common.modifiers import decorators
-from mca.common import log
-from mca.common.paths import paths, project_paths
+from mca.common.project import paths, project_paths
 from mca.common.pyqt import messages
 from mca.common.utils import fileio
-from mca.mya.utils import naming, constraint, camera_utils, namespace, plugins
+from mca.mya.utils import constraint_utils, dag_utils, namespace_utils, naming, plugins
 from mca.mya.modifiers import ma_decorators
-from mca.mya.rigging import rig_utils, frag
-from mca.mya.rigging.frag import cine_sequence_component, frag_rig
-from mca.mya.animation import baking, time_utils
+from mca.mya.rigging import frag
+from mca.mya.animation import baking, camera_utils, time_utils
 from mca.mya.cinematics import cine_sequence_nodes, cine_file_utils
-from mca.mya.thirdpartytools.mocapx.lib import utils as mcpx_utils
-from mca.mya.thirdpartytools.mocapx import commands as mcpx_cmds
-from mca.mya.thirdpartytools.mocapx.lib import nodes as mcpx_nodes
+# from mca.mya.thirdpartytools.mocapx.lib import utils as mcpx_utils
+# from mca.mya.thirdpartytools.mocapx import commands as mcpx_cmds
+# from mca.mya.thirdpartytools.mocapx.lib import nodes as mcpx_nodes
 
+from mca.common import log
 logger = log.MCA_LOGGER
 
 
@@ -176,7 +171,7 @@ def create_cine_cam(seq_name):
 	return cam
 
 
-@decorators.track_fnc
+
 def make_cine_locators_at_sel_cmd():
 	"""
 	Toolbox command to create locators at current selection.
@@ -200,7 +195,7 @@ def make_cine_locator(obj, loc_name=None):
 
 	if not loc_name:
 		loc_name = f'{naming.get_basename(obj)}_locator'
-	loc = rig_utils.create_locator_at_object(obj, label=loc_name)
+	loc = dag_utils.create_locator_at_object(obj, name=loc_name)
 	if not pm.objExists('layout_grp'):
 		cmds.group(n='layout_grp', em=True)
 	loc.setParent(pm.PyNode('layout_grp'))
@@ -208,7 +203,7 @@ def make_cine_locator(obj, loc_name=None):
 	return loc
 
 
-@decorators.track_fnc
+
 def bake_locators_to_selection_cmd():
 	"""
 	Command for baking locators to selection.
@@ -238,7 +233,7 @@ def bake_locators(object_list, start_frame, end_frame):
 		loc = make_cine_locator(obj)
 		loc.rename(f'{loc}_BAKED')
 		locs.append(loc)
-		con = constraint.parent_constraint_safe(obj, loc)
+		con = constraint_utils.parent_constraint_safe(obj, loc)
 		constraints.append(con)
 
 	baking.bake_objects(locs, bake_range=[start_frame, end_frame])
@@ -255,7 +250,7 @@ def match_objects(child_node, parent_node):
 
 	"""
 
-	con = constraint.parent_constraint_safe(parent_node, child_node, mo=False)
+	con = constraint_utils.parent_constraint_safe(parent_node, child_node, mo=False)
 	if pm.keyframe(child_node, q=True, kc=True):
 		pm.setKeyframe(child_node)
 	if con:
@@ -350,7 +345,7 @@ def set_hud():
 					  dfs='large')
 
 
-@decorators.track_fnc
+
 def playblast_single_cmd():
 	"""
 	Command to create a playblast and export it to cinematic folder.
@@ -433,15 +428,15 @@ def playblast_sequence(cine_seq_node):
 	end_time = max([x.endFrame.get() for x in shot_list])
 	start_time = min([x.startFrame.get() for x in shot_list])
 	time_utils.set_timeline_range(start_time, end_time)
-	namespace.set_namespace('TempUbercam')
+	namespace_utils.set_namespace('TempUbercam')
 	ubercam = camera_utils.create_mca_ubercam(shot_list)
 	blast_path = create_cine_playblast(cine_seq_node.seq_name(),
 						 f'{cine_seq_node.seq_name()}_Sequence_v{cine_seq_node.version_num()}',
 						 cine_seq_node.stage(),
 						 [int(start_time), int(end_time)],
 						 ubercam)
-	namespace.purge_namespace('TempUbercam')
-	namespace.set_namespace('')
+	namespace_utils.purge_namespace('TempUbercam')
+	namespace_utils.set_namespace('')
 	return blast_path
 
 
@@ -478,7 +473,7 @@ def batch_playblast(seq_name, shot_number_list, stage):
 										  shot_node.currentCamera.get())
 
 
-@decorators.track_fnc
+
 def playblast_sequence_cmd():
 	"""
 	Command to playblast all shots in a sequence through an ubercam.
@@ -492,7 +487,7 @@ def playblast_sequence_cmd():
 	playblast_sequence(cine_seq_node)
 
 
-@decorators.track_fnc
+
 def make_new_shot_cmd():
 	"""
 	Command to create a new shot in a sequence.
@@ -524,7 +519,7 @@ def create_reference_cam_cine_shot(cine_seq_data, shot_number):
 	end = cmds.playbackOptions(query=True, maxTime=True)
 	cam = create_cine_cam(cine_seq_data.seq_name)
 	shot_name = f'{cine_seq_data.seq_name}_shot_{int(shot_number):0=3d}'
-	chars = frag_rig.get_frag_rigs()
+	chars = frag.get_all_frag_rigs()
 
 	cine_shot = cine_sequence_nodes.CineShotData.create(shot_number,
 														cine_seq_data.data,
@@ -554,16 +549,16 @@ def rename_shot(shot_data, new_shot_name):
 		old_shot_cam_name = shot_data.shot_camera
 		shot_node = pm.PyNode(shot_data.node_name)
 		shot_node.shotName.set(new_shot_name)
-		old_ns = namespace.get_namespace(old_shot_cam_name, check_node=False)
+		old_ns = namespace_utils.get_namespace(old_shot_cam_name, check_node=False)
 
 		if pm.namespace(exists=old_ns):
-			ns_nodes = namespace.get_all_nodes_in_namespace(old_ns)
+			ns_nodes = namespace_utils.get_all_nodes_in_namespace(old_ns)
 			if pm.namespace(exists=new_shot_name):
-				list(map(lambda x: namespace.move_node_to_namespace(x, new_shot_name), ns_nodes))
+				list(map(lambda x: namespace_utils.move_node_to_namespace(x, new_shot_name), ns_nodes))
 			else:
 				pm.namespace(ren=[old_ns, new_shot_name])
 
-			ns_nodes = namespace.get_all_nodes_in_namespace(new_shot_name)
+			ns_nodes = namespace_utils.get_all_nodes_in_namespace(new_shot_name)
 			real_ns_nodes = [x for x in ns_nodes if not pm.objExists(x)]
 			for ns_node in real_ns_nodes:
 				if ns_node.isReferenced():

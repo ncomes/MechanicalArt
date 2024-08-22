@@ -12,13 +12,13 @@ import maya.cmds as cmds
 
 # mca python imports
 from mca.mya.rigging import frag
-from mca.common.utils import lists
-from mca.mya.rigging import mesh_markup_rig
+from mca.common.utils import list_utils
+#from mca.mya.rigging import mesh_markup_rig
 from mca.mya.face.face_utils import face_util, face_import_export
 from mca.mya.modeling import blendshape_model, blendshape_node
 from mca.mya.utils import attr_utils, naming, display_layers
-from mca.common import log
 
+from mca.common import log
 logger = log.MCA_LOGGER
 
 
@@ -61,7 +61,8 @@ class FaceModel:
 	
 	@property
 	def mesh_markup(self):
-		return mesh_markup_rig.MeshMarkup(self.mesh)
+		pass
+		#return mesh_markup_rig.MeshMarkup(self.mesh)
 	
 	@property
 	def region(self):
@@ -307,8 +308,8 @@ class FaceModel:
 		control_rig = frag.get_frag_rig(self.mesh)
 		if control_rig:
 			world_root = frag.get_root_joint(control_rig)
-			joint = lists.get_first_in_list(world_root.listRelatives(c=True))
-			display_layer = lists.get_first_in_list(display_layers.get_display_layers([joint]))
+			joint = list_utils.get_first_in_list(world_root.listRelatives(c=True))
+			display_layer = list_utils.get_first_in_list(display_layers.get_display_layers([joint]))
 			if display_layer:
 				if display_layer.displayType.get() == 1 or display_layer.displayType.get() == 2:
 					display_layer.displayType.set(0)

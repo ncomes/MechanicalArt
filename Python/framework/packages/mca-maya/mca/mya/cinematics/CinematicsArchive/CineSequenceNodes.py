@@ -21,7 +21,7 @@ from mca.common.modifiers import decorators
 #Maya Shelf Button Press
 
 
-@decorators.track_fnc
+
 def seqNodeButtonPress(*args):
         UI = MayaSequenceNodeUI()
         seqNodes = cmds.ls("*Sequence_Node")

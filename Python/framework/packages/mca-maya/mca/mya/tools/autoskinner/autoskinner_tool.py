@@ -16,7 +16,7 @@ import pymel.core as pm
 from mca.common import log
 from mca.mya.utils import optionvars
 from mca.mya.pyqt import mayawindows
-from mca.mya.deformations import skin_utils
+from mca.mya.rigging import skin_utils
 
 logger = log.MCA_LOGGER
 

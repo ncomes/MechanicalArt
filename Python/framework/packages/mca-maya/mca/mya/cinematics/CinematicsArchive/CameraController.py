@@ -65,7 +65,7 @@ def getCamPivotLoc(cam, scl):
     return loc
 
 
-@decorators.track_fnc
+
 def addCameraController():
     selectedCams = [c for c in cmds.ls(sl=True) if cc.CineStaticClass.isShotCam(c)]
     for cam in selectedCams:

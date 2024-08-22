@@ -9,15 +9,12 @@ Parameter data for working with the facial rigs.
 import re
 # software specific imports
 import pymel.core as pm
-import maya.cmds as cmds
-import maya.api.OpenMaya as om
 
 #  python imports
-from mca.common.utils import lists
-from mca.common import log
-from mca.mya.utils import namespace
 from mca.mya.modifiers import contexts
-from mca.mya.utils.om import om_plug, attributetypes
+from mca.mya.utils import naming
+
+from mca.common import log
 logger = log.MCA_LOGGER
 
 TRANSLATION_ATTRS = ['tx', 'ty', 'tz']
@@ -37,82 +34,6 @@ MAYA_TYPE_DICT = {
                     }
 
 
-def has_attribute(node, attr_name=''):
-    """
-    Efficient way of querying if an attribute exists on a PyNode or a DAG path. Runs slightly faster when given a DAG path,
-    but isn't worth the cost of converting to a string path if you already have a PyNode instantiated.
-    
-    :param PyNode or str node: PyNode or string DAG path to object
-    :param str attr_name: Name of the attribute to check for
-    :return: Return True if the attribute exists, False if it doesn't, and None if the given node or path doesn't exist.
-    :rtype: bool
-    """
-    
-    sel_list = om.MSelectionList()
-    sel_list.add(str(node))
-    m_obj = sel_list.getDependNode(0)
-    dep_node = om.MFnDependencyNode(m_obj)
-    
-    return dep_node.hasAttribute(attr_name)
-
-
-def get_attribute(node, attr_name, attr_type='string'):
-    """
-    Efficient way of getting an attribute value that is slightly faster than using cmds getAttr.
-    The trade-off is that the exact attribute type must be specified.
-    
-    :param PyNode or str node: PyNode or string DAG path to object
-    :param attr_name: Name of attribute to get value of
-    :param attr_type: Explicit type of attribute; supported types are 'string'
-    :return: Returns the string name of the attribute value.
-    :rtype: str
-    """
-    
-    plug = None
-    value = None
-    
-    if isinstance(node, pm.nt.DependNode):
-        sel_list = om.MSelectionList()
-        sel_list.add(str(node))
-        m_obj = sel_list.getDependNode(0)
-        dep_node = om.MFnDependencyNode(m_obj)
-        plug = dep_node.findPlug(attr_name, True)
-    
-    if plug:
-        if attr_type == 'string':
-            value = plug.asString()
-        else:
-            raise Exception('get_attribute: Invalid attribute type of "{0}" specified!'.format(attr_type))
-    
-    return value
-
-
-def get_indices(full_attribute):
-    """
-    Returns the index values of a multi attribute.
-    
-    :param str full_attribute: node.attribute name of a multi attribute (Exp: bShp1.inputTarget).
-    :return: dictionary of integers that correspond to multi attribute indices.
-    :rtype: dict
-    """
-    
-    multi_attrs = pm.listAttr(full_attribute, multi=True)
-    indices = dict()
-    if not multi_attrs:
-        return indices
-    
-    for multi_attr in multi_attrs:
-        index = re.findall(r'\d+', multi_attr)
-        if index:
-            index = int(index[-1])
-            indices[index] = None
-    
-    indices = list(indices.keys())
-    indices.sort()
-    
-    return indices
-
-
 def set_attr_state(node_list, locked=True, attr_list=None, visibility=False):
     """
     For a given object set a list of attrs to locked or unlocked, and optionally toggle their visibility to match.
@@ -126,11 +47,14 @@ def set_attr_state(node_list, locked=True, attr_list=None, visibility=False):
     if not node_list:
         return
 
-    if attr_list is None:
-        attr_list = TRANSFORM_ATTRS
-
     if not isinstance(node_list, list):
         node_list = [node_list]
+
+    add_extra_attrs = False
+    if attr_list is None:
+        attr_list = TRANSFORM_ATTRS
+        if locked is False:
+            add_extra_attrs = True
 
     for node in node_list:
         # Unlock parent attrs so we can set the locks on a per attribute basis.
@@ -139,7 +63,12 @@ def set_attr_state(node_list, locked=True, attr_list=None, visibility=False):
         node.r.unlock()
         node.s.unlock()
 
-        for attr_name in attr_list:
+        local_attr_list = attr_list[:]
+        if add_extra_attrs:
+            local_attr_list += [x.shortName() for x in node.listAttr(locked=True)]
+            local_attr_list = list(set(local_attr_list))
+
+        for attr_name in local_attr_list:
             if locked:
                 node.attr(attr_name).lock()
             else:
@@ -147,122 +76,6 @@ def set_attr_state(node_list, locked=True, attr_list=None, visibility=False):
             if visibility:
                 node.attr(attr_name).set(channelBox=not locked)
                 node.attr(attr_name).set(keyable=not locked)
-
-def lock_and_hide_attrs(node, attr_list):
-    """
-    Locks and hides attributes on a node.
-    
-    :param pm.nt.PyNode node: Any node that has the listed attributes
-    :param list(str) attr_list: String list of attributes to lock.  EX: [tx, ty, tz] or [translateX,translateY,translateZ]
-    """
-    
-    if not isinstance(attr_list, (tuple, list)):
-        attr_list = [attr_list]
-    
-    for attr in attr_list:
-        node.attr(attr).lock()
-        node.attr(attr).set(keyable=False, channelBox=False)
-
-
-def unlock_transform_attributes(node, transform_list=None):
-    """
-    Unlocks all transform values on the given transform node.
-    
-    :param pm.PyNode node: node we want to unlock transform attributes of.
-    :param list(str) transform_list: list of attribute names to unlock. By default, all transforms will be unlocked.
-    :return: list of all unlocked attributes.
-    :rtype: list(pm.Attribute)
-    """
-    
-    transform_list = lists.force_list(transform_list or TRANSFORM_ATTRS)
-    unlocked_attrs = list()
-    for attr_name in transform_list:
-        attr = node.attr(attr_name)
-        if attr.isLocked():
-            unlocked_attrs.append(attr)
-        attr.unlock()
-    
-    return unlocked_attrs
-
-
-def lock_all_keyable_attrs(node, hidden=False, allow_visibility=False):
-    """
-    locks all keyable attrs on the specified node.
-    
-    :param pm.nt.PyNode node: a node that will have it's attributes locked.
-    :param hidden: optional variable to hide attr after locking.
-    :param bool allow_visibility: Lock or not lock the visibility channel.
-    :return:
-    """
-    
-    if not len(pm.ls(node)):
-        raise pm.MayaNodeError("lock_all_keyable_attrs: input node does not exist '{0}'".format(node))
-    
-    node = pm.PyNode(node)
-    keyable_attrs = node.listAttr(keyable=True)
-    
-    if len(keyable_attrs):
-        for keyable_attr in keyable_attrs:
-            if (not keyable_attr == node.nodeName() + '.v') or (
-                    keyable_attr == node.nodeName() + '.v' and not allow_visibility):
-                keyable_attr.lock()
-            if hidden:
-                keyable_attr.setKeyable(0)
-
-
-def unlock_all_attrs(obj, show=False):
-    """
-    Unlocks all attrs on a given object.
-    
-    :param pm.nt.PyNode obj: A pynode that has locked attributes.
-    :param bool show: Sets the attribute as keyable.
-    """
-    
-    if not pm.objExists(obj):
-        raise pm.MayaNodeError('#unlock_all_attrs: ' + str(obj) + ' doesnt exist.')
-    
-    obj = pm.PyNode(obj)
-    attrs = obj.listAttr(locked=True)
-    
-    for attr in attrs:
-        attr.unlock()
-        if show:
-            attr.setKeyable(1)
-
-
-def lock_and_hide_object_attrs(attr_list):
-    """
-    Locks and hides attributes on a node.
-    
-    :param pm.nt.PyNode node: Any node that has the listed attributes
-    :param list(str) attr_list: String list of attributes to lock.  EX: [tx, ty, tz] or [translateX,translateY,translateZ]
-    """
-    
-    if not isinstance(attr_list, list) and not isinstance(attr_list, set):
-        attr_list = [attr_list]
-    
-    attr_list = map(lambda attr: pm.PyNode(attr), attr_list)
-    
-    # Lock and hide attributes
-    for attr in attr_list:
-        attr.lock()
-        attr.set(keyable=False, channelBox=False)
-
-
-def unlock_and_show_attrs(attr_list):
-    """
-    Unlocks and unhides attributes.
-    :param list attr_list: List of attributes on an object.
-    """
-    
-    if not isinstance(attr_list, list):
-        attr_list = [attr_list]
-    
-    attr_list = map(lambda attr: pm.PyNode(attr), attr_list)
-    for attr in attr_list:
-        if pm.objExists(attr):
-            attr.setKeyable(1)
-            attr.unlock()
 
 
 def purge_user_defined_attrs(node_list, skip_list=(), skip_dialog=False):
@@ -285,7 +98,7 @@ def purge_user_defined_attrs(node_list, skip_list=(), skip_dialog=False):
                     logger.warning(f'{node.nodeName()} does not have any user attributes.')
                 return
             
-            unlock_all_attrs(node)
+            set_attr_state(node, False)
             if skip_list:
                 skip_attrs = [node.attr(x) for x in skip_list if node.hasAttr(x)]
                 user_attrs = [attr for attr in user_attrs if attr not in skip_attrs]
@@ -294,166 +107,16 @@ def purge_user_defined_attrs(node_list, skip_list=(), skip_dialog=False):
         return user_attrs
 
 
-def unlock_node_attributes(node, attributes=None, only_keyable=False):
-    """
-    Unlock attributes on given node.
-
-    :param pm.PyNode node: node to unlock attributes of.
-    :param list(str) attributes: list of attributes name to unlock on node. If None, unlock any that are locked.
-    :param bool only_keyable: whether to unlock only the keyable attributes.
-    :return: list of unlocked attributes.
-    :rtype: list(pm.Attribute)
-    """
-
-    unlocked_attributes = list()
-    if not attributes:
-        if only_keyable:
-            attributes = pm.listAttr(node, locked=True, k=True)
-        else:
-            attributes = pm.listAttr(node, locked=True)
-
-    if attributes:
-        attributes = lists.force_list(attributes)
-        for attr_name in attributes:
-            attr = node.attr(attr_name)
-            if not attr.isLocked():
-                continue
-            pm.setAttr('{}.{}'.format(node, attr_name), lock=False, keyable=True, channelBox=True)
-            pm.setAttr('{}.{}'.format(node, attr_name), keyable=True)
-            unlocked_attributes.append(attr)
-
-    return unlocked_attributes
-
-
-def serialize_attribute(attribute_to_serialize, optimize=True, force=False):
-    """
-    Function that converts given PyMEL attribute into a serialized dictionary.
-    
-    :param pm.Attribute attribute_to_serialize: attribute to serialize.
-    :param bool optimize: If True, all the serialized data with default values will be ignored.
-    :return: serialized plug as a dictionary.
-    :rtype: dict
-    """
-    
-    # this operation is a common operation we need to maximize its speed.
-    # for this reason we use OpenMaya to retrieve the data.
-    full_name = attribute_to_serialize.name(fullDagPath=True)
-    plug = om_plug.as_mplug(full_name)
-    
-    serialized_data = om_plug.serialize_plug(plug, optimize=optimize, force=force)
-    serialized_data.update({
-                'min': attribute_to_serialize.getMin(),
-                'max': attribute_to_serialize.getMax(),
-                'softMin': attribute_to_serialize.getSoftMin(),
-                'softMax': attribute_to_serialize.getSoftMax()
-                })
-    
-    # make sure we save the attribute type using PyMEL format (string) not OpenMaya format (integer)
-    if 'type' in serialized_data:
-        serialized_data['type'] = attributetypes.om_type_to_pymel_type(serialized_data['type'])
-    
-    return serialized_data
-
-
-def get_all_objects_with_attr(attr_name, of_type=None, as_pynode=True):
-    """
-    Search for objects with a given attribute name within all namespaces.
-    
-    :param str attr_name: Name of the attribute to search
-    :param str of_type: Type of objects to look for
-    :param bool as_pynode: return a list of pynodes or strings
-    :return:
-    :rtype: list[pm.nt.dagNode]
-    """
-    
-    all_namespaces = namespace.get_all_namespaces()
-    all_namespaces.append('')
-    objects = []
-    
-    for ns in all_namespaces:
-        search_string = f'{ns[1:]}:*.{attr_name}'
-        if not of_type:
-            objects += cmds.ls(search_string, o=1)
-        else:
-            objects += cmds.ls(search_string, o=1, type=of_type)
-    
-    if not as_pynode:
-        return objects
-    
-    return [pm.PyNode(x) for x in objects]
-
-
-def reset_attrs(obj):
-    """
-    puts all keyable attributes to default values,
-    translates,
-    rotates to 0,
-    scales,
-    visibility to 1,
-    customs to defaultValues
-    
-    :param pm.nt.PyNode obj: The pynode object to reset
-    :return: Returns a list of attributes which were set
-    :rtype: list(str)
-    """
-    if not pm.objExists(obj):
-        raise pm.MayaNodeError("object given, {0} , doesn't exist".format(obj))
-    
-    obj = pm.PyNode(obj)
-    keyable_attrs = obj.listAttr(keyable=1)
-    keyable_attrs = filter(lambda x: not x.isHidden(), keyable_attrs)
-    keyable_attrs = filter(lambda x: not x.isLocked(), keyable_attrs)
-    is_transform = isinstance(obj, pm.nodetypes.Transform)
-    transformAttrs_values = {}
-    
-    if is_transform:
-        transformAttrs_values = {obj.tx: 0,
-                                 obj.ty: 0,
-                                 obj.tz: 0,
-                                 obj.rx: 0,
-                                 obj.ry: 0,
-                                 obj.rz: 0,
-                                 obj.sx: 1,
-                                 obj.sy: 1,
-                                 obj.sz: 1,
-                                 obj.v: 1}
-    attrs_set = []
-    
-    for attr in keyable_attrs:
-        if is_transform:
-            if attr in transformAttrs_values.keys():
-                attr.set(transformAttrs_values[attr])
-                attrs_set.append(attr)
-        
-        default_value = None
-        
-        if attr.isDynamic():
-            default_value = pm.addAttr(attr, q=1, dv=1)
-        
-        failed_attrs = list()
-        if not default_value is None:
-            try:
-                attr.set(default_value)
-                attrs_set.append(attr)
-            except RuntimeError:
-                logger.warning(f'Failed to reset {attr}')
-                failed_attrs.append(attr)
-        if failed_attrs:
-            logger.warning(f'Failed to reset {len(failed_attrs)} attrs | {failed_attrs}')
-    
-    return list(set(attrs_set))
-
-
 def set_attribute(node, attribute_dict, merge_values=False):
     """
     Convert a dictionary of attr names and values into stamped attrs.
-    
+
     :param PyNode node: The PyNode to stamp the new attributes on
     :param dict attribute_dict: A dictionary of attr names to their values
     :param bool merge_values: If a multi attr should keep original values and add the new ones.
     :return:
     """
-    
+
     for attr_name, attr_value in attribute_dict.items():
         if not node.hasAttr(attr_name):
             if isinstance(attr_value, (list, tuple)):
@@ -477,9 +140,8 @@ def set_attribute(node, attribute_dict, merge_values=False):
                         break
                 else:
                     string_property_type = 'string'
-                    'An incoming data type does not have a register in the MAYA_TYPE_DICT type: {0} for property: {1}'.format(
-                            type(attr_value), attr_name)
-    
+                    f'An incoming data type does not have a register in the MAYA_TYPE_DICT type: {attr_value} for property: {attr_name}'
+
             if string_property_type in ['string']:
                 node.addAttr(attr_name,
                              dataType=string_property_type,
@@ -488,7 +150,7 @@ def set_attribute(node, attribute_dict, merge_values=False):
                 node.addAttr(attr_name,
                              attributeType=string_property_type,
                              nn=attr_name, m=multi_attr)
-    
+
         if attr_value is not None:
             new_node_attr = node.attr(attr_name)
             if isinstance(attr_value, (list, tuple)):
@@ -497,7 +159,7 @@ def set_attribute(node, attribute_dict, merge_values=False):
                 if merge_values:
                     original_values = new_node_attr.get() or []
                     found_index = node.getAttr(attr_name, mi=True)
-                    start_index = max(found_index)+1 if found_index else 0
+                    start_index = max(found_index) + 1 if found_index else 0
                 for index, val in enumerate(attr_value):
                     if merge_values and val in original_values:
                         continue
@@ -507,9 +169,9 @@ def set_attribute(node, attribute_dict, merge_values=False):
                             val.node().message >> new_node_attr[index + start_index]
                             node.message >> val
                         elif isinstance(val, pm.PyNode):
-                            val.message >> new_node_attr[index+start_index]
+                            val.message >> new_node_attr[index + start_index]
                         else:
-                            new_node_attr[index+start_index].set(val)
+                            new_node_attr[index + start_index].set(val)
                     except AttributeError as exc:
                         pass
             else:
@@ -553,15 +215,15 @@ def set_compound_attribute_groups(node, compound_attr_name, attribute_dict):
         # we're adding an extra child attr here to get around it.
         # when we export since this doesn't have the block name appended it'll fail to find when setting it to schema.
         node.addAttr(compound_attr_name, numberOfChildren=(number_of_children + 1), attributeType='compound')
-        node.addAttr('_{0}_hidden'.format(compound_attr_name), attributeType='bool', parent=compound_attr_name, h=True)
+        node.addAttr(f'_{compound_attr_name}_hidden', attributeType='bool', parent=compound_attr_name, h=True)
     # END HACK
     # add child attrs to the compound, these still register as if added directly to the node.
     for property_name, property_value in attribute_dict.items():
         if not isinstance(property_name, str):
-            'Dictionary key with value {0} is not a string, entry will be skipped.'.format(property_value)
+            'Dictionary key with value {property_value} is not a string, entry will be skipped.'
             continue
         # since the attr is added directly to the node, we need to make the name a little more unique
-        if not node.hasAttr('{0}_{1}'.format(compound_attr_name, property_name)):
+        if not node.hasAttr(f'{compound_attr_name}_{property_name}'):
             # block name and property name are combined to avoid property blocks with the same property name.
             # all attrs are registered on the base node and will conflict without this.
             if isinstance(property_value, (list, tuple)):
@@ -585,19 +247,18 @@ def set_compound_attribute_groups(node, compound_attr_name, attribute_dict):
                         break
                 else:
                     string_property_type = 'string'
-                    'An incoming data type does not have a register in the MAYA_TYPE_DICT type: {0} for property: {1}, {2}'.format(
-                        type(property_value), compound_attr_name, property_name)
+                    f'An incoming data type does not have a register in the MAYA_TYPE_DICT type: {type(property_value)} for property: {compound_attr_name}, {property_name}'
             else:
                 # data value was None
                 string_property_type = 'string'
             if string_property_type:
                 # concatenate the class name and property name to create a unique attr name. Objects cannot have more than one property group of the same type.
                 if string_property_type in ['string']:
-                    node.addAttr('{0}_{1}'.format(compound_attr_name, property_name),
+                    node.addAttr(f'{compound_attr_name}_{property_name}',
                                  dataType=string_property_type,
                                  parent=compound_attr_name, nn=property_name, m=multi_attr)
                 else:
-                    node.addAttr('{0}_{1}'.format(compound_attr_name, property_name),
+                    node.addAttr(f'{compound_attr_name}_{property_name}',
                                  attributeType=string_property_type,
                                  parent=compound_attr_name, nn=property_name, m=multi_attr)
     for property_name, property_value in attribute_dict.items():
@@ -607,15 +268,15 @@ def set_compound_attribute_groups(node, compound_attr_name, attribute_dict):
         if isinstance(property_value, pm.Attribute):
             # check if the receiver is a message attr
             property_value.disconnect()
-            property_value >> node.attr('{0}_{1}'.format(compound_attr_name, property_name))
-        # node.attr('{0}_{1}'.format(compound_attr_name, property_name)) >> property_value
+            property_value >> node.attr(f'{compound_attr_name}_{property_name}')
+        # node.attr(f'{compound_attr_name}_{property_name}') >> property_value
         
         elif isinstance(property_value, pm.PyNode):
             # To handle message type connections
             if pm.attributeQuery('message', node=property_value, exists=True):
-                property_value.message >> node.attr('{0}_{1}'.format(compound_attr_name, property_name))
+                property_value.message >> node.attr(f'{compound_attr_name}_{property_name}')
             else:
-                'does not have a message attr and could not be connected.'.format(property_value)
+                f'{property_value} does not have a message attr and could not be connected.'
         elif isinstance(property_value, (list, tuple)):
             # to handle multi attrs
             for index, value in enumerate(property_value):
@@ -625,46 +286,21 @@ def set_compound_attribute_groups(node, compound_attr_name, attribute_dict):
                 if isinstance(property_value, pm.Attribute):
                     # check if the receiver is a message attr
                     property_value.disconnect()
-                    property_value >> node.attr('{0}_{1}'.format(compound_attr_name, property_name))
-                    # node.attr('{0}_{1}'.format(compound_attr_name, property_name)) >> property_value
+                    property_value >> node.attr(f'{compound_attr_name}_{property_name}')
+                    # node.attr(f'{compound_attr_name}_{property_name}') >> property_value
                 elif isinstance(value, pm.PyNode):
                     # to handle message type connections
                     if pm.attributeQuery('message', node=value, exists=True):
-                        value >> node.attr('{0}_{1}'.format(compound_attr_name, property_name))[index]
+                        value >> node.attr(f'{compound_attr_name}_{property_name}')[index]
                     else:
-                        '{0} does not have a message attr and could not be connected.'.format(value)
+                        '{value} does not have a message attr and could not be connected.'
                 else:
-                    node.attr('{0}_{1}'.format(compound_attr_name, property_name))[index].set(value)
+                    node.attr(f'{compound_attr_name}_{property_name}')[index].set(value)
         else:
             # For standard single value settings.
             if property_value is not None:
                 # We can't set None
-                node.attr('{0}_{1}'.format(compound_attr_name, property_name)).set(property_value)
-
-
-def create_message_compound_attr(node, attr_names, compound_attr_name):
-    """
-    Creates a compound attribute with a list of attribute names.
-    The compound attr uses message attributes.
-    
-    :param pm.nt.Transform node: Maya transform to create compound attributes.
-    :param list(str) attr_names: list of attribute names to use in the compound attribute.
-    :param str compound_attr_name: the name of the compound attribute
-    :return: returns the newly created compound attribute.
-    :rtype: pm.nt.General.Attribute
-    """
-    
-    if not isinstance(attr_names, list):
-        logger.error('Attribute names must be a list.')
-        return
-    obj_number = len(attr_names)
-    node.addAttr(compound_attr_name, numberOfChildren=obj_number, attributeType='compound')
-    for x in range(obj_number):
-        node.addAttr(str(attr_names[x]), attributeType='message', parent=compound_attr_name)
-    compound_attr = node.attr(compound_attr_name)
-    if not node.hasAttr(compound_attr_name):
-        compound_attr.setAlias(compound_attr_name)
-    return compound_attr
+                node.attr(f'{compound_attr_name}_{property_name}').set(property_value)
 
 
 def get_all_attributes_from_compound_attr(node, compound_attr_name=None):
@@ -788,28 +424,27 @@ def disconnect_and_delete_compound_attr(node, compound_attr_name):
     pm.deleteAttr(compound_attr)
 
 
-def invert_attribute(attr):
+def invert_attribute(attr_to_invert):
     """
     Reverses the attribute.
     
-    :param str attr: Attribute name.
+    :param PyNode attr: Attribute name.
     :return: Returns the setRange node that reverses the value.
     :rtype: pm.nt.setRange
     """
-    
-    node_name = pm.PyNode(attr).nodeName().split(':')[-1]
-    node_name = node_name.replace('.', '_')
-    # Create setRange Node
-    reverse_node = pm.createNode("setRange", n="{0}_inverseAttr".format(node_name))
-    pm.setAttr(".min", [0, 1, 0], k=False, lock=True)
-    pm.setAttr(".max", [1, 0, 100], k=False, lock=True)
-    pm.setAttr(".oldMin", [0, 0, 0], k=False, lock=True)
-    pm.setAttr(".oldMax", [1, 1, 1], k=False, lock=True)
-    pm.aliasAttr("straight", "{0}.outValueX".format(reverse_node), "inverse", "{0}.outValueY".format(reverse_node),
-                 "percentage", "{0}.outValueZ".format(reverse_node))
-    pm.connectAttr(attr, "{0}.valueX".format(reverse_node), force=True)
-    pm.connectAttr(attr, "{0}.valueY".format(reverse_node), force=True)
-    pm.connectAttr(attr, "{0}.valueZ".format(reverse_node), force=True)
+    node_name = f'{naming.get_basename(attr_to_invert.node())}_inverseAttr'
+    reverse_node = pm.createNode(pm.nt.SetRange, n=node_name)
+    reverse_node.setAttr('min', [0, 1, 0], k=False, lock=True)
+    reverse_node.setAttr('max', [1, 0, 100], k=False, lock=True)
+    reverse_node.setAttr('oldMin', [0, 0, 0], k=False, lock=True)
+    reverse_node.setAttr('oldMax', [1, 1, 1], k=False, lock=True)
+    reverse_node.outValueX.setAlias('straight')
+    reverse_node.outValueY.setAlias('inverse')
+    reverse_node.outValueZ.setAlias('percent')
+
+    attr_to_invert >> reverse_node.valueX
+    attr_to_invert >> reverse_node.valueY
+    attr_to_invert >> reverse_node.valueZ
     return reverse_node
 
 
@@ -943,59 +578,6 @@ def add_limits_for_transform(node,
         node.attr(limit_min_name).lock(True)
     if not limit_max_loc:
         node.attr(limit_max_name).lock(True)
-
-
-def connect_nodes_with_message_attrs(source_node, source_attr, target_node, target_attr):
-    """
-    connect two nodes with provided message attrs.
-    :param      PyNode      source_node :source node connecting from
-    :param      str         source_attr :attribute on object a we'd like to connect as out
-    :param      PyNode      target_node :target node connecting to
-    :param      str         target_attr :attribute on object a we'd like to connect as in
-    :return:
-    """
-
-    source_attr_node = None
-    target_attr_node = None
-
-    # Source Attr
-    if isinstance(source_attr, str):
-        if source_node.hasAttr(source_attr):
-            source_attr_node = source_node.attr(
-                source_attr)  # this attr wrappiing may need to be optimized down the road.
-            if not source_attr_node.type() == 'message':
-                raise AttributeError(
-                    '{node}:{attr} is not a message attribute and was not connected.'.format(node=source_node,
-                                                                                             attr=source_attr))
-        else:
-            source_node.addAttr(source_attr, at='message')
-            source_attr_node = source_node.attr(source_attr)
-
-    elif isinstance(source_attr, pm.Attribute):
-        if source_attr.type() == 'message':
-            source_attr_node = source_attr
-
-    # target attr
-    if isinstance(target_attr, str):
-        if target_node.hasAttr(target_attr):
-            target_attr_node = target_node.attr(target_attr)
-            if not target_attr_node.type() == 'message':
-                raise AttributeError(
-                    '{node}:{attr} is not a message attribute and was not connected.'.format(node=target_node,
-                                                                                             attr=target_attr))
-        else:
-            target_node.addAttr(target_attr, at='message')
-            target_attr_node = target_node.attr(target_attr)
-
-    elif isinstance(target_attr, pm.Attribute):
-        if target_attr.type() == 'message':
-            target_attr_node = target_attr
-
-    # connect
-    try:
-        source_attr_node >> target_attr_node
-    except Exception:
-        pass
 
 
 def remove_relationship_between_nodes(source_node, destination_node):

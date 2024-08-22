@@ -11,13 +11,13 @@ import maya.cmds as cmds
 import pymel.core as pm
 import maya.mel as mel
 # mca python imports
-from mca.common.paths import paths
+from mca.common.project import paths
 from mca.mya.rigging import frag
-from mca.mya.pyqt import dialogs
+from mca.mya.pyqt import maya_dialogs
 from mca.mya.utils import display_layers, attr_utils
 from mca.mya.modeling import vert_utils, blendshape_model, blendshape_node, face_model
 from mca.mya.face.face_utils import face_util, face_import_export, face_skinning
-from mca.mya.rigging.flags import flag_utils
+#from mca.mya.rigging.flags import flag_utils
 from mca.common import log
 # Internal module imports
 
@@ -236,7 +236,7 @@ class FacePoseEdit:
 														mirror_pose_name=mirror_pose,
 														asset_id=asset_id)
 				attr_utils.purge_user_defined_attrs([mirror_mesh], skip_dialog=True)
-				dialogs.display_view_message(text='Mirroring Successful!', header='Face Editing')
+				maya_dialogs.display_view_message(text='Mirroring Successful!', header='Face Editing')
 		
 		# Get the parameters and reconnect the blend shapes to the rig
 		#parameters_inst = mesh.get_parameters()
@@ -618,7 +618,7 @@ class FacePoseEdit:
 		
 		path = paths.get_face_blendshape_path(asset_id)
 		face_import_export.export_blendshapes(path, pose_mesh, remove_mtls=True)
-		dialogs.display_view_message(text=f'{pose_mesh}: Exported Successfully', header='Face Editing')
+		maya_dialogs.display_view_message(text=f'{pose_mesh}: Exported Successfully', header='Face Editing')
 	
 	def mirror_edited_mesh(self, pose_mesh, mesh, mirror_pose_name, asset_id):
 		"""

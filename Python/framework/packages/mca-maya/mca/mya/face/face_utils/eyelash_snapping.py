@@ -11,12 +11,12 @@ import os
 import pymel.core as pm
 # mca python imports
 from mca.mya.modeling import rivets
-from mca.common.paths import paths
+from mca.common.project import paths
 from mca.common import log
 from mca.mya.modifiers import ma_decorators
 from mca.mya.face import source_data
 from mca.mya.rigging import mesh_markup_rig
-from mca.mya.deformations import skin_utils
+from mca.mya.rigging import skin_utils
 
 logger = log.MCA_LOGGER
 

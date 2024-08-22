@@ -11,14 +11,11 @@ import os
 import pymel.core as pm
 # mca python imports
 from mca.common import log
-from mca.common.utils import lists
-from mca.common.modifiers import decorators
-from mca.common.tools.dcctracking import dcc_tracking
+from mca.common.utils import list_utils
 from mca.mya.animation import baking
 from mca.mya.utils import attr_utils
-from mca.mya.rigging.flags import frag_flag
 from mca.mya.pyqt import mayawindows
-from mca.mya.rigging import frag
+from mca.mya.rigging import flags
 
 
 logger = log.MCA_LOGGER
@@ -57,7 +54,7 @@ def get_timewarp(create_new=True):
     :rtype: Transform
     """
 
-    time_control = lists.get_first_in_list(pm.ls('*.timewarp_node', o=True))
+    time_control = list_utils.get_first_in_list(pm.ls('*.timewarp_node', o=True))
 
     if not time_control:
         if not create_new:
@@ -115,7 +112,7 @@ def setup_timewarp_control():
     time_control.addAttr('animation_layer', h=False, k=False, at='message')
     time_control.addAttr('timewarp_input', dv=0.0, k=True)
 
-    attr_utils.lock_and_hide_attrs(time_control, attr_utils.TRANSFORM_ATTRS+['v'])
+    attr_utils.set_attr_state(time_control, attr_utils.TRANSFORM_ATTRS+['v'])
 
     return time_control
 
@@ -127,7 +124,7 @@ def setup_timewarp_layer(time_control):
     :param Transform time_control: The control that represents a timewarp system in the scene.
     """
 
-    animation_layer = lists.get_first_in_list(pm.ls('Timewarp_Selection', type=pm.nt.AnimLayer))
+    animation_layer = list_utils.get_first_in_list(pm.ls('Timewarp_Selection', type=pm.nt.AnimLayer))
     animation_layer = animation_layer or pm.animLayer('Timewarp_Selection')
     if not time_control.hasAttr('animation_layer'):
         time_control.addAttr('animation_layer', h=False, k=False, at='message')
@@ -217,7 +214,7 @@ def get_all_timewarped_nodes():
     current_anim_curve_list = timewarp_node.listConnections(type=pm.nt.AnimCurve)
     source_node_list = []
     for anim_curve in current_anim_curve_list:
-        source_node = lists.get_first_in_list(anim_curve.output.listConnections())
+        source_node = list_utils.get_first_in_list(anim_curve.output.listConnections())
         if source_node not in source_node_list:
             source_node_list.append(source_node)
     return source_node_list
@@ -230,15 +227,10 @@ def add_objects_to_timewarp_cmd():
     """
 
     selection = pm.selected()
-    filtered_selection = [x for x in selection if frag_flag.is_flag_node(x)]
+    filtered_selection = [x for x in selection if flags.is_flag(x)]
     add_remove_objects_from_timewarp(filtered_selection, True)
-    if filtered_selection:
-        frag_root = frag.get_frag_root(filtered_selection[0])
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(fn=add_objects_to_timewarp_cmd, asset_id=frag_root.asset_id)
 
 
-@decorators.track_fnc
 def remove_objects_from_timewarp_cmd():
     """
     Remove objects from the scene's timewarp.
@@ -246,15 +238,10 @@ def remove_objects_from_timewarp_cmd():
     """
 
     selection = pm.selected()
-    filtered_selection = [x for x in selection if frag_flag.is_flag_node(x)]
+    filtered_selection = [x for x in selection if flags.is_flag(x)]
     add_remove_objects_from_timewarp(filtered_selection, False)
-    if filtered_selection:
-        frag_root = frag.get_frag_root(filtered_selection[0])
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(fn=remove_objects_from_timewarp_cmd, asset_id=frag_root.asset_id)
 
 
-@decorators.track_fnc
 def get_all_timewarped_nodes_cmd():
     """
     Select all objects overriden by the timewarp
@@ -278,7 +265,7 @@ def remove_timewarp():
     pm.delete(things_to_delete)
 
 
-@decorators.track_fnc
+
 def bake_timewarp():
     """
     Bake the scene's timewarp down and remove it.

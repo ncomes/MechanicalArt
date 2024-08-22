@@ -71,7 +71,7 @@ def copyAllAnimation(cineShot, newStartTime):
     print("All Done!")
 
 
-@decorators.track_fnc
+
 def duplicateShot():
     seqNodes = cmds.ls("*Sequence_Node")
     if seqNodes:

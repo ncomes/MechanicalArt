@@ -13,7 +13,7 @@ import shutil
 import pymel.core as pm
 import maya.cmds as cmds
 #  python imports
-from mca.common.paths import paths
+from mca.common.project import paths
 from mca.mya.utils import attr_utils, display_layers
 from mca.mya.modeling import blendshape_model, blendshape_node, face_model
 from mca.mya.face import source_data
@@ -58,7 +58,7 @@ def convert_to_source_mesh(mesh, asset_id):
     blendshape_node.BlendShapeNode.create(shapes=shapes,
                                             mesh=source_mesh.mesh,
                                             label=source_mesh.part_type_name)
-    attr_utils.unlock_all_attrs(source_mesh.mesh)
+    attr_utils.set_attr_state(source_mesh.mesh, False)
 
     return source_mesh
 

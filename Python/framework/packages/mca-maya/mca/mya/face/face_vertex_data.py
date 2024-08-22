@@ -16,7 +16,7 @@ import maya.cmds as cmds
 import maya.mel as mel
 
 #  python imports
-from mca.common.utils import pyutils
+from mca.common.utils import dict_utils
 from mca.mya.modifiers import ma_decorators
 from mca.mya.modeling import vert_utils
 from mca.common.tools.progressbar import progressbar_ui
@@ -24,7 +24,7 @@ from mca.common.tools.progressbar import progressbar_ui
 
 class SourceVertexData:
 	def __init__(self, data):
-		self.data = pyutils.ObjectDict(data)
+		self.data = dict_utils.ObjectDict(data)
 
 	@staticmethod
 	def build_vertex_name(mesh_name, vertex_number):
@@ -135,7 +135,7 @@ class SourceVertexData:
 
 class RegionVertices(SourceVertexData):
 	def __init__(self, data):
-		self.data = pyutils.ObjectDict(data)
+		self.data = dict_utils.ObjectDict(data)
 		super(RegionVertices, self).__init__(data)
 
 	@classmethod
@@ -1163,7 +1163,7 @@ class SourceVertexMirror(SourceVertexData):
 			self.data['mirror_map'] = {}
 		if not 'right' in self.data:
 			self.data['right'] = {}
-		self.data = pyutils.ObjectDict(self.data)
+		self.data = dict_utils.ObjectDict(self.data)
 
 	@property
 	def left(self):
@@ -1364,7 +1364,7 @@ class SourceFaceEyelashShelf(SourceVertexData):
 			self.data['eye_shelf'] = {}
 		if not 'lip_snap' in self.data:
 			self.data['lip_snap'] = {}
-		self.data = pyutils.ObjectDict(self.data)
+		self.data = dict_utils.ObjectDict(self.data)
 
 	@classmethod
 	def create(cls, eye_blink, eye_shelf, lip_snap):

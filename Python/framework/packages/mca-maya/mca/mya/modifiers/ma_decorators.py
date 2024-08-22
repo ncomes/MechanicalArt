@@ -105,6 +105,32 @@ def freeze_renderer_decorator(fn):
     return wrapper
 
 
+def ignore_prompts_decorator(fn):
+    """
+    Function decorator that makes sure that disable maya import/open prompts.
+
+    :param callable fn: decorated function.
+    """
+
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        try:
+            prompt_setting = cmds.file(prompt=True, q=True)
+            cmds.file(prompt=False)
+            result = None
+            try:
+                result = fn(*args, **kwargs)
+            except Exception:
+                raise
+            finally:
+                cmds.file(prompt=prompt_setting)
+            return result
+        except Exception:
+            raise
+
+    return wrapper
+
+
 def keep_autokey_decorator(fn):
     """
     Function decorator that makes sure that original autokey setting is kept after executing the wrapped function.

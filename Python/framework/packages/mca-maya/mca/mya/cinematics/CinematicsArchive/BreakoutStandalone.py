@@ -24,7 +24,7 @@ mayaNode = sys.argv[2]
 seqsDir = sys.argv[3]
 
 
-@decorators.track_fnc
+
 def batchBreakout():
     #open file
     cmds.file(fileName, o=True, f=True)

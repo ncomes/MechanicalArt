@@ -38,7 +38,7 @@ def groupLoc(loc):
         cmds.parent(loc, layoutGrp)
 
 
-@decorators.track_fnc
+
 def addLocators():
     selection = cmds.ls(sl=True)
     for each in selection:

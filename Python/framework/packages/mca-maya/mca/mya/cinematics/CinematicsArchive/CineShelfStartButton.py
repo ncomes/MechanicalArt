@@ -17,7 +17,7 @@ from mca.common.modifiers import decorators
 print("Hold on to your...")
 
 
-@decorators.track_fnc
+
 def startButtonCommand(*args):
     path = getProjectPath()
     #print(path)
@@ -30,7 +30,7 @@ def startButtonCommand(*args):
 
 def getProjectPath(*args):    
     #Studio Specific import of tools to get the project
-    from mca.common.paths import project_paths
+    from mca.common.project import project_paths
     path = project_paths.MCA_PROJECT_ROOT
     ####
 
@@ -47,7 +47,7 @@ def setCinematicProjectPaths(path):
     csc.scriptsPath = r'{}{}'.format(csc.projectPath,'\\Python\\framework\\mca\\mya\\cinematics')
 
 
-@decorators.track_fnc
+
 def makeCustomShelf():
     shelfName = "Cinematics"
     labelBackground = (0, 0, 0, 0)

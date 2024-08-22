@@ -60,7 +60,7 @@ def executeBatchBreakout():
         nodeUI.mayaCineStartUI(nodeUI)    
 
 
-@decorators.track_fnc
+
 def promptBreakoutWindow(*args):
     result = cmds.confirmDialog( title='Batch Break Out Shots', 
         message='WARNING:\n\nThis process will lock your Maya until it is finished.'+

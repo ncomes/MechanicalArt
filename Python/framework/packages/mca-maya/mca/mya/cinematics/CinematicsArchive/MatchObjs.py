@@ -31,7 +31,7 @@ def matchPos(lead, follow):
     cmds.delete(con)
 
 
-@decorators.track_fnc
+
 def matchObjs():
     if getMatchSelection():
         lead, follow = getMatchSelection()

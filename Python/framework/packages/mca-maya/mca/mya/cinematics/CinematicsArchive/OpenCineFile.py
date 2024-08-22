@@ -14,7 +14,7 @@ from mca.common.modifiers import decorators
 from mca.mya.cinematics.CinematicsArchive.CineClasses import CineStaticClass as csc
 
 
-@decorators.track_fnc
+
 def openMayaFile(filePath, refresh=True, *args):
     #print('opening {} file'.format(os.path.basename(filePath)))
     cmds.file( new = True, force = True )

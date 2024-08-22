@@ -7,9 +7,8 @@ Configurations for rig FK/IK and space switching options.
 
 # python imports
 import os
-from PySide2.QtWidgets import QLabel, QHBoxLayout, QComboBox, QPushButton, QScrollArea, QSizePolicy, QWidget
-from PySide2.QtWidgets import QFrame, QVBoxLayout
-from PySide2.QtCore import Qt
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets, qtcore
 
 # software specific imports
 import pymel.core as pm
@@ -44,19 +43,19 @@ class RigSettings(mayawindows.MCAMayaWindow):
         Setting up scroll widget to place flags in later.
         """
 
-        scroll_area = QScrollArea()
+        scroll_area = qtwidgets.QScrollArea()
         scroll_area.setObjectName('MainScrollFrame')
-        scroll_area.setFrameStyle(QFrame.Box | QFrame.Sunken)
+        scroll_area.setFrameStyle(qtwidgets.QFrame.Box | qtwidgets.QFrame.Sunken)
         scroll_area.setContentsMargins(0, 0, 4, 0)
-        scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll_area.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Expanding)
+        scroll_area.setVerticalScrollBarPolicy(qtcore.Qt.ScrollBarAsNeeded)
+        scroll_area.setHorizontalScrollBarPolicy(qtcore.Qt.ScrollBarAlwaysOff)
         scroll_area.setWidgetResizable(True)
         self.ui.main_verticalLayout.addWidget(scroll_area)
-        scroll_area_widget_contents = QWidget()
+        scroll_area_widget_contents = qtwidgets.QWidget()
         scroll_area.setWidget(scroll_area_widget_contents)
 
-        self.container_layout = QVBoxLayout(scroll_area_widget_contents)
+        self.container_layout = qtwidgets.QVBoxLayout(scroll_area_widget_contents)
         scroll_area_widget_contents.setLayout(self.container_layout)
 
     def setup_signals(self):
@@ -160,9 +159,9 @@ class RigSettings(mayawindows.MCAMayaWindow):
         Adds a horizontal line divider to layout.
         """
 
-        hline = QFrame()
-        hline.setFrameShape(QFrame.HLine)
-        hline.setFrameShadow(QFrame.Sunken)
+        hline = qtwidgets.QFrame()
+        hline.setFrameShape(qtwidgets.QFrame.HLine)
+        hline.setFrameShadow(qtwidgets.QFrame.Sunken)
         self.container_layout.addWidget(hline)
 
     def _add_group_label(self, name):
@@ -172,7 +171,7 @@ class RigSettings(mayawindows.MCAMayaWindow):
         :param str name: Name of the label.
         """
 
-        label = QLabel(name.capitalize())
+        label = qtwidgets.QLabel(name.capitalize())
         label_font = label.font()
         label_font.setBold(True)
         label.setFont(label_font)
@@ -228,31 +227,31 @@ class RigSettings(mayawindows.MCAMayaWindow):
                 pm.setAttr(f'{key}.rotateFollow', value[0])
 
 
-class FlagOptionWidget(QWidget):
+class FlagOptionWidget(qtwidgets.QWidget):
     def __init__(self, flag=None, follow_enums=None, ikfk_switch=False, namespace=None, parent=None, parent_class=None):
         super().__init__(parent=parent)
 
         # Creates layout.
-        self.main_layout = QHBoxLayout()
+        self.main_layout = qtwidgets.QHBoxLayout()
         self.main_layout.setContentsMargins(0, 3, 3, 0)
         self.setLayout(self.main_layout)
 
         # Creates flag label.
-        self.flag_label = QLabel()
+        self.flag_label = qtwidgets.QLabel()
         self.main_layout.addWidget(self.flag_label)
 
         # Creates combo box for ikfk_switch.
-        self.ikfk_comboBox = QComboBox()
+        self.ikfk_comboBox = qtwidgets.QComboBox()
         self.ikfk_comboBox.setMaximumWidth(40)
         self.main_layout.addWidget(self.ikfk_comboBox)
 
         # Creates combo box for space switching.
-        self.followenum_comboBox = QComboBox()
+        self.followenum_comboBox = qtwidgets.QComboBox()
         self.followenum_comboBox.setMaximumWidth(100)
         self.main_layout.addWidget(self.followenum_comboBox)
 
         # Creates button to apply specific flag only.
-        self.button = QPushButton('+')
+        self.button = qtwidgets.QPushButton('+')
         self.button.setMaximumHeight(20)
         self.button.setMaximumWidth(20)
         self.main_layout.addWidget(self.button)

@@ -32,7 +32,7 @@ def deleteSceneMover(loc, topGroups):
     cmds.delete(loc)
 
 
-@decorators.track_fnc
+
 def makeSceneMoverButtonClick(*args):
     targetGroups = ['cameras', 'props', 'chars', 'layout', 'env']
     topGroups = [x for x in cmds.ls('*_grp') if x[:-4] in targetGroups]

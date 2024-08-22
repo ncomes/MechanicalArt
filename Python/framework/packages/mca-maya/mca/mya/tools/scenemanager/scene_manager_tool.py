@@ -8,9 +8,12 @@ Tool for organizing a Maya scene.
 
 # python imports
 import os
-from PySide2.QtWidgets import QAction, QMenu, QPushButton, QHBoxLayout, QSizePolicy, QTreeWidgetItem
-from PySide2.QtWidgets import QWidget
-from PySide2.QtCore import Qt, QSize
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets, qtcore, qtgui
+try:
+	QAction = qtwidgets.QAction
+except:
+	QAction = qtgui.QAction
 
 # software specific imports
 import pymel.core as pm
@@ -20,9 +23,8 @@ from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 from mca.common import log
 from mca.common.pyqt import messages
 from mca.common.utils import fileio
-from mca.common.modifiers import decorators
-from mca.mya.utils import scene_utils, namespace
-from mca.mya.rigging import frag, rig_utils
+from mca.mya.utils import namespace_utils, scene_utils
+from mca.mya.rigging import frag
 from mca.mya.pyqt.utils import ma_main_window
 from mca.mya.pyqt import mayawindows
 
@@ -37,7 +39,7 @@ def MCASceneManagerStartup():
 	"""
 
 	found_manager_widget = None
-	for widget in MAYA_MAIN_WINDOW.findChildren(QWidget):
+	for widget in MAYA_MAIN_WINDOW.findChildren(qtwidgets.QWidget):
 		if isinstance(widget, MayaQWidgetDockableMixin) and 'MCA_SceneManager' in widget.objectName():
 			found_manager_widget = widget
 			break
@@ -92,8 +94,8 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		self.ui.rigs_treeWidget.clear()
 		self.layer_data_dict = {}
 		for layer_group, layer_data in self.layer_tree_build_dict.items():
-			rig_tree_widget_item = QTreeWidgetItem(self.ui.rigs_treeWidget)
-			rig_tree_widget_item.setSizeHint(1, QSize(0, 30))
+			rig_tree_widget_item = qtwidgets.QTreeWidgetItem(self.ui.rigs_treeWidget)
+			rig_tree_widget_item.setSizeHint(1, qtcore.QSize(0, 30))
 			rig_tree_widget_item.setText(0, layer_group)
 			top_vis_button, top_p_button = self.setup_buttons(rig_tree_widget_item,
 															  add_dt_button=False,
@@ -110,8 +112,8 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 
 			if display_layers:
 				for layer in display_layers:
-					layer_tree_widget_item = QTreeWidgetItem(rig_tree_widget_item)
-					layer_tree_widget_item.setSizeHint(1, QSize(0, 20))
+					layer_tree_widget_item = qtwidgets.QTreeWidgetItem(rig_tree_widget_item)
+					layer_tree_widget_item.setSizeHint(1, qtcore.QSize(0, 20))
 					layer_tree_widget_item.setText(0, layer.name().split(':')[-1])
 
 
@@ -149,7 +151,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 
 			self.ui.rigs_treeWidget.setColumnWidth(0, 130)
 			self.ui.rigs_treeWidget.setColumnWidth(1, 30)
-			self.ui.rigs_treeWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+			self.ui.rigs_treeWidget.setContextMenuPolicy(qtcore.Qt.CustomContextMenu)
 
 			self.ui.rigs_treeWidget.customContextMenuRequested.connect(self.show_context_menu)
 			self.ui.rigs_treeWidget.resizeColumnToContents(1)
@@ -158,32 +160,32 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		"""
 		Sets up buttons for the rig tree widget item
 
-		:param QTreeWidgetItem tree_widget_item: Item to add buttons to.
+		:param qtwidgets.QTreeWidgetItem tree_widget_item: Item to add buttons to.
 		:param bool add_dt_button: Whether or not to add the dt button (top level buttons do not have a dt button).
 		:param list(int) button_size: Width and height of the buttons.
 		:return: Returrns list of created buttons.
-		:rtype: list(QPushButton)
+		:rtype: list(qtwidgets.QPushButton)
 
 		"""
 
 		return_buttons = []
-		button_widget = QWidget()
-		button_layout = QHBoxLayout(button_widget)
+		button_widget = qtwidgets.QWidget()
+		button_layout = qtwidgets.QHBoxLayout(button_widget)
 		button_layout.setContentsMargins(0, 0, 0, 0)
-		vis_button = QPushButton()
-		p_button = QPushButton()
+		vis_button = qtwidgets.QPushButton()
+		p_button = qtwidgets.QPushButton()
 
 		if add_dt_button:
-			dt_button = QPushButton()
-			dt_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+			dt_button = qtwidgets.QPushButton()
+			dt_button.setSizePolicy(qtwidgets.QSizePolicy.Fixed, qtwidgets.QSizePolicy.Fixed)
 			dt_button.setFixedSize(button_size[0], button_size[1])
 			return_buttons.append(dt_button)
 
 		return_buttons.append(vis_button)
 		return_buttons.append(p_button)
 
-		vis_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-		p_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+		vis_button.setSizePolicy(qtwidgets.QSizePolicy.Fixed, qtwidgets.QSizePolicy.Fixed)
+		p_button.setSizePolicy(qtwidgets.QSizePolicy.Fixed, qtwidgets.QSizePolicy.Fixed)
 
 		vis_button.setFixedSize(button_size[0], button_size[1])
 		p_button.setFixedSize(button_size[0], button_size[1])
@@ -193,12 +195,12 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		if add_dt_button:
 			button_layout.addWidget(dt_button)
 
-		button_widget.setWindowFlags(Qt.FramelessWindowHint)
-		button_widget.setAttribute(Qt.WA_TranslucentBackground)
+		button_widget.setWindowFlags(qtcore.Qt.FramelessWindowHint)
+		button_widget.setAttribute(qtcore.Qt.WA_TranslucentBackground)
 
 		self.ui.rigs_treeWidget.setItemWidget(tree_widget_item, 1, button_widget)
 		button_widget.setFixedSize(button_size[0]*3+20, button_size[1]+2)
-		button_widget.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+		button_widget.setSizePolicy(qtwidgets.QSizePolicy.Fixed, qtwidgets.QSizePolicy.Fixed)
 
 		for button in return_buttons:
 			button.setContentsMargins(0, 0, 0, 0)
@@ -278,7 +280,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		"""
 		Returns the layer(s) associated with the button.
 
-		:param QPushButton button: Button to get the layer from.
+		:param qtwidgets.QPushButton button: Button to get the layer from.
 		:return: List of layer(s) associated with the button.
 		:rtype: list(str)
 
@@ -291,7 +293,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 					return_layers.append(layer)
 		return return_layers
 
-	@decorators.track_fnc
+	
 	def _on_top_vis_button_clicked(self):
 		"""
 		Sets the visibility of all layers in a layer group to off or their original value.
@@ -323,7 +325,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 
 		self.set_vis_button_state(button, 'V')
 
-	@decorators.track_fnc
+	
 	def _on_top_p_button_clicked(self):
 		"""
 		Sets the hideOnPlayback of all layers in a layer group to off or their original value.
@@ -401,14 +403,14 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 			create_new_lyr_action = QAction('Create New Layer', self)
 			actions.append(create_new_lyr_action)
 			create_new_lyr_action.triggered.connect(self._on_create_new_layer_action_triggered)
-		menu = QMenu(self)
+		menu = qtwidgets.QMenu(self)
 
 		list(map(lambda x: menu.addAction(x), actions))
 
 		# Show the context menu at the specified position
 		menu.exec_(self.ui.rigs_treeWidget.mapToGlobal(position))
 
-	@decorators.track_fnc
+	
 	def _on_create_new_layer_action_triggered(self):
 		"""
 		Creates new layer.
@@ -420,7 +422,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 			pm.createNode(pm.nt.DisplayLayer, name=layer_name)
 			self.initialize_layer_tree()
 
-	@decorators.track_fnc
+	
 	def _on_empty_layer_action_triggered(self, item):
 		"""
 		Empties the layer.
@@ -436,12 +438,12 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		layer_members = pm.editDisplayLayerMembers(layer_node, q=True)
 		layer_node.removeMembers(layer_members)
 
-	@decorators.track_fnc
+	
 	def _on_delete_group_action_triggered(self, item):
 		"""
 		Deletes layer group and all associated layers.
 
-		:param QTreeWidgetItem item: Item to delete.
+		:param qtwidgets.QTreeWidgetItem item: Item to delete.
 
 		"""
 
@@ -469,12 +471,12 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 				del child_item
 			del top_level_item
 
-	@decorators.track_fnc
+	
 	def _on_add_selected_action_triggered(self, item):
 		"""
 		Adds selected objects to layer.
 
-		:param QTreeWidgetItem item: Item whose associated layer we want to add selected objects to.
+		:param qtwidgets.QTreeWidgetItem item: Item whose associated layer we want to add selected objects to.
 
 		"""
 
@@ -490,12 +492,12 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		layer_node = pm.PyNode(layer)
 		layer_node.addMembers(selected_objects)
 
-	@decorators.track_fnc
+	
 	def _on_remove_selected_action_triggered(self, item):
 		"""
 		Removes selected objects from layer.
 
-		:param QTreeWidgetItem item: Item whose associated layer we want to remove selected objects from.
+		:param qtwidgets.QTreeWidgetItem item: Item whose associated layer we want to remove selected objects from.
 
 		"""
 
@@ -511,12 +513,12 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		layer_node = pm.PyNode(layer)
 		layer_node.removeMembers(selected_objects)
 
-	@decorators.track_fnc
+	
 	def _on_delete_layer_action_triggered(self, item):
 		"""
 		Deletes selected layer.
 
-		:param QTreeWidgetItem item: Item whose associated layer we want to delete.
+		:param qtwidgets.QTreeWidgetItem item: Item whose associated layer we want to delete.
 
 		"""
 
@@ -543,12 +545,12 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 
 		del self.layer_data_dict[layer]
 
-	@decorators.track_fnc
+	
 	def _on_rename_layer_action_triggered(self, item):
 		"""
 		Renames layer.
 
-		:param QTreeWidgetItem item: Tree item whose associated layer we want to rename.
+		:param qtwidgets.QTreeWidgetItem item: Tree item whose associated layer we want to rename.
 
 		"""
 
@@ -563,13 +565,13 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		new_name = messages.text_prompt_message('Rename Layer', 'New name for this layer:', layer.split(':')[-1])
 
 		if new_name:
-			layer_namespace = namespace.get_namespace(layer, check_node=False)
+			layer_namespace = namespace_utils.get_namespace(layer, check_node=False)
 			layer_node.rename(f'{layer_namespace}:{new_name}')
 			item.setText(0, new_name.split(':')[-1])
 			self.layer_data_dict[layer_node.name()] = layer_data
 			del self.layer_data_dict[layer]
 
-	@decorators.track_fnc
+	
 	def _on_dt_button_clicked(self):
 		"""
 		Sets the display type of the layer.
@@ -597,7 +599,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 	def set_dt_button_state(self, button, value):
 		"""
 		Sets the state of the display type button.
-		:param QPushButton button: Button to set the state of.
+		:param qtwidgets.QPushButton button: Button to set the state of.
 		:param int value: Value to set the button to.
 
 		"""
@@ -609,7 +611,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		else:
 			button.setText('')
 
-	@decorators.track_fnc
+	
 	def _on_vis_button_clicked(self):
 		"""
 		Sets the visibility of the layer.
@@ -629,7 +631,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		layer_data = self.layer_data_dict.get(layer)
 		layer_data['vis_status'] = set_layer
 
-	@decorators.track_fnc
+	
 	def _on_p_button_clicked(self):
 		"""
 		Sets the playback status of the layer.
@@ -652,7 +654,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		"""
 		Sets the state of the visibility button.
 
-		:param QPushButton button: Button to set the state of.
+		:param qtwidgets.QPushButton button: Button to set the state of.
 		:param str letter: Letter to set the button to.
 
 		"""
@@ -662,7 +664,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		else:
 			button.setText('')
 
-	@decorators.track_fnc
+	
 	def _on_action_clean_scene_triggered(self):
 		"""
 		Cleans the scene.
@@ -676,19 +678,19 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 															 f'\nPlease see script editor for more details.')
 		self.initialize_layer_tree()
 
-	@decorators.track_fnc
+	
 	def _on_action_remove_dead_frag_nodes_triggered(self):
 		"""
 		Removes dead frag nodes.
 
 		"""
 
-		dead_nodes_list = rig_utils.remove_dead_frag_nodes()
+		dead_nodes_list = frag.remove_dead_frag_nodes()
 		info_message = messages.info_message('Remove Dead Frag Nodes', f'Removed {len(dead_nodes_list)} abandoned FRAG nodes.'
 																	   f'\nPlease see script editor for more details.')
 		self.initialize_layer_tree()
 
-	@decorators.track_fnc
+	
 	def _on_action_check_out_in_plastic_triggered(self):
 		"""
 		Checks out the current scene in plastic.
@@ -698,7 +700,7 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 		file_path = pm.sceneName()
 		fileio.touch_and_checkout(file_path)
 
-	@decorators.track_fnc
+	
 	def _on_refresh_button_clicked(self):
 		"""
 		Refreshes the layer tree.
@@ -707,11 +709,11 @@ class MCASceneManager(MayaQWidgetDockableMixin, mayawindows.MCAMayaWindow):
 
 		self.initialize_layer_tree()
 
-	@decorators.track_fnc
+	
 	def _on_select_objects_action_triggered(self, item):
 		"""
 		Selects the layer members.
-		:param QTreeWidgetItem item: Tree item whose associated objects will be selected.
+		:param qtwidgets.QTreeWidgetItem item: Tree item whose associated objects will be selected.
 
 		"""
 

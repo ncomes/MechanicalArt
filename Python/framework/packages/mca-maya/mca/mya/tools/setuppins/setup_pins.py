@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 A tool for character modelling team to use to have a visual reference of joints and how they will rotate
 """
@@ -8,24 +5,19 @@ A tool for character modelling team to use to have a visual reference of joints 
 # python imports
 import os
 import inspect
-import webbrowser
-import yaml
-
 # software specific imports
 import pymel.core as pm
-
 # mca python imports
 from mca.common import log
 from mca.common.utils import fileio
-from mca.common.tools.dcctracking import dcc_tracking
 from mca.common.modifiers import decorators as py_decorators
 from mca.common.textio import yamlio
 from mca.common.resources import resources
 from mca.common.assetlist import assetlist
 from mca.mya.pyqt import mayawindows
 from mca.mya.rigging import skel_utils, chain_markup
-from mca.mya.utils import namespace, naming, optionvars
-from mca.mya.modeling import geometry
+from mca.mya.utils import namespace_utils, naming, optionvars
+from mca.mya.modeling import geo_utils
 from mca.mya.modifiers import ma_decorators
 
 
@@ -72,7 +64,7 @@ class SkeletonPins(mayawindows.MCAMayaWindow):
         self.CREATED_NODES = {}
         tool_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
         self.PIN_PATH = os.path.join(tool_path, 'setup_pins_dict.yml')
-        self.PIN_DATA_DICT = yamlio.read_yaml_file(self.PIN_PATH)
+        self.PIN_DATA_DICT = yamlio.read_yaml(self.PIN_PATH)
 
         self.setup_signals()
 
@@ -125,8 +117,6 @@ class SkeletonPins(mayawindows.MCAMayaWindow):
         self._on_remove_button_clicked()
 
         asset_id = self.ui.assetBox.currentText()
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(fn=self._on_add_button_clicked, data_entry=asset_id)
 
         # Look for a skeleton to reference, import one if not found
         jnt_list = pm.ls(type=pm.nt.Joint)
@@ -145,7 +135,7 @@ class SkeletonPins(mayawindows.MCAMayaWindow):
             else:
                 delete_joint_list = True
 
-        pins = geometry.make_pins(joint_list=chain_markup.ChainMarkup(root_joint).joints,
+        pins = geo_utils.make_pins(joint_list=chain_markup.ChainMarkup(root_joint).joints,
                          size_multiplier=self.ui.create_size_spinBox.value(),
                          data_dict=self.PIN_DATA_DICT,
                          delete_joint_list=delete_joint_list,
@@ -178,7 +168,7 @@ class SkeletonPins(mayawindows.MCAMayaWindow):
                 pm.delete(skel[0])
 
         if pm.namespace(exists='skel_ref'):
-            namespace.purge_namespace('skel_ref')
+            namespace_utils.purge_namespace('skel_ref')
 
         if not self.ui.make_editable_pushButton.isEnabled():
             self._button_switch()
@@ -193,9 +183,6 @@ class SkeletonPins(mayawindows.MCAMayaWindow):
 
         self.save_pin_config(self.CREATED_NODES.get('pins'))
         self.export_pin_data()
-        asset_id = self.ui.assetBox.currentText()
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(fn=self._on_save_data_button_clicked, data_entry=asset_id)
         
 
     def save_pin_config(self, pin_list):
@@ -246,11 +233,11 @@ class SkeletonPins(mayawindows.MCAMayaWindow):
             return
         new_objs = []
         obj_grp = selected_objects[0].getParent()
-        namespace.set_namespace('skel_ref')
+        namespace_utils.set_namespace('skel_ref')
         for obj in selected_objects:
             obj_name = naming.get_basename(obj)
             if obj.hasAttr('ref_pin'):
-                new_obj = geometry.create_reference_obj(obj.scaleY.get(),
+                new_obj = geo_utils.create_reference_obj(obj.scaleY.get(),
                                                         self.ui.create_size_spinBox.value(),
                                                         new_shape,
                                                         obj.rotatedAxis.get(),
@@ -261,7 +248,7 @@ class SkeletonPins(mayawindows.MCAMayaWindow):
                 new_obj.setParent(obj_grp)
                 new_obj.translate.lock()
                 new_objs.append(new_obj)
-        namespace.set_namespace('')
+        namespace_utils.set_namespace('')
         pm.select(new_objs, r=True)
 
     def _on_edit_size_changed(self):
@@ -283,7 +270,7 @@ class SkeletonPins(mayawindows.MCAMayaWindow):
         Exports PIN_DATA_DICT to YAML file
         """
         fileio.touch_path(self.PIN_PATH)
-        yamlio.write_to_yaml_file(self.PIN_DATA_DICT, self.PIN_PATH)
+        yamlio.write_yaml(self.PIN_PATH, self.PIN_DATA_DICT)
 
     @py_decorators.track_fnc
     def _on_import_skeleton_button_pressed(self):
@@ -294,9 +281,6 @@ class SkeletonPins(mayawindows.MCAMayaWindow):
         root_joint = self._import_skeleton()
         self._button_switch()
         self.CREATED_NODES['skel'] = [root_joint]
-        asset_id = self.ui.assetBox.currentText()
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(fn=self._on_import_skeleton_button_pressed, data_entry=asset_id)
 
     def _import_skeleton(self):
         """

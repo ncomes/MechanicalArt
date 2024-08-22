@@ -16,7 +16,7 @@ from  mca.mya.cinematics.CinematicsArchive.CineSequenceNodes import CineSequence
 from functools import partial
 
 
-@decorators.track_fnc
+
 def renameShot():
     selShot = [x for x in cmds.ls(sl=True) if x in cmds.ls(type='shot')]
     if not selShot:

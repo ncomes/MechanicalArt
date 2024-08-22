@@ -19,7 +19,7 @@ import mca.mya.cinematics.CinematicsArchive.CineClasses as cc
 logger = log.MCA_LOGGER
 
 
-@decorators.track_fnc
+
 def breakOutSelectedShot(*args):
     if cmds.ls('*Sequence_Node'):
         mayaNode = cmds.ls('*Sequence_Node')[0]

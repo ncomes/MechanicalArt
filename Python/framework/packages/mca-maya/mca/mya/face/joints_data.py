@@ -13,7 +13,7 @@ import pymel.core as pm
 import maya.cmds as cmds
 
 #  python imports
-from mca.common.utils import pyutils
+from mca.common.utils import dict_utils
 from mca.common.textio import yamlio, jsonio
 from mca.mya.modeling import rivets, vert_utils
 
@@ -33,7 +33,7 @@ UV_DATA = {'joints': {'rivet': {},
 
 class FaceJointData:
 	def __init__(self, data):
-		self.data = pyutils.ObjectDict(data)
+		self.data = dict_utils.ObjectDict(data)
 		
 	@classmethod
 	def create(cls, mesh, joints, prefix='rivet_'):
@@ -89,7 +89,7 @@ class FaceJointData:
 		if not data:
 			data = {}
 		data = dict(list(UV_DATA.items()) + list(data.items()))
-		return pyutils.ObjectDict(data)
+		return dict_utils.ObjectDict(data)
 	
 	@property
 	def joints(self):
@@ -346,7 +346,7 @@ class FaceJointData:
 		:param str file_path: Full path to the file.
 		"""
 		
-		yamlio.write_to_yaml_file(data=self.data, filename=file_path)
+		yamlio.write_yaml(file_path, self.data)
 	
 	@classmethod
 	def load_yaml(cls, file_path):
@@ -358,5 +358,5 @@ class FaceJointData:
 		:rtype: UvPositionData
 		"""
 		
-		data = yamlio.read_yaml_file(file_path)
+		data = yamlio.read_yaml(file_path)
 		return cls(data)

@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Tool that adds multi constraints.
 """
@@ -9,30 +6,25 @@ Tool that adds multi constraints.
 import os
 # Software specific imports
 import pymel.core as pm
+import maya.cmds as cmds
 # mca python imports
-from mca.common import log
-from mca.common.tools.dcctracking import dcc_tracking
-
 from mca.mya.modifiers import ma_decorators
 from mca.mya.pyqt import mayawindows
-from mca.mya.rigging import frag
-from mca.mya.rigging.flags import frag_flag
+from mca.mya.rigging import flags, frag
 from mca.mya.utils import naming
-from mca.mya.rigging import rig_utils
-
-
+from mca.common import log
 logger = log.MCA_LOGGER
 
 
 class MulticonstraintSwitch(mayawindows.MCAMayaWindow):
-    VERSION = '1.0.0'
+    _version = 1.0
     
     def __init__(self):
         root_path = os.path.dirname(os.path.realpath(__file__))
         ui_path = os.path.join(root_path, 'ui', 'multiconstraint_switchUI.ui')
         super().__init__(title='Multi Constraint Switch',
                          ui_path=ui_path,
-                         version=MulticonstraintSwitch.VERSION,
+                         version=MulticonstraintSwitch._version,
                          events_register=True)
 
         # we're going to establish these during the callback so they're ready to fire.
@@ -40,12 +32,17 @@ class MulticonstraintSwitch(mayawindows.MCAMayaWindow):
         self._rig_multi_dict = {}
 
         # spin up callback to handle updating the dropdown options.
-        self.register_event('MultiSwitchSelection', self._sync_dropdown_options)
+        #self.register_event('MultiSwitchSelection', self._sync_dropdown_options)
+        self.sji = cmds.scriptJob( event= ["SelectionChanged", self._sync_dropdown_options])
         # ==============================
         # Signals
         # ==============================
-        self.ui.switch_pushButton.clicked.connect(self.switch_multiconstraint_cmd)
-        
+        self.ui.switch_pushButton.clicked.connect(self.switch_multiconstraint_clicked)
+
+    def closeEvent(self, event):
+        if cmds.scriptJob(exists=self.sji):
+            cmds.scriptJob(kill=self.sji)
+        super().closeEvent(event)
     # ==============================
     # Slots
     # ==============================
@@ -53,8 +50,7 @@ class MulticonstraintSwitch(mayawindows.MCAMayaWindow):
         selection = pm.selected()
         if not selection:
             return
-        print(selection)
-        flag_filter_list = [x for x in selection if frag_flag.is_flag_node(x) and x.hasAttr('sourceMultiConstraint')]
+        flag_filter_list = [x for x in selection if flags.is_flag(x) and x.hasAttr('source_multi_constraint')]
 
         self.ui.switch_comboBox.clear()
         self._target_dict = {}
@@ -71,13 +67,13 @@ class MulticonstraintSwitch(mayawindows.MCAMayaWindow):
         first_rig_multi_dict = {}
         for index, flag_node in enumerate(flag_filter_list):
             # filter flags to only those with a multiconstraint.
-            multi_constraint = frag.FRAGNode(flag_node.getAttr('sourceMultiConstraint'))
+            multi_constraint = frag.FRAGNode(flag_node.getAttr('source_multi_constraint'))
             frag_root = frag.get_frag_root(multi_constraint)
-            frag_rig = frag_root.get_rig()
+            frag_rig = frag_root.frag_rig
             if frag_rig not in rig_multi_dict:
                 rig_multi_dict[frag_rig] = []
             rig_multi_dict[frag_rig].append(multi_constraint)
-            target_list = multi_constraint.get_targets()
+            target_list = multi_constraint.targets
             if not index:
                 # if we don't find any matches use this list for the valid switch list
                 first_target_list = target_list
@@ -112,10 +108,8 @@ class MulticonstraintSwitch(mayawindows.MCAMayaWindow):
     @ma_decorators.undo_decorator
     @ma_decorators.keep_autokey_decorator
     @ma_decorators.keep_current_frame_decorator
-    def switch_multiconstraint_cmd(self):
+    def switch_multiconstraint_clicked(self):
         switch_target = self._target_dict[self.ui.switch_comboBox.currentText()]
-        asset_id = rig_utils.switch_multiconstraint(self._rig_multi_dict, switch_target)
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(fn=self.switch_multiconstraint_cmd, asset_id=asset_id)
-    
+
+
     

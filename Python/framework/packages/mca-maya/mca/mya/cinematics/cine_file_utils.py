@@ -12,17 +12,15 @@ import maya.mel as mel
 
 # mca python imports
 from mca.common import log
-from mca.common.modifiers import decorators
-from mca.common.paths import paths
+from mca.common.project import paths
 from mca.common.utils import fileio
 from mca.common.pyqt import messages
 
 from mca.mya.cinematics import cine_sequence_nodes
-from mca.mya.utils import scene_utils, namespace, fbx_utils, constraint, camera_utils
-from mca.mya.animation import time_utils, baking
-from mca.mya.rigging import rig_utils
+from mca.mya.utils import constraint_utils, namespace_utils, scene_utils, fbx_utils
+from mca.mya.animation import camera_utils, time_utils, baking
 from mca.mya.rigging import frag
-from mca.mya.rigging.frag import frag_rig, cine_sequence_component
+from mca.mya.rigging.frag import frag_rig #cine_sequence_component
 from mca.mya.tools.animationexporter import animationexporter_utils as ae_utils
 
 logger = log.MCA_LOGGER
@@ -91,7 +89,7 @@ def save_new_version(seq_name, stage, shot_number=None):
 	save_dir = get_save_dir(stage, seq_dir, shot_number=shot_number)
 
 	version = get_version_number(save_dir)
-	cine_seq_node = cine_sequence_component.find_cine_seq_component()
+	cine_seq_node = None #cine_sequence_component.find_cine_seq_component()
 	if cine_seq_node:
 		cine_seq_node.pynode.versionNumber.set(version)
 		cine_seq_node.pynode.stage.set(stage)
@@ -430,14 +428,14 @@ def reload_references():
 			cmds.file(ref, loadReference=True)
 
 
-@decorators.track_fnc
+
 def break_out_selected_shot_cmd():
 	"""
 	Command to break out the selected shot.
 
 	"""
 
-	cine_seq_node = cine_sequence_component.find_cine_seq_component()
+	cine_seq_node = None # cine_sequence_component.find_cine_seq_component()
 	cine_seq_data = cine_sequence_nodes.CineSequenceData.get_cine_seq_data(cine_seq_node.pynode)
 	if not cine_seq_node:
 		messages.info_message('Break Out Selected Shot', 'Cine sequence node not found.')
@@ -491,21 +489,21 @@ def batch_breakout(shot_data_list):
 	logger.info(f'Breaking out {file_name}')
 	for shot_data in shot_data_list:
 		cmds.file(file_name, o=True, f=True)
-		cine_seq_node = cine_sequence_component.find_cine_seq_component()
+		cine_seq_node = None # cine_sequence_component.find_cine_seq_component()
 		shot_node = pm.PyNode(shot_data.node_name)
 		shot_number = shot_data.shot_number
 		break_out(shot_node, shot_number, cine_seq_node)
 	return [x.shot_name for x in shot_data_list]
 
 
-@decorators.track_fnc
+
 def execute_batch_breakout():
 	"""
 	Command to execute batch breakout of all shots in a scene.
 
 	"""
 
-	cine_seq_node = cine_sequence_component.find_cine_seq_component()
+	cine_seq_node = None # cine_sequence_component.find_cine_seq_component()
 	cine_seq_data = cine_sequence_nodes.CineSequenceData.get_cine_seq_data(cine_seq_node.pynode)
 	if cine_seq_node:
 		shot_data_list = [cine_sequence_nodes.CineShotData.get_shot_data_from_node(x, cine_seq_data)
@@ -632,7 +630,7 @@ def process_camera_for_export(cam_xform, shot_start, shot_end):
 
 	"""
 	temp_loc = pm.spaceLocator(n=f'{cam_xform.name()}_export_loc')
-	loc_con = constraint.parent_constraint_safe(cam_xform, temp_loc, mo=False)
+	loc_con = constraint_utils.parent_constraint_safe(cam_xform, temp_loc, mo=False)
 	pm.currentTime(shot_start)
 	pm.refresh()
 
@@ -643,7 +641,7 @@ def process_camera_for_export(cam_xform, shot_start, shot_end):
 		pm.delete(cam_constraints)
 	cam_xform.setLocked(False)
 	cam_xform.setParent(w=True)
-	constraint.parent_constraint_safe(temp_loc, cam_xform, mo=False)
+	constraint_utils.parent_constraint_safe(temp_loc, cam_xform, mo=False)
 
 	pm.currentTime(shot_start)
 	pm.refresh()
@@ -718,7 +716,7 @@ def export_cine_shot(seq_name, shot_number):
 	for char in all_rigs:
 		export_name = get_export_name(seq_name,
 									  shot_number,
-									  namespace.get_namespace(char.pynode, check_node=False))
+									  namespace_utils.get_namespace(char.pynode, check_node=False))
 		export_char_anim(f'{export_name}.fbx', char, start_frame, end_frame)
 
 	cmds.file(rn="DO NOT SAVE")
@@ -796,7 +794,7 @@ def export_char_anim(export_path, char_rig, start_time, end_time):
 
 	fileio.touch_path(export_path)
 
-	export_root = rig_utils.bake_skeleton_from_rig(char_rig,
+	export_root = frag.bake_skeleton_from_rig(char_rig,
 	                                               start_time,
 	                                               end_time+1,
 	                                               False)

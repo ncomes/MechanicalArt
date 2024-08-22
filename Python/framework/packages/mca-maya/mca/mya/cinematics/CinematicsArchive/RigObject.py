@@ -189,7 +189,7 @@ def cleanUp(geo, geoBase):
         cmds.parent(each, topNode)
 
 
-@decorators.track_fnc
+
 def rigObject():
     selection = cmds.ls(sl=True)
     rootBone = None

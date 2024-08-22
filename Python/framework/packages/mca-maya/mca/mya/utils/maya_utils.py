@@ -6,12 +6,29 @@ Utilities for Maya
 """
 
 # System global imports
+import os
+
 # software specific imports
 import pymel.core as pm
 import maya.mel as mel
-#  python imports
-from mca.common.utils import lists
 
+#  python imports
+from mca.common.utils import list_utils
+from mca.common.project import paths
+
+
+def maya_default_preferences_path():
+    prefs_folder = paths.get_dcc_prefs_folder('maya')
+    default_paths = os.path.join(prefs_folder, 'default_options')
+    if not os.path.exists(default_paths):
+        os.makedirs(default_paths)
+    return os.path.normpath(default_paths)
+
+
+def get_default_preferences_file():
+    default_path = maya_default_preferences_path()
+    file_path = os.path.join(default_path, 'maya_default_options.prefs')
+    return os.path.normpath(file_path)
 
 def get_version():
     """
@@ -96,7 +113,7 @@ def delete_nodes_of_type(node_type):
     :rtype: list(str)
     """
 
-    node_type = lists.force_list(node_type)
+    node_type = list_utils.force_list(node_type)
     deleted_nodes = list()
 
     for node_type_name in node_type:

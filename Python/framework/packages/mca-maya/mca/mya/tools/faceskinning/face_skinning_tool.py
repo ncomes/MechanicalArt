@@ -13,9 +13,7 @@ import maya.cmds as cmds
 import pymel.core as pm
 import maya.mel as mel
 # mca python imports
-from mca.common.tools.dcctracking import dcc_tracking
 from mca.common.modifiers import decorators
-from mca.common.utils import process
 from mca.common import log
 
 from mca.mya.pyqt import mayawindows
@@ -59,7 +57,7 @@ class FaceSkinning(mayawindows.MCAMayaWindow):
     # ==============================
     # Slots
     # ==============================
-    @decorators.track_fnc
+    
     def _on_load_data_button_clicked(self):
         """
         Sets up region combo box
@@ -75,7 +73,7 @@ class FaceSkinning(mayawindows.MCAMayaWindow):
         for each_region in regions_list:
             self.ui.regionsBox.addItem(each_region)
 
-    @decorators.track_fnc
+    
     def _on_copy_weights_button_clicked(self):
         """
         Copies weights from head mesh and applies them to another mesh
@@ -95,7 +93,7 @@ class FaceSkinning(mayawindows.MCAMayaWindow):
         face_skinning.copy_weights_from_head(face_mesh, face_data, obj_to_skin)
         pm.select(obj_to_skin)
 
-    @decorators.track_fnc
+    
     def _on_mirror_weights_button_clicked(self):
         """
         Mirrors vertex weights
@@ -118,7 +116,7 @@ class FaceSkinning(mayawindows.MCAMayaWindow):
 
         face_skinning.mirror_face_weights(vertex_selection, str(face_mesh), face_data)
 
-    @decorators.track_fnc
+    
     def _on_select_vertices_button_clicked(self):
         """
         Selects vertices in a particular region
@@ -145,7 +143,7 @@ class FaceSkinning(mayawindows.MCAMayaWindow):
         if keep_previous_sel:
             pm.select(current_selection, add=True)
 
-    @decorators.track_fnc
+    
     def _on_smooth_weights_button_clicked(self):
         """
         Smooths selected vertex weights (Note: this works for now but will be updated)
@@ -167,7 +165,7 @@ class FaceSkinning(mayawindows.MCAMayaWindow):
 
         pm.skinCluster(obj_clus, edit=True, smoothWeights=tolerance_value)
 
-    @decorators.track_fnc
+    
     def _on_toggle_vis_button_clicked(self):
         """
         Toggle visibility of blendshape and skinned mesh
@@ -214,7 +212,7 @@ class FaceSkinning(mayawindows.MCAMayaWindow):
                 pm.setAttr(f'{blend_mouth}.visibility', 0)
                 pm.setAttr(f'{skinned_mouth}.visibility', 1)
 
-    @decorators.track_fnc
+    
     def _on_skin_to_head_clicked(self):
         """
         Hard skins selection to head
@@ -229,7 +227,7 @@ class FaceSkinning(mayawindows.MCAMayaWindow):
 
         face_skinning.skin_to_head_joint(selected_objs, root_joint)
 
-    @decorators.track_fnc
+    
     def _on_mirror_selection_button_clicked(self):
         """
         Mirrors selection based on vertex data
@@ -261,7 +259,7 @@ class FaceSkinning(mayawindows.MCAMayaWindow):
                 mirror_vert_name = f'{face_mesh}.vtx[{mir}]'
                 cmds.select(mirror_vert_name, add=True)
 
-    @decorators.track_fnc
+    
     def _copy_paste_vertex_weights_clicked(self):
         """
         Copies first selected vertex weight and pastes onto rest of selection

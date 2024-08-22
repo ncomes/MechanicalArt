@@ -12,7 +12,7 @@ import maya.cmds as cmds
 
 # mca python imports
 from mca.common import log
-from mca.common.utils import lists
+from mca.common.utils import list_utils
 
 from mca.mya.animation import keyframes, time_utils
 from mca.mya.modifiers import ma_decorators
@@ -97,7 +97,7 @@ def merge_curves(curve_a, curve_b, delete_curves=False):
     max_keyframe = max(keyframes)
 
     for x in range(int(max_keyframe) + 1):
-        value = lists.get_first_in_list(pm.keyframe(curve_a, q=True, t=x, vc=True))
+        value = list_utils.get_first_in_list(pm.keyframe(curve_a, q=True, t=x, vc=True))
         if value and value != 0:
             pm.setKeyframe(merged_curve, t=x, v=value)
 

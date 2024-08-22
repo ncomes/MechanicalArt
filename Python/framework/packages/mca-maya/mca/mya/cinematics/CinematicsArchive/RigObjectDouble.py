@@ -14,7 +14,7 @@ from mca.common.modifiers import decorators
 import mca.mya.cinematics.CinematicsArchive.RigObject as ro
 
 
-@decorators.track_fnc
+
 def rigObjectDouble():
     bones = ro.rigObject()
     #print("double clicked button. here are the bones: {}".format(bones))

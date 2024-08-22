@@ -9,14 +9,14 @@ Module that contains Test tool implementation.
 import os
 # Software specific imports
 import pymel.core as pm
-# PySide2 imports
-from PySide2.QtWidgets import QFileDialog
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets
+
 # mca python imports
 from mca.common import log
-from mca.common.paths import paths, project_paths, path_utils
-from mca.common.modifiers import decorators
+from mca.common.project import project_paths, path_utils
 from mca.common.assetlist import assetlist
-from mca.mya.deformations import skin_utils
+from mca.mya.rigging import skin_utils
 from mca.mya.pyqt import mayawindows
 
 
@@ -56,13 +56,13 @@ class SaveSkinning(mayawindows.MCAMayaWindow):
     # Slots
     # ==============================
 
-    @decorators.track_fnc
+    
     def _on_path_button_clicked(self):
         """
         Internal callback function that is called when Select Directory button is clicked by the user.
         """
 
-        sel_dir = QFileDialog.getExistingDirectory(None, 'Select a directory:', project_paths.MCA_PROJECT_ROOT, QFileDialog.ShowDirsOnly)
+        sel_dir = qtwidgets.QFileDialog.getExistingDirectory(None, 'Select a directory:', project_paths.MCA_PROJECT_ROOT, qtwidgets.QFileDialog.ShowDirsOnly)
         if not sel_dir:
             return
 
@@ -72,7 +72,7 @@ class SaveSkinning(mayawindows.MCAMayaWindow):
 
         self.ui.pathField.setText(print_name)
 
-    @decorators.track_fnc
+    
     def _on_import_button_clicked(self):
         """
         Internal callback function that is called when Import button is clicked by the user.
@@ -92,7 +92,7 @@ class SaveSkinning(mayawindows.MCAMayaWindow):
         skin_utils.apply_skin_weights_cmd(asset_path)
 
 
-    @decorators.track_fnc
+    
     def _on_export_button_clicked(self):
         """
         Internal callback function that is called when Export button is clicked by the user.
@@ -112,7 +112,7 @@ class SaveSkinning(mayawindows.MCAMayaWindow):
             skin_utils.save_skin_weights_cmd(asset_path)
 
 
-    @decorators.track_fnc
+    
     def _on_get_id_button_clicked(self):
         """
         Internal callback function that is called when ID button is clicked by the user.

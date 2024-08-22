@@ -17,7 +17,7 @@ from mca.common import log
 from mca.common.utils import fileio
 from mca.mya.animation import time_utils
 from mca.mya.modifiers import ma_decorators
-from mca.mya.utils import namespace
+from mca.mya.utils import namespace_utils
 
 logger = log.MCA_LOGGER
 
@@ -32,6 +32,13 @@ def import_fbx(fbx_path, import_namespace=None):
     :return: A list of all imported files. If an import namespace was given it will only return the new subset of nodes.
     :rtype: list[PyNode]
     """
+
+    # $HACK HUGE FUCKING HACK.
+    # Improting an FBX will overwrite attr values sometimes. Notable occurs on the root joint.
+    # I shouldn't have to put this here but fucking Autodesk can't keep their shit together.
+    root_path_list = []
+    for root_joint in pm.ls('*.skel_path', o=True):
+        root_path_list.append([root_joint, root_joint.skel_path.get()])
 
     if not os.path.exists(fbx_path):
         raise f'File not found at: {fbx_path}'
@@ -50,7 +57,11 @@ def import_fbx(fbx_path, import_namespace=None):
     return_list = list(imported_node_list-original_node_list)
     if import_namespace:
         for x in return_list:
-            namespace.move_node_to_namespace(x, import_namespace)
+            namespace_utils.move_node_to_namespace(x, import_namespace)
+    
+    # $HACK HUGE FUCKING HACK.
+    for root_joint, skel_path in root_path_list:
+        root_joint.skel_path.set(skel_path)
     return return_list
 
 

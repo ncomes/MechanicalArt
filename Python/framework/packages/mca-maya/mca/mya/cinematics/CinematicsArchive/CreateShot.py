@@ -80,7 +80,7 @@ def getCineShotFromSeqNode(cineSeqNode):
     return cineShot
 
 
-@decorators.track_fnc
+
 def makeNewShot():
     seqNodes = cmds.ls("*Sequence_Node")
     if not seqNodes:

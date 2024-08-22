@@ -15,7 +15,7 @@ from mca.mya.utils import attr_utils
 from mca.mya.cinematics.CinematicsArchive.AddLocator import makeLoc
 
 
-@decorators.track_fnc
+
 def bakeLocToSelection():
     selection = cmds.ls(sl=True)
     locs = []

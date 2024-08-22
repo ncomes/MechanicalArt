@@ -14,7 +14,7 @@ import mca.mya.cinematics.CinematicsArchive.CineClasses as cc
 from mca.common.modifiers import decorators
 
 
-@decorators.track_fnc
+
 def getBoundingInfo(obj):    
     bboxMinX = cmds.getAttr(obj+".boundingBoxMinX")
     bboxMinY = cmds.getAttr(obj+".boundingBoxMinY")

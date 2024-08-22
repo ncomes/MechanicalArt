@@ -10,7 +10,7 @@ import string
 
 # software specific imports
 import pymel.core as pm
-from mca.common.utils import strings
+from mca.common.utils import string_utils
 #  python imports
 
 
@@ -53,7 +53,7 @@ def get_unique_dagname(node_name):
     if not pm.objExists(node_name):
         return node_name
 
-    counter = strings.get_trailing_numbers(node_name) or 0
+    counter = string_utils.get_trailing_numbers(node_name) or 0
 
     while pm.objExists(node_name):
         counter += 1

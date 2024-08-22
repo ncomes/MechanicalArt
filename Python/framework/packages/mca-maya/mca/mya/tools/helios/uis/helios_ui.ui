@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>helios_Form</class>
+ <widget class="QWidget" name="helios_Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>586</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>500</width>
+    <height>900</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Helios</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_12">
+   <item>
+    <widget class="QGroupBox" name="getting_started_groupBox">
+     <property name="title">
+      <string>Getting Started</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_7">
+      <item>
+       <widget class="QLabel" name="getting_started_label">
+        <property name="text">
+         <string>If you're working with a new asset, Ask the Wizard to assist with organizing your scene, or setting up your working directories. (Skip this if you're working with pre-existing assets)</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="wizard_horizontalLayout">
+     <item>
+      <spacer name="wizard_horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="wizard_pushButton">
+       <property name="text">
+        <string>Ask the Wizard</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="filter_horizontalLayout">
+     <item>
+      <widget class="QLabel" name="filter_label">
+       <property name="text">
+        <string>Filter:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="filter_lineEdit"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="import_tabWidget">
+     <property name="currentIndex">
+      <number>-1</number>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="remove_entry_horizontalLayout">
+     <item>
+      <spacer name="remove_entry_horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="open_source_pushButton">
+       <property name="toolTip">
+        <string>With an organization group selected. Open the meshes folder associated with that asset.</string>
+       </property>
+       <property name="text">
+        <string>Open Source</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="remove_entry_pushButton">
+       <property name="text">
+        <string>Remove Entry</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="importing_groupBox">
+     <property name="title">
+      <string>Importing</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_6">
+      <item>
+       <widget class="QLabel" name="importing_label">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select option(s) from the tabs above.&lt;br/&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Performance Materials&lt;/span&gt; - Will rebuild materials using only the diffuse and alpha cutout on import.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;With Skinning&lt;/span&gt; - Imports meshes bound to a skeleton.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;To Selected&lt;/span&gt; - Will bind mesh to a selected root, or first found root in the scene.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::RichText</enum>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="import_model_options_groupBox">
+        <property name="title">
+         <string>Import Options</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QCheckBox" name="performance_materials_checkBox">
+           <property name="text">
+            <string>Performance Materials</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="import_skinning_options_groupBox">
+        <property name="title">
+         <string>Skinning Options</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QCheckBox" name="with_skinning_checkBox">
+           <property name="text">
+            <string>With Skinning</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="to_selected_checkBox">
+           <property name="text">
+            <string>To Selected</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="import_pushButton">
+        <property name="text">
+         <string>Import</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="exporting_groupBox">
+     <property name="title">
+      <string>Exporting</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_8">
+      <item>
+       <widget class="QLabel" name="exporting_label">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For exporting a single asset and its children select the top level group in the outliner. (&lt;span style=&quot; font-weight:600;&quot;&gt;Export&lt;/span&gt; button)&lt;br/&gt;For exporting all assets, no selection is required. (&lt;span style=&quot; font-weight:600;&quot;&gt;Export All&lt;/span&gt; button)&lt;br/&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Save Source.Ma&lt;/span&gt; - Saves a Maya Ascii file to the working directory.&lt;span style=&quot; font-weight:600;&quot;&gt;&lt;br/&gt;Update Skn&lt;/span&gt; - Saves skinning changes to the _skn file. (Tech art only)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::RichText</enum>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="export_options_groupBox">
+        <property name="title">
+         <string>Export Options</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QCheckBox" name="save_source_ma_checkBox">
+           <property name="text">
+            <string>Save Source.Ma</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="update_thumbnail_checkBox">
+           <property name="text">
+            <string>Update Thumbnail</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="export_skinning_options_groupBox">
+        <property name="title">
+         <string>Skinning Options</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QCheckBox" name="update_skn_checkBox">
+           <property name="text">
+            <string>Update Skn</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="export_horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="export_pushButton">
+          <property name="text">
+           <string>Export</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="export_all_pushButton">
+          <property name="text">
+           <string>Export All</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

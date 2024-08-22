@@ -11,24 +11,27 @@ import os
 # Software specific imports
 import pymel.core as pm
 import maya.cmds as cmds
-
-# PySide2 imports
-from PySide2.QtWidgets import QMenu, QAction
-from PySide2.QtCore import Qt, QModelIndex
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets, qtcore, qtgui
+try:
+    QAction = qtwidgets.QAction
+except:
+    QAction = qtgui.QAction
 
 # mca python imports
 from mca.common import log
-from mca.common.paths import paths
+from mca.common.project import paths
 from mca.common.textio import jsonio
 from mca.common.utils import fileio
 from mca.common.pyqt import messages
-from mca.mya.utils import optionvars, namespace
-from mca.mya.pyqt import dialogs, mayawindows
+from mca.mya.utils import namespace_utils, optionvars
+from mca.mya.pyqt import maya_dialogs, mayawindows
 from mca.mya.rigging import frag
 
 logger = log.MCA_LOGGER
 
 FLAG_ROTATION_PRESETS = os.path.join(paths.get_common_tools_path(), 'Common\\Rigging\\Flag Rotation Presets\\')
+
 
 class MCARigRotationsOptionVars(optionvars.MCAOptionVars):
     """
@@ -37,9 +40,10 @@ class MCARigRotationsOptionVars(optionvars.MCAOptionVars):
 
     MCALastPreset = {'default_value': '', 'docstring': 'Last preset selected.'}
 
+
 class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
     VERSION = '1.0.2'
-    
+
     def __init__(self):
         root_path = os.path.dirname(os.path.realpath(__file__))
         ui_path = os.path.join(root_path, 'ui', 'flagrotationordereditor_ui.ui')
@@ -83,17 +87,17 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
         self.ui.save_full_preset_pushButton.clicked.connect(self.save_overwrite_preset)
 
         # left click menu pull up for each widget.
-        self.ui.xyz_listWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.xyz_listWidget.setContextMenuPolicy(qtcore.Qt.CustomContextMenu)
         self.ui.xyz_listWidget.customContextMenuRequested.connect(self.xyz_context_menu)
-        self.ui.yzx_listWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.yzx_listWidget.setContextMenuPolicy(qtcore.Qt.CustomContextMenu)
         self.ui.yzx_listWidget.customContextMenuRequested.connect(self.yzx_context_menu)
-        self.ui.zxy_listWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.zxy_listWidget.setContextMenuPolicy(qtcore.Qt.CustomContextMenu)
         self.ui.zxy_listWidget.customContextMenuRequested.connect(self.zxy_context_menu)
-        self.ui.xzy_listWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.xzy_listWidget.setContextMenuPolicy(qtcore.Qt.CustomContextMenu)
         self.ui.xzy_listWidget.customContextMenuRequested.connect(self.xzy_context_menu)
-        self.ui.yxz_listWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.yxz_listWidget.setContextMenuPolicy(qtcore.Qt.CustomContextMenu)
         self.ui.yxz_listWidget.customContextMenuRequested.connect(self.yxz_context_menu)
-        self.ui.zyx_listWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.zyx_listWidget.setContextMenuPolicy(qtcore.Qt.CustomContextMenu)
         self.ui.zyx_listWidget.customContextMenuRequested.connect(self.zyx_context_menu)
 
     def get_preset_names(self):
@@ -249,7 +253,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
         self.clear_list_widgets()
 
         selection_str = cmds.ls(sl=True)
-        self.rig_namespace = namespace.get_namespace(selection_str[0], False) + ':'
+        self.rig_namespace = namespace_utils.get_namespace(selection_str[0], False) + ':'
 
         for x in selection:
             frag_rig = frag.get_frag_rig(x)
@@ -547,8 +551,8 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
         # TODO (maybe): prevent new flags from being added to the json file.
         #               Will look into this later to see what we need from this tool.
 
-        result = dialogs.question_prompt(title='Save Preset',
-                                         text='Are you want to save these changes?')
+        result = maya_dialogs.question_prompt(title='Save Preset',
+                                              text='Are you want to save these changes?')
         if result != 'Yes':
             return
 
@@ -607,8 +611,8 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
         Function that removes selected flag(s).
         """
 
-        result = dialogs.question_prompt(title='Delete Flags',
-                                         text='Are you sure you want to delete the selected flags?')
+        result = maya_dialogs.question_prompt(title='Delete Flags',
+                                              text='Are you sure you want to delete the selected flags?')
         if result != 'Yes':
             return
 
@@ -621,32 +625,32 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
 
         if xyz_selected:
             for item in reversed(xyz_selected):
-                selected_index = QModelIndex.row(item)
+                selected_index = qtcore.QModelIndex.row(item)
                 self.ui.xyz_listWidget.takeItem(selected_index)
 
         if yzx_selected:
             for item in reversed(yzx_selected):
-                selected_index = QModelIndex.row(item)
+                selected_index = qtcore.QModelIndex.row(item)
                 self.ui.yzx_listWidget.takeItem(selected_index)
 
         if zxy_selected:
             for item in reversed(zxy_selected):
-                selected_index = QModelIndex.row(item)
+                selected_index = qtcore.QModelIndex.row(item)
                 self.ui.zxy_listWidget.takeItem(selected_index)
 
         if xzy_selected:
             for item in reversed(xzy_selected):
-                selected_index = QModelIndex.row(item)
+                selected_index = qtcore.QModelIndex.row(item)
                 self.ui.xzy_listWidget.takeItem(selected_index)
 
         if yxz_selected:
             for item in reversed(yxz_selected):
-                selected_index = QModelIndex.row(item)
+                selected_index = qtcore.QModelIndex.row(item)
                 self.ui.yxz_listWidget.takeItem(selected_index)
 
         if zyx_selected:
             for item in reversed(zyx_selected):
-                selected_index = QModelIndex.row(item)
+                selected_index = qtcore.QModelIndex.row(item)
                 self.ui.zyx_listWidget.takeItem(selected_index)
 
     def save_overwrite_preset(self):
@@ -654,8 +658,8 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
         Saves preset json file. This one overwrites the entire file.
         """
 
-        result = dialogs.question_prompt(title='Save Preset',
-                                         text='Are you want to save these changes? (the preset will be overwritten)')
+        result = maya_dialogs.question_prompt(title='Save Preset',
+                                              text='Are you want to save these changes? (the preset will be overwritten)')
         if result != 'Yes':
             return
 
@@ -703,7 +707,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
         else:
             pass
 
-        menu = QMenu(self)
+        menu = qtwidgets.QMenu(self)
         list(map(lambda x: menu.addAction(x), actions))
         menu.exec_(self.ui.xyz_listWidget.mapToGlobal(position))
 
@@ -716,7 +720,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
 
         items_selected = self.ui.xyz_listWidget.selectedIndexes()
         for flag in reversed(items_selected):
-            current_row = QModelIndex.row(flag)
+            current_row = qtcore.QModelIndex.row(flag)
             taken_item = self.ui.xyz_listWidget.takeItem(current_row)
 
             if widget == 1:
@@ -765,7 +769,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
         else:
             pass
 
-        menu = QMenu(self)
+        menu = qtwidgets.QMenu(self)
         list(map(lambda x: menu.addAction(x), actions))
         menu.exec_(self.ui.xyz_listWidget.mapToGlobal(position))
 
@@ -778,7 +782,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
 
         items_selected = self.ui.yzx_listWidget.selectedIndexes()
         for flag in reversed(items_selected):
-            current_row = QModelIndex.row(flag)
+            current_row = qtcore.QModelIndex.row(flag)
             taken_item = self.ui.yzx_listWidget.takeItem(current_row)
 
             if widget == 0:
@@ -827,7 +831,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
         else:
             pass
 
-        menu = QMenu(self)
+        menu = qtwidgets.QMenu(self)
         list(map(lambda x: menu.addAction(x), actions))
         menu.exec_(self.ui.zxy_listWidget.mapToGlobal(position))
 
@@ -840,7 +844,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
 
         items_selected = self.ui.zxy_listWidget.selectedIndexes()
         for flag in reversed(items_selected):
-            current_row = QModelIndex.row(flag)
+            current_row = qtcore.QModelIndex.row(flag)
             taken_item = self.ui.zxy_listWidget.takeItem(current_row)
 
             if widget == 0:
@@ -889,7 +893,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
         else:
             pass
 
-        menu = QMenu(self)
+        menu = qtwidgets.QMenu(self)
         list(map(lambda x: menu.addAction(x), actions))
         menu.exec_(self.ui.xzy_listWidget.mapToGlobal(position))
 
@@ -902,7 +906,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
 
         items_selected = self.ui.xzy_listWidget.selectedIndexes()
         for flag in reversed(items_selected):
-            current_row = QModelIndex.row(flag)
+            current_row = qtcore.QModelIndex.row(flag)
             taken_item = self.ui.xzy_listWidget.takeItem(current_row)
 
             if widget == 0:
@@ -951,7 +955,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
         else:
             pass
 
-        menu = QMenu(self)
+        menu = qtwidgets.QMenu(self)
         list(map(lambda x: menu.addAction(x), actions))
         menu.exec_(self.ui.yxz_listWidget.mapToGlobal(position))
 
@@ -964,7 +968,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
 
         items_selected = self.ui.yxz_listWidget.selectedIndexes()
         for flag in reversed(items_selected):
-            current_row = QModelIndex.row(flag)
+            current_row = qtcore.QModelIndex.row(flag)
             taken_item = self.ui.yxz_listWidget.takeItem(current_row)
 
             if widget == 0:
@@ -1013,7 +1017,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
         else:
             pass
 
-        menu = QMenu(self)
+        menu = qtwidgets.QMenu(self)
         list(map(lambda x: menu.addAction(x), actions))
         menu.exec_(self.ui.zyx_listWidget.mapToGlobal(position))
 
@@ -1026,7 +1030,7 @@ class FlagRotationOrderEditor(mayawindows.MCAMayaWindow):
 
         items_selected = self.ui.zyx_listWidget.selectedIndexes()
         for flag in reversed(items_selected):
-            current_row = QModelIndex.row(flag)
+            current_row = qtcore.QModelIndex.row(flag)
             taken_item = self.ui.zyx_listWidget.takeItem(current_row)
 
             if widget == 0:

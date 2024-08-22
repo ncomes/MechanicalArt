@@ -16,7 +16,7 @@ from mca.mya.cinematics.CinematicsArchive.MayaSaveVersion import saveNewVersion
 from mca.common.modifiers import decorators
 
 
-@decorators.track_fnc
+
 def saveButtonPress(*args):
     #print("save button pressed")
     mayaNode = getMayaSeqNode()

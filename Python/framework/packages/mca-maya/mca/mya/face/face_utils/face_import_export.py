@@ -12,7 +12,7 @@ import os
 # mca python imports
 from mca.mya.rigging import frag
 from mca.mya.face.face_utils import face_util
-from mca.common.paths import paths
+from mca.common.project import paths
 from mca.common.tools.progressbar import progressbar_ui
 from mca.mya.utils import fbx_utils, scene_utils
 

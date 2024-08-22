@@ -12,7 +12,7 @@ import os
 import maya.cmds as cmds
 import pymel.core as pm
 # mca python imports
-from mca.common.utils import pyutils
+from mca.common.utils import dict_utils
 from mca.common.textio import jsonio
 from mca.mya.rigging.frag import frag_rig
 
@@ -40,7 +40,7 @@ class CineSequenceData:
 	# python class for the mya node that lives in scene and holds information
 	def __init__(self, data=None):
 		data = data_check(CINE_SEQ_DATA, data)
-		self.data = pyutils.ObjectDict(data)
+		self.data = dict_utils.ObjectDict(data)
 	# -----------------------------------------------------------------------()
 	@classmethod
 	def create(cls, seq_name, version_num, stage, scene_name='', shots=None):
@@ -156,7 +156,7 @@ class CineShotData(CineSequenceData):
 	def __init__(self, shot_number, data=None):
 		self.shot_number = shot_number
 		data = self.data_check(shot_number, data)
-		self.data = pyutils.ObjectDict(data) if data else pyutils.ObjectDict()
+		self.data = dict_utils.ObjectDict(data) if data else dict_utils.ObjectDict()
 		super(CineShotData, self).__init__(self.data)
 
 	@classmethod
@@ -382,5 +382,5 @@ def data_check(empty_data, existing_data=None):
 		if isinstance(value, dict) and value.keys():
 			sub_data = dict(list(empty_data[key].items()) + list(updated_data[key].items()))
 			updated_data[key] = sub_data
-	return pyutils.ObjectDict(updated_data)
+	return dict_utils.ObjectDict(updated_data)
 

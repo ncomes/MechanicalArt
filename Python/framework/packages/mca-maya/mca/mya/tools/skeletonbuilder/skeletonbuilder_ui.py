@@ -2,524 +2,423 @@
 # -*- coding: utf-8 -*-
 
 """
-Module that contains Helios main UI.
+Module that contains Skeleton Builder main UI.
 """
 
 # System global imports
 import os
+
 # PySide2 imports
-from PySide2 import QtWidgets, QtGui
+from mca.common.pyqt.pygui import qtwidgets, qtcore, qtgui
+
 # software specific imports
+import maya.cmds as cmds
 import pymel.all as pm
+
 # mca python imports
-from mca.common import log
 from mca.common.assetlist import assetlist
-from mca.common.modifiers import decorators
-from mca.common.paths import path_utils
-from mca.common.utils import fileio, lists, process, pymaths
-from mca.common.tools.dcctracking import dcc_tracking
+from mca.common.resources import resources
+from mca.common.project import paths
+from mca.common.pyqt import messages
+from mca.common.utils import fileio
 
 from mca.mya.modifiers import ma_decorators
-from mca.mya.pyqt import mayawindows, dialogs
-from mca.mya.rigging import chain_markup, rig_utils, skel_utils
-from mca.mya.utils import dag, naming
+from mca.mya.pyqt import mayawindows, maya_dialogs
+from mca.mya.rigging import frag, joint_utils
+from mca.mya.utils import dag_utils, naming, namespace_utils
 
-from mca.mya.tools.skeletonbuilder import skeletonbuilder_registry
-
+from mca.common import log
 logger = log.MCA_LOGGER
+
+MISSING_ICON = resources.icon(r'color\question.png')
 
 # Common misspellings due to skeleton mirrors.
 NAMING_ERROR_LIST = ['rower', 'reg']
 BLACKLIST_ATTRS = ['fragParent', 'fragRootJoint', 'noStaticAnim', 'noExport', 'SDK_Parent', 'driver_flag']
 
-DEFAULT_COLOR = QtGui.QColor(1, 0, 0, 0)
-NEGATIVE_COLOR = QtGui.QColor('#521424')
-CONFLICT_COLOR = QtGui.QColor('#664D00')
+DEFAULT_COLOR = qtgui.QColor(1, 0, 0, 0)
+NEGATIVE_COLOR = qtgui.QColor('#521424')
+CONFLICT_COLOR = qtgui.QColor('#664D00')
 
+DEFAULT_SKELETONS_PATH = os.path.join(paths.get_common_tools_path(), 'Skeleton Builder')
+PREBUILT_SKELETONS_PATH = os.path.join(DEFAULT_SKELETONS_PATH, 'Prebuilt Skeletons')
+SKELETON_PARTS = os.path.join(DEFAULT_SKELETONS_PATH, 'Skeleton Parts')
 
 class SkeletonBuilder(mayawindows.MCAMayaWindow):
-    VERSION = '1.0.0'
+    _version = 2.0
+    previous_sel = []
 
     def __init__(self):
         root_path = os.path.dirname(os.path.realpath(__file__))
         ui_path = os.path.join(root_path, 'ui', 'skeletonbuilderUI.ui')
         super().__init__(title='Skeleton Builder',
                          ui_path=ui_path,
-                         version=SkeletonBuilder.VERSION)
+                         version=SkeletonBuilder._version)
         
 
-        self.item_name_dict = {}
-        self._root_joint = None
+        self.root_joint = None
+        self.ui.set_skeleton_root_pushButton.setStyleSheet("background-color: #fb8b23")
+
+        self.entry = qtgui.QStandardItemModel()
+        self.ui.archetype_skeleton_listView.setModel(self.entry)
+        self.ui.archetype_skeleton_listView.setSpacing(2)
+        self.ui.archetype_skeleton_listView.setIconSize(qtcore.QSize(64, 64))
+
         self.setup_signals()
 
-        self.setup_treeview()
-        self.setup_listview()
+        self.initialize_lists()
+
+    class AssetItem(qtgui.QStandardItem):
+        ASSET_ENTRY = None
+        def __init__(self, asset_entry):
+            super().__init__()
+            self.ASSET_ENTRY = asset_entry
+
+            self.setEditable(False)
+
+            self.setText(asset_entry.asset_name)
+            asset_icon = None
+            if asset_entry.mesh_path:
+                asset_icon_path = f'{asset_entry.mesh_path[:-3]}jpg'
+                if os.path.exists(asset_icon_path):
+                    asset_icon = qtgui.QIcon(asset_icon_path)
+            self.setIcon(asset_icon or MISSING_ICON)
+
+    class HierarchyJointItem(qtwidgets.QTreeWidgetItem):
+        pynode = None
+        joint_index = None
+        def __init__(self, joint_node, joint_index):
+            joint_name = naming.get_basename(joint_node)
+            if joint_name.startswith('root'):
+                joint_name = 'root'
+            super().__init__([joint_name])
+
+            self.pynode = joint_node
+            self.joint_index = joint_index
+
+        def select_joint(self):
+            if self.pynode and pm.objExists(self.pynode):
+                mods = cmds.getModifiers()
+                if mods in [1,4,5]:
+                    pm.select(self.pynode, add=True)
+                else:
+                    pm.select(self.pynode, add=False)
 
     def setup_signals(self):
+        # build a rig tab
+        self.ui.import_skeleton_pushButton.clicked.connect(self.import_skeleton_clicked)
+        self.ui.add_new_entry_pushButton.clicked.connect(self.add_skeleton_clicked)
+        self.ui.remove_skeleton_pushButton.clicked.connect(self.remove_skeleton_clicked)
+        self.ui.add_a_joint_pushButton.clicked.connect(self.add_joint_clicked)
+        self.ui.make_planar_pushButton.clicked.connect(self.make_planar_clicked)
 
-        self.ui.validate_treeWidget.setColumnCount(2)
-        self.ui.validate_treeWidget.setHeaderLabels(["Name", "Status"])
-        self.ui.validate_treeWidget.setIndentation(7)
+        self.ui.prebuilt_skeleton_listWidget.itemDoubleClicked.connect(self.import_skeleton_clicked)
+        self.ui.skeleton_parts_listWidget.itemDoubleClicked.connect(self.import_skeleton_clicked)
+        self.ui.archetype_skeleton_listView.doubleClicked.connect(self.import_skeleton_clicked)
 
-        self.ui.validate_treeWidget.clicked.connect(self.select_item)
-        self.ui.validate_pushButton.clicked.connect(self.validate_skeleton)
+        # markup tab
+        self.ui.set_skeleton_root_pushButton.clicked.connect(self._set_root_skeleton_clicked)
 
-        self.ui.apply_markup_pushButton.clicked.connect(self.apply_markup)
+        self.ui.validate_skeleton_pushButton.clicked.connect(self.validate_skeleton)
 
-        self.ui.add_archetype_pushButton.clicked.connect(self.add_skeleton_entry)
-        self.ui.remove_archetype_pushButton.clicked.connect(self.remove_skeleton_entry)
+        self.ui.skeleton_view_treeWidget.setColumnCount(2)
+        self.ui.skeleton_view_treeWidget.setHeaderLabels(["Name", "Status"])
+        self.ui.skeleton_view_treeWidget.setIndentation(7)
 
-        self.ui.import_archetype_pushButton.clicked.connect(self.import_skeleton)
-        self.ui.export_skeleton_pushButton.clicked.connect(self.export_skeleton)
+        self.ui.skeleton_view_treeWidget.clicked.connect(self._select_joint)
+        self.ui.set_markup_pushButton.clicked.connect(self.set_markup_clicked)
 
-    def setup_treeview(self):
+        self.ui.export_skeleton_pushButton.clicked.connect(self.export_skeleton_clicked)
+
+    def initialize_lists(self):
         """
-        Setup our main treeview widget in the UI. This checks through a selected hierarchy and registers each joint to
-        an item in the treeview widget.
+        Collect all files for each list, and display them.
 
         """
-        selection = lists.get_first_in_list(pm.selected())
+        self.ui.prebuilt_skeleton_listWidget.clear()
+        fileio.touch_path(os.path.join(PREBUILT_SKELETONS_PATH, ''))
+        self.ui.prebuilt_skeleton_listWidget.addItems(os.listdir(PREBUILT_SKELETONS_PATH))
+
+        self.ui.skeleton_parts_listWidget.clear()
+        fileio.touch_path(os.path.join(SKELETON_PARTS, ''))
+        self.ui.skeleton_parts_listWidget.addItems(os.listdir(SKELETON_PARTS))
+
+        self.entry.clear()
+        asset_registry = assetlist.get_registry()
+        for asset_entry in [x for x in sorted(asset_registry.ASSET_ID_DICT.values(), key=lambda x: x.asset_name) if not x.asset_parent]:
+            self.entry.appendRow(self.AssetItem(asset_entry))
+
+        self.ui.skeleton_side_comboBox.clear()
+        self.ui.skeleton_side_comboBox.addItems(joint_utils.SIDE_LIST)
+            
+    
+    def _set_root_skeleton_clicked(self):
+        selection = pm.selected()
+        self.root_joint = None
+        self.ui.set_skeleton_root_pushButton.setStyleSheet("background-color: #fb8b23")
         if not selection:
             return
+        root_joint = dag_utils.get_absolute_parent(selection[0], node_type=pm.nt.Joint)
+        if isinstance(root_joint, pm.nt.Joint):
+            self.root_joint = root_joint
+            self.ui.set_skeleton_root_pushButton.setStyleSheet("background-color: #1b4197")
+            self.validate_skeleton()
+            self.previous_sel = []
 
-        hierarchy_root = dag.get_absolute_parent(selection, node_type=pm.nt.Joint)
-
-        if not isinstance(hierarchy_root, pm.nt.Joint):
-            return
-
-        self._root_joint = hierarchy_root
-
-        self.ui.validate_treeWidget.clear()
-        skel_hierarchy = chain_markup.ChainMarkup(self._root_joint)
-
-        self.item_name_dict = {}
-        for index, joint_node in enumerate(skel_hierarchy.joints):
-            joint_name = 'root'
-            parent_name = None
-            if index:
-                joint_name = naming.get_basename(joint_node)
-                parent_name = naming.get_basename(joint_node.getParent())
-
-            tree_item = QtWidgets.QTreeWidgetItem([joint_name])
-            if parent_name:
-                self.item_name_dict[parent_name][0].addChild(tree_item)
-            else:
-                self.ui.validate_treeWidget.insertTopLevelItem(0, tree_item)
-
-            if joint_name not in self.item_name_dict:
-                self.item_name_dict[joint_name] = [tree_item, joint_node]
-            else:
-                logger.warning(f'rename {joint_name} a joint has already been registered with this name.')
-                return
-
-        header = self.ui.validate_treeWidget.header()
-        header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-
-        self.ui.validate_treeWidget.expandAll()
-        self.validate_skeleton()
-
-    def setup_listview(self):
-        """
-        From the skeleton archetype registry display all entries.
-
-        """
-        self.ui.archetype_listWidget.clear()
-
-        # Pull our list of skeleton archetypes.
-        skeleton_registry = skeletonbuilder_registry.SkeletonArchetypeRegistry()
-        skeleton_registry.reload(force=True)
-        for skel_name in skeleton_registry.REGISTRY_DICT:
-            self.ui.archetype_listWidget.addItem(skel_name)
-
-    @decorators.track_fnc
     def validate_skeleton(self):
         """
         From our registered skeleton check for a list of common errors then in place edit the treeview items to show status
 
         """
-        if not self.item_name_dict or not self.item_name_dict['root'][-1].exists():
-            self.setup_treeview()
+        if not self.root_joint or not pm.objExists(self.root_joint):
             return
+        
+        tree_selection = self.ui.skeleton_view_treeWidget.selectedItems()
+        previous_selection = None
+        if tree_selection:
+            tree_selection = tree_selection[1:]+[tree_selection[0]]
+            previous_selection = [x.pynode for x in tree_selection]
 
-        skel_hierarchy = chain_markup.ChainMarkup(self.item_name_dict['root'][-1])
+        skel_hierarchy = joint_utils.SkeletonHierarchy(self.root_joint, True)
+        self.ui.skeleton_view_treeWidget.clear()
 
-        if len(self.item_name_dict) != len(skel_hierarchy.joints):
-            pm.select(skel_hierarchy.root)
-            self.setup_treeview()
-            return
+        self.item_node_dict = {}
+        for index, joint_node in enumerate(skel_hierarchy.all_joints):
+            parent_node = None
+            if index:
+                parent_node = joint_node.getParent()
 
-        validation_markup_dict = {}
-        # Make sure our root has space for the asset_id of this skel.
-        if not skel_hierarchy.root.hasAttr('asset_id'):
-            skel_hierarchy.root.addAttr('asset_id', dt='string')
+            tree_item = self.HierarchyJointItem(joint_node, index)
+            if parent_node and parent_node in self.item_node_dict:
+                self.item_node_dict[parent_node].addChild(tree_item)
+            else:
+                self.ui.skeleton_view_treeWidget.insertTopLevelItem(0, tree_item)
 
-        for joint_name, (tree_item, joint_node) in self.item_name_dict.items():
-            if not joint_node.exists() or (joint_name != 'root' and naming.get_basename(joint_node) != joint_name):
-                pm.select(self._root_joint)
-                self.setup_treeview()
-                return
+            if joint_node not in self.item_node_dict:
+                self.item_node_dict[joint_node] = tree_item
 
-            # Reset item look.
-            tree_item.setBackgroundColor(0, DEFAULT_COLOR)
-            tree_item.setText(1, '')
+        header = self.ui.skeleton_view_treeWidget.header()
+        header.setSectionResizeMode(qtwidgets.QHeaderView.ResizeToContents)
 
-            wrapped_joint = chain_markup.JointMarkup(joint_node)
-            joint_region = wrapped_joint.region
-            joint_side = wrapped_joint.side
-            chain_twist = wrapped_joint.chainTwist
-            chain_start = wrapped_joint.chainStart
-            chain_end = wrapped_joint.chainEnd
-
-            error_str = tree_item.text(1)
-            error_color = DEFAULT_COLOR
-
-            # Purge attrs that fuck with other systems.
-            for attr_name in BLACKLIST_ATTRS:
-                if joint_node.hasAttr(attr_name):
-                    pm.deleteAttr(joint_node, at=attr_name)
-
-            # Check for missing markup
-            if not joint_region or not joint_side:
-                if 'Missing Markup' not in error_str:
-                    error_str += 'Missing Markup. '
-                tree_item.setBackground(0, NEGATIVE_COLOR)
-                tree_item.setText(1, error_str)
-                # Hit the next joint we can't do any other lookups if we're missing markup.
-                continue
-
-            if joint_region not in validation_markup_dict:
-                validation_markup_dict[joint_region] = {}
-
-            if joint_side not in validation_markup_dict[joint_region]:
-                validation_markup_dict[joint_region][joint_side] = {'joints': []}
-
-            # Check for chain start
-            chain_dict = validation_markup_dict[joint_region][joint_side]
-            if chain_start:
-                if 'chain_start' not in chain_dict:
-                    if chain_start == joint_region:
-                        chain_dict['chain_start'] = joint_name
+        if skel_hierarchy.invalid_joints:
+            for index, error_type in enumerate(['mirror', 'typo', 'side', 'name', 'duplicates', 'scale', 'parent', 'bookend', 'skeleton', 'animated']):
+                joints_list = skel_hierarchy.invalid_joints.get(error_type, [])
+                for joint_node in joints_list:
+                    tree_item = self.item_node_dict.get(joint_node)
+                    if not tree_item:
+                        continue
+                    # A mirror is not a serious fault, all others are.
+                    tree_item.setBackgroundColor(0, NEGATIVE_COLOR) if index > 1 else tree_item.setBackgroundColor(0, CONFLICT_COLOR)
+                    conflict_text = tree_item.text(1)
+                    if conflict_text and f'{error_type}' not in conflict_text:
+                        tree_item.setText(1, f'{conflict_text}, {error_type}')
                     else:
-                        error_str += 'Region Mismatch. '
-                        error_color = NEGATIVE_COLOR
-                else:
-                    error_str += 'Duplicate Start. '
-                    error_color = NEGATIVE_COLOR
-                    conflict_item = self.item_name_dict[chain_dict['chain_start']][0]
-                    conflict_text = conflict_item.text(1)
-                    if conflict_text and 'Duplicate Start. ' not in conflict_text:
-                        conflict_item.setText(1, f'{conflict_text}Duplicate Start. ')
-                    else:
-                        conflict_item.setBackground(0, NEGATIVE_COLOR)
-                        conflict_item.setText(1, 'Duplicate Start. ')
+                        tree_item.setText(1, f'{error_type}')
+        self.ui.skeleton_view_treeWidget.expandAll()
 
+        if previous_selection:
+            tree_item_list = [self.item_node_dict.get(x) for x in previous_selection]
+            for tree_item in tree_item_list:
+                tree_item.setSelected(True)
 
-            # Check for chain end
-            if chain_end:
-                if not chain_dict.get('chain_start'):
-                    error_str += 'No Region Start. '
-                    error_color = NEGATIVE_COLOR
-                elif chain_dict.get('chain_end'):
-                    error_str += 'Duplicate End. '
-                    error_color = NEGATIVE_COLOR
-                    conflict_item = self.item_name_dict[chain_dict['chain_end']][0]
-                    conflict_text = conflict_item.text(1)
-                    if conflict_text and 'Duplicate End. ' not in conflict_text:
-                        conflict_item.setText(1, f'{conflict_text}Duplicate End. ')
-                    else:
-                        conflict_item.setBackground(0, NEGATIVE_COLOR)
-                        conflict_item.setText(1, 'Duplicate End. ')
-                else:
-                    if chain_end == joint_region and 'chain_end' not in chain_dict:
-                        chain_dict['chain_end'] = joint_name
-                    elif chain_end in validation_markup_dict:
-                        if 'chain_end' not in validation_markup_dict[chain_end][joint_side]:
-                            validation_markup_dict[chain_end][joint_side]['chain_end'] = joint_name
-
-            # Check if joint has a registered chain start.
-            chain_start_joint = skel_hierarchy.skeleton_dict.get(chain_dict.get('chain_start'))
-            all_parents_list = dag.get_all_parents(joint_node, pm.nt.Joint)
-            joint_parent = joint_node.getParent()
-
-            if not chain_start_joint and not chain_twist:
-                error_str += 'Invalid Chain. '
-                error_color = NEGATIVE_COLOR
-
-            if chain_twist:
-                if not chain_dict.get('parent'):
-                    chain_dict['parent'] = joint_parent
-
-            # check if we're animation exportable, but our parent is not.
-            if joint_parent:
-                if joint_node.hasAttr('animationExport'):
-                    if joint_parent.hasAttr('animationExport'):
-                        if joint_node.getAttr('animationExport') and not joint_parent.getAttr('animationExport'):
-                            error_str += 'Parent not animation exportable. '
-                            error_color = CONFLICT_COLOR
-
-                # check if we're skel exportable, but our parent is not.
-                if joint_node.hasAttr('skExport'):
-                    if joint_parent.hasAttr('skExport'):
-                        if joint_node.getAttr('skExport') and not joint_parent.getAttr('skExport'):
-                            error_str += 'Parent not skel exportable. '
-                            error_color = NEGATIVE_COLOR
-
-            # Check if chain start is in the parent structure.
-            # Or if we've a chain twist joint with same markup but different parent.
-            # If not we've duplicate markup with non shared parents.
-            if (chain_start_joint and joint_node != chain_start_joint and chain_start_joint not in all_parents_list) or (chain_twist and joint_parent != chain_dict.get('parent')) and 'leaf' not in joint_name:
-                error_str += 'Duplicate Markup. '
-                error_color = NEGATIVE_COLOR
-                for conflict_joint_name in chain_dict['joints']:
-                    conflict_item = self.item_name_dict[conflict_joint_name][0]
-                    conflict_text = conflict_item.text(1)
-                    if conflict_text and 'Duplicate Markup. ' not in conflict_text:
-                        conflict_item.setText(1, f'{conflict_text}Duplicate Markup. ')
-                    else:
-                        conflict_item.setText(1, f'Duplicate Markup. ')
-                    conflict_item.setBackground(0, NEGATIVE_COLOR)
-
-
-            # Check Mirror
-            rev_joint_name = joint_name
-            if '_l_' in joint_name:
-                rev_joint_name = joint_name.replace('_l_', '_r_')
-            elif joint_name.endswith('_l'):
-                rev_joint_name = joint_name[:-2] + '_r'
-            elif '_r_' in joint_name:
-                rev_joint_name = joint_name.replace('_r_', '_l_')
-            elif joint_name.endswith('_r'):
-                rev_joint_name = joint_name[:-2] + '_l'
-
-            if rev_joint_name != joint_name:
-                rev_joint = skel_hierarchy.skeleton_dict.get(rev_joint_name)
-                if rev_joint:
-                    joint_distance = pymaths.find_vector_length(pm.xform(joint_node, q=True, ws=True, t=True))
-                    rev_joint_distance = pymaths.find_vector_length(pm.xform(rev_joint, q=True, ws=True, t=True))
-                    if not abs(joint_distance - rev_joint_distance) < .01:
-                        error_str += 'Not Mirrored. '
-                        if error_color != NEGATIVE_COLOR:
-                            error_color = CONFLICT_COLOR
-
-                        if rev_joint_name not in self.item_name_dict:
-                            pm.select(self._root_joint)
-                            self.setup_treeview()
-                            return
-
-                        conflict_item = self.item_name_dict[rev_joint_name][0]
-                        conflict_text = conflict_item.text(1)
-                        if conflict_text and 'Not Mirrored. ' not in conflict_text:
-                            conflict_item.setText(1, f'{conflict_text}Not Mirrored. ')
-                        else:
-                            conflict_item.setBackground(0, CONFLICT_COLOR)
-                            conflict_item.setText(1, 'Not Mirrored. ')
-
-            # Check for naming errors
-            if any(True if x in joint_name else False for x in NAMING_ERROR_LIST):
-                error_str += 'Check Name. '
-                if error_color != NEGATIVE_COLOR:
-                    error_color = CONFLICT_COLOR
-
-            chain_dict['joints'].append(joint_name)
-
-            if error_str:
-                # Apply all errors found and markup with color.
-                tree_item.setText(1, error_str)
-                tree_item.setBackgroundColor(0, error_color)
-
-        for joint_region, side_dict in validation_markup_dict.items():
-            # Check back over all entries if any are missing a chain end or a chain start that entire chain is invalid.
-            # We should have already caught all chain starts, but this gets us our chain ends as well.
-            for joint_side, data_dict in side_dict.items():
-                if not data_dict.get('parent') and (not (data_dict.get('chain_end') or not data_dict.get('chain_start'))):
-                    for joint_name in data_dict.get('joints', []):
-                        tree_item = self.item_name_dict[joint_name][0]
-                        tree_item.setBackgroundColor(0, NEGATIVE_COLOR)
-                        conflict_text = tree_item.text(1)
-                        if conflict_text and 'Invalid Chain. ' not in conflict_text:
-                            tree_item.setText(1, f'{conflict_text}Invalid Chain. ')
-                        else:
-                            tree_item.setText(1, f'Invalid Chain. ')
-
-    def select_item(self):
+    def _select_joint(self):
         """
         Select the joint represented by an entry in the treewidget.
 
         """
-        tree_item = self.ui.validate_treeWidget.selectedItems()[0]
-        joint_name = tree_item.text(0)
-        joint_node = self.item_name_dict[joint_name][1]
-        pm.select(joint_node)
+        tree_selection = self.ui.skeleton_view_treeWidget.selectedItems()
+        if len(tree_selection) == 1:
+            self.previous_sel = tree_selection
+        else:
+            if len(tree_selection) == len(self.previous_sel)+1:
+                # We've added a single selection:
+                self.previous_sel = self.previous_sel+[x for x in tree_selection if x not in self.previous_sel]
+            elif len(tree_selection) == len(self.previous_sel)-1:
+                # We've deselected one.
+                self.previous_sel = [x for x in self.previous_sel if x in tree_selection]
+            else:
+                # We've shift selected a large group
+                self.previous_sel = self.previous_sel + [x for x in sorted(tree_selection, key=lambda x: x.joint_index) if x not in self.previous_sel]
+
+        if self.previous_sel:
+            pm.select([x.pynode for x in self.previous_sel])
 
     @ma_decorators.keep_selection_decorator
-    @decorators.track_fnc
-    def apply_markup(self):
+    @ma_decorators.undo_decorator
+    def set_markup_clicked(self):
         """
         Apply markup to the selected joints represented by the treewidget.
 
         """
-        skel_region = self.ui.region_label_lineEdit.text()
-        skel_side = self.ui.side_label_lineEdit.text()
+        skel_region = self.ui.skeleton_region_lineEdit.text()
+        skel_side = self.ui.skeleton_side_comboBox.currentText()
+        tree_selection = self.previous_sel
+        if tree_selection:
+            joint_list = [x.pynode for x in tree_selection]
+            joint_utils.set_markup(joint_list, skel_side, skel_region, self.ui.is_twist_checkBox.isChecked(),
+                                                                       self.ui.is_null_checkBox.isChecked(),
+                                                                       self.ui.is_animated_checkBox.isChecked())
+            self.validate_skeleton()
 
-        logger.debug(f'region:{skel_region}, side:{skel_side}')
-        node_list = []
-        if skel_region or skel_side:
-            for item in self.ui.validate_treeWidget.selectedItems():
-                node_list.append(self.item_name_dict[item.text(0)][1])
-            apply_markup_cmd(node_list, skel_region, skel_side, self.ui.is_twist_checkBox.isChecked(),
-                                                                self.ui.exportable_checkBox.isChecked(),
-                                                                self.ui.animatable_checkBox.isChecked())
-
-        pm.select(self._root_joint)
-        self.validate_skeleton()
-
-    @decorators.track_fnc
-    def import_skeleton(self):
+    @ma_decorators.keep_namespace_decorator
+    def import_skeleton_clicked(self, *args, **kwargs):
         """
         From the selected skeleton entry import merge that skeleton.
 
         """
-        selected_skel = lists.get_first_in_list(self.ui.archetype_listWidget.selectedItems())
-        skel_name = selected_skel.text()
-        skeleton_registry = skeletonbuilder_registry.SkeletonArchetypeRegistry()
-        skel_entry = skeleton_registry.get_entry(skel_name)
+        namespace_utils.set_namespace('')
 
-        skel_path = skel_entry.skel_path
-        if not os.path.exists(skel_path):
-            dialogs.info_prompt(title='Missing File', text=f'{skel_path} was not found on disk, verify the file exists.')
-            logger.warning(f'{skel_path} was not found on disk, verify the file exists.')
-            return
-
-        root_joint = skel_utils.import_merge_skeleton(skel_path, lists.get_first_in_list(pm.selected()))
-
-    @ma_decorators.keep_selection_decorator
-    @decorators.track_fnc
-    def export_skeleton(self):
-        """
-        From the registered skeleton check the asset_id and export to the associated .skl file.
-
-        """
-        if not self._root_joint.exists():
-            dialogs.info_prompt(title='Reload Skeleton', text='Validate a new skeleton, the registered root was not found.')
-            logger.warning('Validate a new skeleton, the registered root was not found.')
-            return
-        pm.select(self._root_joint)
-        asset_id = self._root_joint.getAttr('asset_id')
-        if not asset_id:
-            dialogs.info_prompt(title='Set Asset ID', text='Set a valid Asset ID. The current Asset ID is empty.')
-            logger.warning('Set a valid Asset ID. The current Asset ID is empty.')
-            return
-
-        if asset_id.endswith('.skl'):
-            skel_path = path_utils.to_full_path(asset_id)
-        else:
-            skel_path = rig_utils.get_asset_skeleton(asset_id)
-            if not skel_path:
-                dialogs.info_prompt(title='Lookup Failed', text=f'Verify Asset ID "{asset_id}" is registered, we were unable to lookup the skel path.')
-                logger.warning(f'Verify Asset ID "{asset_id}" is registered, we were unable to lookup the skel path.')
-                return
-
-        fileio.touch_path(skel_path)
-        skel_utils.export_skeleton(skel_path, self._root_joint)
-
-    @decorators.track_fnc
-    def add_skeleton_entry(self):
+        skeleton_path = None
+        if self.ui.prebuilt_skeleton_listWidget.isVisible():
+            selected_element = self.ui.prebuilt_skeleton_listWidget.currentItem()
+            if selected_element:
+                # We're importing a full fresh skel.
+                skeleton_path = os.path.join(PREBUILT_SKELETONS_PATH, selected_element.text())
+                joint_utils.import_merge_skeleton(skeleton_path, None)
+        elif self.ui.skeleton_parts_listWidget.isVisible():
+            selection = pm.selected()
+            selected_element = self.ui.skeleton_parts_listWidget.currentItem()
+            if selected_element:
+                skeleton_path = os.path.join(SKELETON_PARTS, selected_element.text())
+                root_joint = joint_utils.import_merge_skeleton(skeleton_path, None)
+                if selection:
+                    # Import and attach to a selection since we're dealing with a part.
+                    # Maybe rename some stuff here? Reset markup?
+                    # $TODO Make importing parts allow for renaming on the fly. Likely requrie a new format for .skel files maybe .skelpart or something
+                    # Would also need to pass a string to do renames on the fly. Double bonus points for checking against the existing skeletal markup so someone doesn't double up.
+                    # Bonus bonus is import/mirror here. Right now I'm going to punt on that and just let the user use Maya's internal mirror.
+                    parent_node = selection[0]
+                    children_nodes = root_joint.getChildren()
+                    for x in children_nodes:
+                        x.setParent(parent_node)
+                        x.t.set([0,0,0])
+                        x.r.set([0,0,0])
+                    pm.delete(root_joint)
+        elif self.ui.archetype_skeleton_listView.isVisible():
+            list_ui = self.ui.archetype_skeleton_listView
+            for index in list_ui.selectedIndexes():
+                asset_entry = list_ui.model().itemFromIndex(index).ASSET_ENTRY
+                skeleton_path = asset_entry.skeleton_path
+                joint_utils.import_merge_skeleton(skeleton_path, None)
+                break
+    
+    def add_skeleton_clicked(self):
         """
         Add a new entry to ther skeleton archetype registry
 
         """
-
-        if not self._root_joint.exists():
-            dialogs.info_prompt(title='Reload Skeleton', text='Validate a new skeleton, the registered root was not found.')
-            logger.warning('Validate a new skeleton, the registered root was not found.')
+        selection = pm.selected()
+        if not selection or not isinstance(selection[0], pm.nt.Joint):
             return
+        root_joint = dag_utils.get_absolute_parent(selection[0], pm.nt.Joint)
 
-        asset_id = self._root_joint.getAttr('asset_id')
-        if not asset_id:
-            dialogs.info_prompt(title='Set Asset ID', text='Set a valid Asset ID. The current Asset ID is empty.')
-            logger.warning('Set a valid Asset ID. The current Asset ID is empty.')
+        is_part = False
+        if root_joint != selection[0]:
+            is_part = True
+
+        skeleton_name = messages.text_prompt_message('Pick skeleton name', 'Please name this new skeleton addition.')
+        if not skeleton_name:
             return
-
-        mca_asset = assetlist.get_asset_by_id(asset_id)
-        if not mca_asset:
-            dialogs.info_prompt(title='Lookup Failed', text=f'Verify Asset ID "{asset_id}" is registered, we were unable to lookup the skel path.')
-            logger.warning(f'Verify Asset ID "{asset_id}" is registered, we were unable to lookup the skel path.')
-            return
-
-        skel_name = mca_asset.asset_name
-        skel_path = rig_utils.get_asset_skeleton(asset_id)
-        skeleton_registry = skeletonbuilder_registry.SkeletonArchetypeRegistry()
-        skeleton_registry.register_archetype(skeletonbuilder_registry.SkeletonArchetype({'name': skel_name, 'skel_path': skel_path}), commit=True)
-        self.setup_listview()
-
-    @decorators.track_fnc
-    def remove_skeleton_entry(self):
-        """
-        From the selected skeleton entry remove it from the registry.
-
-        """
-        selected_skel = lists.get_first_in_list(self.ui.archetype_listWidget.selectedItems())
-        skel_name = selected_skel.text()
-        skeleton_registry = skeletonbuilder_registry.SkeletonArchetypeRegistry()
-        skeleton_registry.remove_entry(skel_name, commit=True)
-        self.setup_listview()
-
-
-
-@ma_decorators.keep_selection_decorator
-def apply_markup_cmd(node_list, skel_region, skel_side, is_twist=False, sk_exportable=True, animatable=True):
-    """
-    From a list of ORDERED joints, apply Frag markup for us to traverse the skeleton.
-
-    :param list[Joint] node_list: A list of joint nodes in hierarchical order.
-    :param str skel_region: The name of the skeletal region. IE: "leg", "arm"
-    :param str skel_side: The name of the skeleton side. IE: "right", "left", "center"
-    :param bool is_twist: If this joint should be marked up as a twist joint.
-    :param bool sk_exportable: If this joint should be exported as part of the SK.
-    :param bool animatable: If this joint should be marked up for animation export.
-    """
-    node_list = node_list or pm.selected()
-    for index, x in enumerate(node_list):
-        wrapped_joint = chain_markup.JointMarkup(x)
-
-        wrapped_joint.is_sk_export = sk_exportable
-        wrapped_joint.is_animation_export = animatable
-
-        if 'null' in wrapped_joint.name:
-            # Null joints can neither have animation nor should they be exported.
-            wrapped_joint.is_sk_export = False
-            wrapped_joint.is_animation_export = False
-
-        if index:
-            # If our joint has a chain start that matches the region markup we're using, but is not
-            # the first joint, delete that markup
-            if wrapped_joint.chainStart == skel_region:
-                wrapped_joint.node.chainStart.delete()
-
-        if is_twist:
-            if skel_region:
-                wrapped_joint.chainTwist = skel_region
-            # Twist joints cannot accept animation, but they should be part of the primary skeleton.
-            wrapped_joint.is_sk_export = True
-            wrapped_joint.is_animation_export = False
-
-        if not index and not is_twist:
-            # Only the first joint should get chainStart markup
-            if skel_region:
-                wrapped_joint.chainStart = skel_region
-
-        if skel_side:
-            wrapped_joint.side = skel_side
-
-        if skel_region:
-            wrapped_joint.region = skel_region
-
-        if index + 1 == len(node_list) and not is_twist:
-            # Only the last joint should get chainEnd markup
-            if skel_region:
-                wrapped_joint.chainEnd = skel_region
+        file_name = f'{skeleton_name}.skl'
+        
+        if is_part:
+            if file_name in os.listdir(SKELETON_PARTS):
+                result = maya_dialogs.question_prompt('Overwrite Existing Skeleton?', f'A skeleton part with the name "{skeleton_name}" already exists, would you like to overwrite it?')
+                if result != 'Yes':
+                    return
+            part_copy = pm.duplicate(selection[0])
+            part_copy.setParent(None)
+            part_copy.rename(naming.get_basename(selection[0]))
+            new_root = pm.joint('root')
+            part_copy.setParent(new_root)
+            joint_utils.export_skeleton(new_root, os.path.join(SKELETON_PARTS, file_name))
         else:
-            # If we have a joint that is not the last joint, and it has chainEnd markup
-            # delete that attribute.
-            if wrapped_joint.chainEnd == skel_region:
-                wrapped_joint.node.chainEnd.delete()
+            if file_name in os.listdir(PREBUILT_SKELETONS_PATH):
+                result = maya_dialogs.question_prompt('Overwrite Existing Skeleton?', f'A skeleton with the name "{skeleton_name}" already exists, would you like to overwrite it?')
+                if result != 'Yes':
+                    return
+            joint_utils.export_skeleton(root_joint, os.path.join(PREBUILT_SKELETONS_PATH, file_name))
+        self.initialize_lists()
+
+    def remove_skeleton_clicked(self):
+        skeleton_path = None
+        if self.ui.prebuilt_skeleton_listWidget.isVisible():
+            # We're removing a full skeleton
+            selected_element = self.ui.prebuilt_skeleton_listWidget.currentItem()
+            if selected_element:
+                skeleton_path = os.path.join(PREBUILT_SKELETONS_PATH, selected_element.text())
+
+        elif self.ui.skeleton_parts_listWidget.isVisible():
+            # We're removing a skeleton part.
+            selected_element = self.ui.skeleton_parts_listWidget.currentItem()
+            if selected_element:
+                skeleton_path = os.path.join(SKELETON_PARTS, selected_element.text())
+
+        if skeleton_path:
+            skeleton_name = os.path.basename(skeleton_path).split('.')[0]
+            result = maya_dialogs.question_prompt('Remove Skeleton', f'Are you sure you want to remove the skeleton "{skeleton_name}"')
+            if result != 'Yes':
+                return
+            
+            fileio.touch_path(skeleton_path, True)
+        self.initialize_lists()
+    
+    @ma_decorators.keep_namespace_decorator
+    def add_joint_clicked(self):
+        selection = pm.selected()
+        if selection:
+            namespace_utils.set_namespace(selection[0].namespace())
+        else:
+            namespace_utils.set_namespace('')
+        cmds.select(None)
+        new_joint = pm.joint()
+        if selection and isinstance(selection[0], pm.nt.Joint):
+            new_joint.setParent(selection[0])
+            new_joint.t.set([0,0,0])
+            new_joint.r.set([0,0,0])
+
+    def make_planar_clicked(self):
+        selection = pm.selected()
+        if len(selection) == 3:
+            planar_chain = joint_utils.make_planar_chain(selection)
+            for joint_node, planar_node in zip(selection, planar_chain):
+                joint_children = joint_node.getChildren()
+                if joint_children:
+                    pm.parent(joint_children, None)
+                pm.delete(pm.parentConstraint(planar_node, joint_node))
+                if joint_children:
+                    pm.parent(joint_children, joint_node)
+            pm.makeIdentity(selection, apply=True, t=0, r=1, s=0, n=0)
+            pm.delete(planar_chain)
+        else:
+            maya_dialogs.error_prompt('Selection Error', 'Exactly 3 objects must be selected to make them planar.')
+    
+    @ma_decorators.keep_selection_decorator
+    def export_skeleton_clicked(self):
+        """
+        From the selected skeleton check the asset_id and export to the associated .skl file.
+
+        """
+        selection = pm.selected()
+        if not selection:
+            logger.error('Select a joint to continue')
+            maya_dialogs.error_prompt('Selection Error', 'Select a joint to continue.')
+            return
+        
+        root_joint = dag_utils.get_absolute_parent(selection[0], pm.nt.Joint)
+        if not root_joint or not isinstance(root_joint, pm.nt.Joint):
+            logger.error('Unable to find a valid root from selection')
+            maya_dialogs.error_prompt('Selection Error', 'Unable to find a valid root from selection.')
+            return
+
+        skeleton_path = None
+        if root_joint.hasAttr('skeleton_path'):
+            skeleton_path = root_joint.getAttr('skeleton_path')
+
+        if not skeleton_path:
+            skeleton_path, _ = qtwidgets.QFileDialog.getSaveFileName(None, 'Select Skel', paths.get_art_characters_path()+'\\', 'Skeleton (*.skl)')
+
+        if not skeleton_path:
+            return
+        
+        joint_utils.export_skeleton(root_joint, skeleton_path)

@@ -8,8 +8,8 @@ import os
 #  python imports
 from mca.common import log
 from mca.common.textio import jsonio
-from mca.common.utils import pyutils
-from mca.common.paths import paths
+from mca.common.utils import dict_utils
+from mca.common.project import paths
 from mca.mya.face import face_vertex_data, joints_data
 from mca.mya.rigging import frag
 
@@ -67,7 +67,7 @@ REGION_DATA_TYPES = {'mirror_type': {},
 class SourceFaceData:
 	def __init__(self, data=None):
 		data = data_check(FACE_DATA_TYPES, data)
-		self.data = pyutils.ObjectDict(data)
+		self.data = dict_utils.ObjectDict(data)
 	
 	################
 	# regions
@@ -364,7 +364,7 @@ class FaceMeshRegionData(SourceFaceData):
 	def __init__(self, region_name, data=None):
 		self.region_name = region_name
 		data = self.data_check(region_name, data)
-		self.data = pyutils.ObjectDict(data)
+		self.data = dict_utils.ObjectDict(data)
 		super(FaceMeshRegionData, self).__init__(self.data)
 		
 	@classmethod
@@ -1118,7 +1118,7 @@ def data_check(empty_data, existing_data=None):
 	
 	:param dict empty_data: A default set of values for a dictionary.
 	:param dict existing_data: a dictionary with existing data.
-	:return: Returns a combined dictionary with out overwriting existing data.
+	:return: Returns a combined dictionary without overwriting existing data.
 	:rtype: dictionary
 	"""
 	
@@ -1134,5 +1134,5 @@ def data_check(empty_data, existing_data=None):
 		if isinstance(value, dict) and value.keys():
 			sub_data = dict(list(empty_data[key].items()) + list(updated_data[key].items()))
 			updated_data[key] = sub_data
-	return pyutils.ObjectDict(updated_data)
+	return dict_utils.ObjectDict(updated_data)
 			

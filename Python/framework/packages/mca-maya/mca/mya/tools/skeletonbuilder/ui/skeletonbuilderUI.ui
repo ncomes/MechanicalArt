@@ -1,227 +1,425 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>skeletonbuilder</class>
- <widget class="QWidget" name="skeletonbuilder">
+ <class>skeleton_builder_QWidget</class>
+ <widget class="QWidget" name="skeleton_builder_QWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>561</width>
-    <height>679</height>
+    <width>419</width>
+    <height>832</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Skeleton Markup</string>
+   <string>Skeleton Builder</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTabWidget" name="tabWidget">
+    <widget class="QGroupBox" name="getting_started_groupBox">
+     <property name="title">
+      <string>Getting Started</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QLabel" name="getting_started_label">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you're starting with a brand new skeleton import or build a skeleton using the Build A Skeleton tab. If you're looking to validate and update markup use the Skeleton markup tab. To interact with an existing skeleton use the Set Skeleton Root button on the Skeleton Markup tab with joint(s) selected to assign the skeleton this tool will watch.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="build_a_skeleton_tabWidget">
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="validatie_tab">
+     <widget class="QWidget" name="skeleton_builder_tab">
       <attribute name="title">
-       <string>Validate Skeleton</string>
+       <string>Build A Skeleton</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
-        <layout class="QVBoxLayout" name="validate_verticalLayout">
-         <item>
-          <widget class="QTreeWidget" name="validate_treeWidget">
-           <property name="selectionMode">
-            <enum>QAbstractItemView::ExtendedSelection</enum>
-           </property>
-           <property name="columnCount">
-            <number>0</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="validate_pushButton">
-           <property name="text">
-            <string>Validate Skeleton</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QGroupBox" name="import_skeleton_groupBox">
+         <property name="title">
+          <string>Skeleton Imports</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QLabel" name="import_skeleton_label">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Prebuilt Skeletons&lt;/span&gt; - Prebuilt skeletons contain common skeleton configurations pre-named and labeled for use.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Skeleton Parts&lt;/span&gt; - These are a collection of common skeleton parts which can be added to existing skeletons.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Archetype Skeletons&lt;/span&gt; - Archetypes are any entries in our asset lists which contain no parent entries. They should represent unique skeleton options.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTabWidget" name="skeleton_import_tabWidget">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="prebuilt_skeleton_tab">
+             <attribute name="title">
+              <string>Prebuilt Skeletons</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <item>
+               <widget class="QListWidget" name="prebuilt_skeleton_listWidget"/>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="skeleton_parts_tab">
+             <attribute name="title">
+              <string>Skeleton Parts</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_12">
+              <item>
+               <widget class="QListWidget" name="skeleton_parts_listWidget"/>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="archetype_skeleton_tab">
+             <attribute name="title">
+              <string>Archetype Skeletons</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QListView" name="archetype_skeleton_listView"/>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout">
+        <widget class="QGroupBox" name="skeleton_tools_groupBox">
+         <property name="title">
+          <string>Skeleton Tools</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QLabel" name="skeleton_tools_label">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Import Skeleton&lt;/span&gt; - From the selected list import the skeleton. If a part is imported it'll parent and zero itself to a selected joint if one is avaliable.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Add New Skeleton&lt;/span&gt; - Add a new Prebuilt or Part skeleton to their respective list.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Remove Skeleton&lt;/span&gt; - Remove a skeleton from the Prebuilt or Part skeleton lists.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Add a Joint&lt;/span&gt; - Creates a new joint at the origin, or as a child to a selected joint.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Make Planar&lt;/span&gt; - From a selection of exactly 3 joints make them planar to each other.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QPushButton" name="import_skeleton_pushButton">
+              <property name="toolTip">
+               <string>From the active list import a skeleton, or part. A series of popups will guide the experience.</string>
+              </property>
+              <property name="text">
+               <string>Import Skeleton</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="add_new_entry_pushButton">
+              <property name="toolTip">
+               <string>From your selection add a whole new prebuilt skeleton, or a new skeleton part.</string>
+              </property>
+              <property name="text">
+               <string>Add New Skeleton</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="remove_skeleton_pushButton">
+              <property name="text">
+               <string>Remove Skeleton</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="joint_edit_horizontalLayout">
+            <item>
+             <widget class="QPushButton" name="add_a_joint_pushButton">
+              <property name="text">
+               <string>Add a Joint</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="make_planar_pushButton">
+              <property name="toolTip">
+               <string>Make any selected 3 joint chain planar.</string>
+              </property>
+              <property name="text">
+               <string>Make Planar</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="skeleton_markup_tab">
+      <attribute name="title">
+       <string>Skeleton Markup</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_11">
+       <item>
+        <layout class="QHBoxLayout" name="set_skeleton_root_horizontalLayout">
          <item>
-          <layout class="QHBoxLayout" name="side_label_horizontalLayout">
-           <item>
-            <widget class="QLabel" name="side_label">
-             <property name="minimumSize">
-              <size>
-               <width>70</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>70</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Side label</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="side_label_horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="side_label_lineEdit"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="region_label_horizontalLayout">
-           <item>
-            <widget class="QLabel" name="region_label">
-             <property name="minimumSize">
-              <size>
-               <width>70</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>70</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Region Label</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="region_label_horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="region_label_lineEdit"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="is_twist_checkBox">
-           <property name="text">
-            <string>Twist Joint</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="exportable_checkBox">
-           <property name="text">
-            <string>Exportable Joint</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="animatable_checkBox">
-           <property name="text">
-            <string>Animatable Joint</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="apply_markup_pushButton">
-           <property name="text">
-            <string>Apply Markup</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="apply_label_verticalSpacer">
+          <spacer name="set_Skeleton_root_horizontalSpacer">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>40</width>
+             <height>20</height>
             </size>
            </property>
           </spacer>
          </item>
+         <item>
+          <widget class="QPushButton" name="set_skeleton_root_pushButton">
+           <property name="toolTip">
+            <string>From selection, set the given skeleton as the active skeleton for tool operations.</string>
+           </property>
+           <property name="text">
+            <string>Set Skeleton Root</string>
+           </property>
+          </widget>
+         </item>
         </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="skeleton_markup_groupBox">
+         <property name="title">
+          <string>Skeleton Markup</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QLabel" name="skeleton_markup_label">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a series of joints and apply markup required for building a rig.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Side&lt;/span&gt; - This represents a relative location on the skeleton. It should be relative the character, not the stage.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Region&lt;/span&gt; - This represents a unique idenitfier for a part of the skeleton.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Animated&lt;/span&gt; - Animated joints will be exported during animation saving.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Null&lt;/span&gt; - Null joints are joints that need to be part of the skeleton for rigging, but not for anything else.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Twist&lt;/span&gt; - Twist joints are used in the automatic rotation cancelation chains. The first will always be full, and the rest will distribute the twist from there. The first joint of a twist chain by name represents the cancelation joint and the direction the twist joints will inherit their behavior from.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="skeleton_markup_horizontalLayout" stretch="5,2">
+            <item>
+             <layout class="QVBoxLayout" name="skeleton_view_verticalLayout">
+              <item>
+               <widget class="QTreeWidget" name="skeleton_view_treeWidget">
+                <property name="selectionMode">
+                 <enum>QAbstractItemView::ExtendedSelection</enum>
+                </property>
+                <property name="selectionBehavior">
+                 <enum>QAbstractItemView::SelectItems</enum>
+                </property>
+                <property name="sortingEnabled">
+                 <bool>false</bool>
+                </property>
+                <column>
+                 <property name="text">
+                  <string notr="true">1</string>
+                 </property>
+                </column>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="validate_skeleton_pushButton">
+                <property name="toolTip">
+                 <string>From the currently active root, validate all markup and check for common problems.</string>
+                </property>
+                <property name="text">
+                 <string>Validate Skeleton</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="skeleton_markup_options_verticalLayout">
+              <item>
+               <layout class="QHBoxLayout" name="skeleton_side_horizontalLayout">
+                <item>
+                 <widget class="QLabel" name="skeleton_side_label">
+                  <property name="text">
+                   <string>Side</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="skeleton_side_horizontalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="skeleton_side_comboBox">
+                  <property name="minimumSize">
+                   <size>
+                    <width>80</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="skeleton_region_horizontalLayout">
+                <item>
+                 <widget class="QLabel" name="skeleton_region_label">
+                  <property name="text">
+                   <string>Region</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="skeleton_region_horizontalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="skeleton_region_lineEdit">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>80</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="joint_options_groupBox">
+                <property name="title">
+                 <string>Joint Options</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_9">
+                 <item>
+                  <widget class="QCheckBox" name="is_animated_checkBox">
+                   <property name="toolTip">
+                    <string>If the joint should accept keyframe animation, it is an animated joint.</string>
+                   </property>
+                   <property name="text">
+                    <string>Animated</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                   <property name="autoExclusive">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="is_null_checkBox">
+                   <property name="toolTip">
+                    <string>If the joint is required for rigging purposes, but should not be part of the skeleton otherwise.</string>
+                   </property>
+                   <property name="text">
+                    <string>Null</string>
+                   </property>
+                   <property name="autoExclusive">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="is_twist_checkBox">
+                   <property name="toolTip">
+                    <string>If the joint is part of a twist setup.</string>
+                   </property>
+                   <property name="text">
+                    <string>Twist</string>
+                   </property>
+                   <property name="autoExclusive">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="set_markup_pushButton">
+                <property name="text">
+                 <string>Set Markup</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="skeleton_tab">
-      <attribute name="title">
-       <string>Import/Export Skeleton</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QListWidget" name="archetype_listWidget"/>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="add_remove_horizontalLayout">
-         <item>
-          <widget class="QPushButton" name="add_archetype_pushButton">
-           <property name="text">
-            <string>Add Archetype</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="remove_archetype_pushButton">
-           <property name="text">
-            <string>Remove Archetype</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="import_export_horizontalLayout">
-         <item>
-          <widget class="QPushButton" name="import_archetype_pushButton">
-           <property name="text">
-            <string>Import Archetype</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="export_skeleton_pushButton">
-           <property name="text">
-            <string>Export Skeleton</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="export_skeleton_pushButton">
+     <property name="toolTip">
+      <string>From a selected skeleton export it to its original location. Or if one is not registered prompt for a new save location.</string>
+     </property>
+     <property name="text">
+      <string>Export Skeleton</string>
+     </property>
     </widget>
    </item>
   </layout>

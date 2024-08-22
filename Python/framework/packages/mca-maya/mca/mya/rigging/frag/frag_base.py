@@ -2,77 +2,18 @@
 # -*- coding: utf-8 -*-
 
 """
-Generic Meta Node class
+Module that contains functions related to base FRAGNodes and their usage.
 """
 
-import importlib
-import logging
+# python imports
 
-import pymel.core as pm
-import maya.cmds as cmds
+# software specific imports
+import pymel.all as pm
 
-from mca.common.utils import lists
-from mca.mya.utils import attr_utils
-from mca.mya.startup.configs import ma_consts
-
-FRAG_TYPE_ATTR = 'fragType'
-
-
-def is_frag_node(node):
-    result = False
-    if isinstance(node, FRAGNode):
-        result = True
-    else:
-        if not isinstance(node, pm.PyNode):
-            if pm.objExists(node):
-                node = pm.PyNode(node)
-            else:
-                print('Type filter found that node does not exist in the scene. Skipping - "{0}"'.format(node))
-    if isinstance(node, pm.nt.Network):
-        result = attr_utils.has_attribute(node, 'xrigType') or attr_utils.has_attribute(node, FRAG_TYPE_ATTR)
-
-    return result
-
-
-def get_frag_parent(node):
-    node = pm.PyNode(node)
-    result = None
-
-    if isinstance(node, pm.nt.DependNode):
-        if attr_utils.has_attribute(node, 'fragParent'):
-            conn = cmds.listConnections(str(node) + '.fragParent')
-            if conn:
-                result = FRAGNode(conn[0])
-    return result
-
-
-def _import_external_frag_node_package(frag_node_type):
-    """
-    Import FRAGNode package locations that were registered at startup then check to see if the given FRAGNode type
-    exists in any of them. This utility assumes that the FRAGNode type was not found within this base package.
-    The very act of importing registers FRAGNode classes to a dictionary of known types so this just returns True
-    to indicate that our FRAGNode type was found. Then whatever is calling this utility can sort out the rest.
-
-    :param str frag_node_type: frag node class name from FRAGNode's get_type()
-    :return bool: True if a package was found and imported with the given FRAGNode type
-    """
-
-    for node_package_path in ma_consts.FRAG_NODE_PACKAGE_PATHS:
-        # If the package path is THIS package then we can skip it since if the
-        # FRAG Node lived here it would have been imported and found already
-        if __package__ == node_package_path:
-            continue
-
-        # Make sure the external package is imported. These packages were registered at
-        # startup and will be different depending on the project context.
-        package = importlib.import_module(node_package_path)
-        if hasattr(package, frag_node_type):
-            frag_class = getattr(package, frag_node_type)
-            if issubclass(frag_class, FRAGNode):
-                # We imported the package, found the class, and verified it inherited from FRAGNode
-                return True
-
-    return False
+# Project python imports
+from mca.mya.modifiers import ma_decorators
+from mca.mya.rigging import flags
+from mca.mya.utils import attr_utils, namespace_utils
 
 
 class FRAGNodeRegister(type):
@@ -80,390 +21,359 @@ class FRAGNodeRegister(type):
     Metaclass for tracking all FRAGNode classes in the import path.
     """
 
-    __frag_node_types__ = dict()
+    _FRAGNODE_TYPES = dict()
 
     def __init__(cls, *args, **kwargs):
         super(FRAGNodeRegister, cls).__init__(*args, **kwargs)
         # Check for clashing class names on FRAGNodes. New FRAGNodes require unique class names!
-        if cls.__name__ in cls.__frag_node_types__:
+        if cls.__name__ in cls._FRAGNODE_TYPES:
             clash_path = cls.__module__ + '.' + cls.__name__
-            existing_class = cls.__frag_node_types__[cls.__name__]
+            existing_class = cls._FRAGNODE_TYPES[cls.__name__]
             existing_path = existing_class.__module__ + '.' + existing_class.__name__
             # If we reload() and the exact same class is registered things are fine, but if a clashing class name is
             # registered from a different module raise an exception.
             if clash_path != existing_path:
-                raise LookupError(
-                    "FRAG Node {} name clashes with existing FRAG Node {}.".format(clash_path, existing_path))
+                raise LookupError(f"FRAG Node {clash_path} name clashes with existing FRAG Node {existing_path}.")
         else:
-            cls.__frag_node_types__[cls.__name__] = cls
+            cls._FRAGNODE_TYPES[cls.__name__] = cls
 
 
 class FRAGNode(object, metaclass=FRAGNodeRegister):
+    """
+    Rough breakdown for class inheritance.
 
-    VERSION = 1
+    FRAGNode - Base node everything inherits from.
 
-    # Overwrite of __new__ allows wrapping any FRAGNode in the base FRAGNode class and getting the correct subclass
-    # returned
+	FRAGRoot - Represents a whole asset.
+
+	FRAGROOTSingle
+		FRAGMesh - Handles mesh groups. (including blendshapes)
+		FRAGDisplay - Handles managing display layers
+		FRAGRig - Core of the rig, contains a link to all rig components.
+
+	FRAGComponent - Must be children of a FRAGRig
+		FRAGAnimatedfComponent
+				Bake from a skeleton
+			CogComponent - Limit 1
+			RootComponent - Limit 1
+
+			<<RIG>>Component
+
+		TwistComponent
+
+    FragSequencer
+
+    """
+    _version = 1.0
+    pynode = None
     def __new__(cls, node=None):
+        if isinstance(node, FRAGNode):
+            return node
         if node:
-            if not isinstance(node, pm.PyNode):
-                node = pm.PyNode(node)
-            # Check if node is a network.
+            frag_node_type = None
             if not isinstance(node, pm.nt.Network):
-                raise TypeError("Node {0} is not a network node and can't be a FRAG Node.".format(node))
-            elif attr_utils.has_attribute(node, FRAG_TYPE_ATTR):
-                class_string = attr_utils.get_attribute(node, FRAG_TYPE_ATTR, attr_type='string')
+                raise TypeError(f'{node} is not a network node and can\'t be a FRAG Node.')
+            elif node.hasAttr('frag_type'):
+                frag_node_type = node.getAttr('frag_type')
             else:
-                raise TypeError("Node {0} is not a FRAG Node.".format(node))
+                raise TypeError(f'{node} is not a valid FRAG Node')
+            if frag_node_type in cls._FRAGNODE_TYPES:
+                frag_class = cls._FRAGNODE_TYPES.get(frag_node_type)
+                return frag_class.__new__(frag_class)
+            raise TypeError(f'FRAGNode {frag_node_type} does not exist in register.')
 
-            if class_string in cls.__frag_node_types__:
-                frag_class = cls.__frag_node_types__[class_string]
-                return frag_class.__new__(frag_class)
-            elif _import_external_frag_node_package(class_string):
-                frag_class = cls.__frag_node_types__[class_string]
-                return frag_class.__new__(frag_class)
-            raise TypeError("FRAGNode {0} does not exist in register.".format(class_string))
         else:
             return super(FRAGNode, cls).__new__(cls)
 
     def __init__(self, node):
-        if not isinstance(node, pm.PyNode):
-            node = pm.PyNode(node)
+        # Inititalize a FRAGNode off an existing network node.
+        if not isinstance(node, pm.nt.Network):
+            return
         self.pynode = node
 
-    @staticmethod
-    def create(frag_parent, frag_type, version):
+    # These two class overrides are important as it lets us look up the wrapper in lists or dicts.
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.pynode == other.pynode
+        return False
+    
+    def __hash__(self):
+        return hash(self.pynode)
+
+    @classmethod
+    @ma_decorators.keep_namespace_decorator
+    def create(cls, **kwargs):
         """
-        Creates a FRAGNode of given frag_type.
+        Some universal things this handles.
+        If there is a frag_parent it'll build the nodes under the parent namespace.
+        Sets the frag_type
+        Connects to a frag_parent if provided.
 
-        :param frag_parent:
-        :param frag_type:
-        :param version:
-        :return:
+        :param FRAGNode frag_parent: Parent FRAGNode for the newly created FRAGNode
+        :return: The newly created FRAGNode
+        :rtype: FRAGNode
         """
-
+        frag_parent = kwargs.get('frag_parent')
         if frag_parent:
-            frag_parent = FRAGNode(frag_parent)
-        # Create node
-        node = pm.createNode("network", n=str(frag_type))
+            root_namespace = frag_parent.namespace
+            namespace_utils.set_namespace(root_namespace, check_existing=False)
 
-        # Add attributes
-        node.addAttr("version", at='double')
-        node.version.set(version)
-        node.addAttr(FRAG_TYPE_ATTR, dt='string')
-        node.attr(FRAG_TYPE_ATTR).set(frag_type)
-        node.addAttr("fragChildren", at='message')
-        node.addAttr("fragParent", at='message')
-        node = FRAGNode(node)
+        network_node = pm.createNode(pm.nt.Network, n=cls.__name__)
+        network_node.addAttr('frag_type', dt='string')
+        network_node.setAttr('frag_type', cls.__name__)
+
+        new_frag_node = FRAGNode(network_node)
+
+        new_frag_node.version = cls._version
         if frag_parent:
-            node.set_frag_parent(frag_parent)
-        return node
+            new_frag_node.frag_parent = frag_parent
+        return new_frag_node
 
-    def connect_node(self, node, attr, parent_attr=None):
+    @ma_decorators.keep_namespace_decorator
+    def _create_managed_group(self, group_name):
+        """
+        Singular spot to setup groups in the same namespace as this FRAGNode.
+
+        :param str group_name: Name for the new managed group.
+        :return: The Transform that represents the new empty group.
+        :rtype: Transform
+        """
+        root_namespace = self.namespace
+        namespace_utils.set_namespace(root_namespace, check_existing=False)
+
+        new_group = pm.group(n=group_name, em=True, w=True)
+        return new_group
+
+    def remove(self):
+        try:
+            pm.delete(self.pynode)
+        except:
+            pass
+
+    @property
+    def version(self):
+        if self.pynode.hasAttr('frag_version'):
+            return self.pynode.getAttr('frag_version')
+
+    @version.setter
+    def version(self, val):
+        if not self.pynode.hasAttr('frag_version'):
+            self.pynode.addAttr('frag_version', at='float')
+        self.pynode.setAttr('frag_version', val)
+
+    @property
+    def frag_type(self):
+        if self.pynode.hasAttr('frag_type'):
+            return self.pynode.getAttr('frag_type')
+
+    @frag_type.setter
+    def frag_type(self, val):
+        if not self.pynode.hasAttr('frag_type'):
+            self.pynode.addAttr('frag_type', dt='string')
+        self.pynode.setAttr('frag_type', val)
+
+    @property
+    def frag_parent(self):
+        if self.pynode.hasAttr('frag_parent'):
+            return FRAGNode(self.pynode.getAttr('frag_parent'))
+
+    @frag_parent.setter
+    def frag_parent(self, frag_node):
+        if isinstance(frag_node, FRAGNode):
+            self.connect_node(frag_node, 'frag_parent')
+            frag_node.frag_children += [self.pynode]
+        else:
+            raise TypeError('FRAG Parent must be a FRAGNode')
+
+    @property
+    def frag_children(self):
+        if self.pynode.hasAttr('frag_children'):
+            return [FRAGNode(x) for x in self.pynode.getAttr('frag_children')]
+        return []
+
+    @frag_children.setter
+    def frag_children(self, node_list):
+        # Just some logic to convert the call to frag_children back into pynodes to handle the connect.
+        nodes_to_connect = []
+        for node in node_list:
+            if isinstance(node, FRAGNode):
+                nodes_to_connect.append(node.pynode)
+            elif isinstance(node, pm.PyNode):
+                nodes_to_connect.append(node)
+        self.connect_nodes(nodes_to_connect, attr_name='frag_children')
+
+    @property
+    def asset_id(self):
+        """
+        From the FRAGRoot return the asset_id registered
+
+        :return: The guid representative of this FRAGRoot
+        :rtype: str
+        """
+        frag_root = self.get_frag_root()
+
+        if frag_root and hasattr(frag_root, 'asset_id'):
+            return frag_root.asset_id
+
+        else:
+            ('Failed to find a root with asset_id markup.')
+            return
+        
+    @property
+    def asset_name(self):
+        """
+        From the FRAGRoot return the asset_name registered
+
+        :return: The asset name representative of this FRAGRoot
+        :rtype: str
+        """
+        frag_root = self.get_frag_root()
+
+        if frag_root and hasattr(frag_root, 'asset_name'):
+            return frag_root.asset_name
+
+        else:
+            ('Failed to find a root with asset_name markup.')
+            return
+
+
+    def connect_node(self, node, attr_name, parent_attr=None):
+        """
+        Connect from a node or attribute to this network node via a message connection to a new attribute
+        of attr_name.
+
+        :param PyNode node: A PyNode instance, often transforms, or attributes.
+        :param str attr_name: The name of the attribute the passed object should be connected to.
+        :param str parent_attr: If the passed object should use a specific attribute to connect with.
+        """
+        if not node:
+            return
+        if not attr_name:
+            return
+
         node_to_connect = node
-        if not isinstance(node, pm.PyNode):
+        if isinstance(node, (FRAGNode, flags.Flag)):
+            node_to_connect = node.pynode
+        elif not isinstance(node, pm.PyNode):
             if hasattr(node, 'node'):
                 node_to_connect = node.node
             else:
                 node_to_connect = pm.PyNode(node)
 
         if parent_attr:
-            if not node.hasAttr(parent_attr):
-                node.addAttr(parent_attr, at='message')
-            node_to_connect = node.attr(parent_attr)
-        attr_utils.set_attribute(self.pynode, {attr: node_to_connect})
+            if not node_to_connect.hasAttr(parent_attr):
+                node_to_connect.addAttr(parent_attr, at='message')
+            node_to_connect = node_to_connect.attr(parent_attr)
+        attr_utils.set_attribute(self.pynode, {attr_name: node_to_connect})
 
-    def connect_nodes(self, connect_nodes, attr, parent_attr=None, merge_values=False):
+
+    def connect_nodes(self, node_list, attr_name, parent_attr=None, merge_values=False):
         """
-        Connects the node to frag node at given attr.
+        Connect from a list of nodes or attributes to this FRAG node via a message connection to a new multi
+        attribute of attr_name.
 
-        :param list[PyNode] connect_nodes: A list of pynodes to connect to this FRAGNode
-        :param str attr: Attr on this FRAGNode to connect with.
-        :param str parent_attr: The name of the parent attr on the connected nodes that should be used to form the connection
-            NOTE this will override the connection when used so last connected will be the final value.
-        :param bool merge_values: If values already connected should be kept.
-        :return:
+        :param list[PyNode] node_list: A list of PyNodes, often transforms, or attributes.
+        :param str attr_name: The name of the attribute the passed objects should be connected to.
+        :param str parent_attr: If the passed objects should use a specific attribute to connect with.
+        :param bool merge_values: If the values on this FRAG node should be kept when adding the new connections.
         """
-
-        if not isinstance(connect_nodes, (list, tuple)):
-            connect_nodes = [connect_nodes]
+        if not isinstance(node_list, (list, tuple)):
+            node_list = [node_list]
 
         pynode_list = []
-        for node in connect_nodes:
-            if not isinstance(node, pm.PyNode):
+        for node in node_list:
+            if isinstance(node, (FRAGNode, flags.Flag)):
+                pynode_list.append(node.pynode)
+                continue
+            elif not isinstance(node, pm.PyNode):
                 if hasattr(node, 'node'):
                     pynode_list.append(node.node)
                     continue
                 pynode_list.append(pm.PyNode(node))
                 continue
-            pynode_list.append(node)
+            else:
+                pynode_list.append(node)
 
-        objs_to_connect = []
+        nodes_to_connect = []
         if parent_attr:
             for node in pynode_list:
                 if not node.hasAttr(parent_attr):
                     node.addAttr(parent_attr, at='message')
-                objs_to_connect.append(node.attr(parent_attr))
+                nodes_to_connect.append(node.attr(parent_attr))
         else:
-            objs_to_connect = pynode_list
+            nodes_to_connect = pynode_list
 
-        attr_utils.set_attribute(self.pynode, {attr: objs_to_connect}, merge_values=merge_values)
+        attr_utils.set_attribute(self.pynode, {attr_name: nodes_to_connect}, merge_values=merge_values)
 
-    def get_frag_parent(self):
-        result = None
-        if self.has_attribute('fragParent'):
-            conn = cmds.listConnections(str(self.pynode) + '.fragParent')
-            if conn:
-                result = FRAGNode(conn[0])
-        return result
+    @property
+    def namespace(self):
+        frag_root = self.get_frag_root()
+        return frag_root.pynode.namespace().split(':')[0]
 
-    def get_frag_children(self, of_type=None, side=None, region=None):
+    def get_frag_root(self):
         """
-        From a list of all FRAGNode children return a list of them that match search criteria.
+        Recursively check each FRAGNode for a parent connection and return it.
 
-        :param FRAGNode of_type: The specific class of FRAGNode to filter by.
-        :param str side: Side identifier of the FRAGNode
-        :param str region: Region identifier of the FRAGNode
-        :return: A list of FRAGNodes that match the search.
-        :rtype: list[FRAGNode]
+        :return: The highest FRAGNode in this hierarchy.
+        :rtype: FRAGNode
         """
+        frag_root = self
+
+        while frag_root.frag_parent:
+            if frag_root.frag_type == 'FRAGRoot':
+                # If we find a FRAGRoot immediately return it.
+                return frag_root
+            frag_root = frag_root.frag_parent
+
+        return frag_root
+
+
+    def get_frag_children(self, frag_type=None, side=None, region=None, **kwargs):
+        recursive = (kwargs.get('r') or kwargs.get('recursive')) or False
 
         return_list = []
-        if self.hasAttr('fragChildren'):
-            frag_children = self.fragChildren.listConnections()
-            for child_node in frag_children:
-                wrapped_node = FRAGNode(child_node)
-
-                if side and wrapped_node.side != side:
+        for frag_child in self.frag_children:
+            if isinstance(frag_type, str):
+                if frag_child.frag_type != frag_type:
                     continue
-
-                if side and wrapped_node.region != region:
-                    continue
-
-                if of_type and not isinstance(wrapped_node, of_type):
-                    continue
-                return_list.append(wrapped_node)
+            elif frag_type and not isinstance(frag_child, frag_type):
+                continue
+            if side and side != frag_child.side:
+                continue
+            if region and region != frag_child.region:
+                continue
+            return_list.append(frag_child)
+            if recursive:
+                return_list += frag_child.frag_children(frag_type, side, region)
         return return_list
 
-    def get_type(self):
-        if self.has_attribute(FRAG_TYPE_ATTR):
-            return attr_utils.get_attribute(self.pynode, FRAG_TYPE_ATTR, attr_type='string')
-        else:
-            return None
 
-    def set_frag_parent(self, frag_parent):
-        if not is_frag_node(frag_parent):
-            raise TypeError("frag node parent given, {0}, isn't a FRAGNode")
-        parent_attr = frag_parent.fragChildren
-        child_attr = self.fragParent
-        parent_attr >> child_attr
+def is_frag_node(node):
+    """
+    Return the FRAGNode of a given object if it is one. Combined is/get fnc.
 
-    def add_frag_child(self, child):
-        child.set_frag_parent(self)
+    :param PyNode node: The node we want to check if it is a FRAGNode
+    :return: The object's FRAGNode class representation
+    :rtype: FRAGNode
+    """
+    frag_node = None
+    if isinstance(node, FRAGNode):
+        frag_node = node
+    else:
+        if isinstance(node, pm.nt.Network):
+            if pm.objExists(node) and node.hasAttr('frag_type'):
+                frag_node = FRAGNode(node)
+    return frag_node
 
-    def get_frag_child(self, of_type=None):
-        results = self.get_frag_children(of_type=of_type)
-        return lists.get_first_in_list(results)
-
-    def get_pynode(self):
-        return self.pynode
-
-    def get_version(self):
-        return self.version.get()
-
-    def set_version(self, version):
-        self.version.set(version)
-    
-    def get_frag_root(self, input_node):
-        if not is_frag_node(input_node):
-            return None
-    
-        if not isinstance(input_node, FRAGNode):
-            input_node = FRAGNode(input_node)
-    
-        found_root = input_node if input_node.has_attribute('isFragRoot') else None
-        frag_parent_node = input_node.get_frag_parent()
-        while not found_root and frag_parent_node:
-            if frag_parent_node.has_attribute('isFragRoot'):
-                found_root = frag_parent_node
-            else:
-                input_node = frag_parent_node
-            frag_parent_node = input_node.get_frag_parent()
-        return found_root
-    
-    def get_asset_id(self, input_node):
-        root = self.get_frag_root(input_node=input_node)
-        if not root:
-            logging.warning('No root was found.  Cannot access the Asset ID.')
-            return
-        return root.asset_id
-
-    def get_flags(self):
-        return[]
-    
-    @property
-    def side(self):
-        """
-        Returns the side markup on this FRAGNode.
-
-        :return: Returns the side markup on this node.
-        :rtype: str
-        """
-
-        if self.pynode.hasAttr('side'):
-            return self.pynode.getAttr('side')
-        return ''
-
-    @side.setter
-    def side(self, val):
-        """
-        Sets the joint as is_start and adds the region.
-
-        :param str val: A name used to define a joint chain.
-        """
-
-        if not self.pynode.hasAttr('side'):
-            self.pynode.addAttr('side', dt='string')
-        self.pynode.setAttr('side', val)
-
-    @property
-    def region(self):
-        """
-        Returns the region markup on this FRAGNode.
-
-        :return: Returns the region markup on this node.
-        :rtype: str
-        """
-
-        if self.pynode.hasAttr('region'):
-            return self.pynode.getAttr('region')
-        return ''
-
-    @region.setter
-    def region(self, val):
-        """
-        Sets the FRAGNode's region markup
-
-        :param str val: An identifier for the FRAGNode
-        """
-
-        if not self.pynode.hasAttr('region'):
-            self.pynode.addAttr('region', dt='string')
-        self.pynode.setAttr('region', val)
-
-    def update(self):
-        current_version = self.get_version()
-        latest_version = self.VERSION
-        while current_version < latest_version:
-            update_method_name = "_update_version_{0}_to_version_{1}".format(current_version, current_version + 1)
-            update_method = getattr(self, update_method_name)
-            update_method()
-            later_version = self.get_version()
-            if later_version == current_version:
-                raise AttributeError("Please set the version in your update script: {0}".format(update_method))
-            current_version = later_version
-
-    def has_attribute(self, attr_name):
-        """
-        Efficient way of checking if this FRAG node's PyNode has a particular attribute.
-
-        :param str attr_name: Name of attribute to check for
-        :return: True if the attribute exists on the internally stored PyNode
-        """
-
-        return attr_utils.has_attribute(self.pynode, attr_name)
-
-    def __str__(self):
-        return self.pynode.__str__()
-
-    def __getattr__(self, attrname):
-        if attrname == 'pynode':
-            raise AttributeError("this instance of {0} has no pynode".format(self.__class__.__name__))
-        return getattr(self.pynode, attrname)
-
-    def __melobject__(self):
-        return self.pynode.__melobject__()
-
-    def __apimfn__(self):
-        return self.pynode.__apimfn__()
-
-    def __repr__(self):
-        return self.pynode.__repr__()
-
-    def __radd__(self, other):
-        return self.pynode.__radd__(other)
-
-    def __reduce__(self):
-        return self.pynode.__reduce__()
-
-    def __eq__(self, other):
-        if hasattr(other, "pynode"):
-            return self.pynode.__eq__(other.pynode)
-        return self.pynode.__eq__(other)
-
-    def __hash__(self):
-        return self.pynode.__hash__()
-
-    def __ne__(self, other):
-        return self.pynode.__ne__(other)
-
-    def __nonzero__(self):
-        return self.pynode.__nonzero__()
-
-    def __lt__(self, other):
-        return self.pynode.__lt__(other)
-
-    def __gt__(self, other):
-        return self.pynode.__gt__(other)
-
-    def __le__(self, other):
-        return self.pynode.__le__(other)
-
-    def __ge__(self, other):
-        return self.pynode.__ge__(other)
-
-
-def get_frag_node_parents(node, of_type=FRAGNode):
-    node = pm.PyNode(node)
-    result = []
-    frag_parent = get_frag_parent(node)
-    if frag_parent:
-        to_add = []
-        if isinstance(frag_parent, of_type):
-            to_add = [frag_parent]
-        result = to_add + get_frag_node_parents(frag_parent, of_type=of_type)  # direct parent first
-    return result
-
-
-def get_frag_node_descendants(node, of_type=FRAGNode):
-    result = []
-    if is_frag_node(node):
-        node = FRAGNode(node)
-        all_children = node.get_frag_children()
-        matching_children = [x for x in all_children if isinstance(x, of_type)]
-        children_descendants = []
-        for child in all_children:
-            children_descendants += get_frag_node_descendants(child, of_type=of_type)
-        result = matching_children + children_descendants
-    return result
-
-
-def get_all_frag_nodes(of_type=FRAGNode):
-    all_networks = cmds.ls(type='network') or []
-    all_frag_nodes = [FRAGNode(x) for x in all_networks if is_frag_node(x)]
-    matching_frag_nodes = [x for x in all_frag_nodes if isinstance(x, of_type)]
-    return matching_frag_nodes
-
-
-def list_frag_node_connections(object, of_type=FRAGNode):
-    # get connected network nodes
-    network_nodes = cmds.listConnections(str(object), type='network') or []
-    network_nodes = [FRAGNode(x) for x in network_nodes if is_frag_node(x) and isinstance(FRAGNode(x), of_type)]
-    return network_nodes
-
-
-def update_all_frag_nodes():
-    all_networks = cmds.ls(type='network') or []
-    all_frag_nodes = [FRAGNode(x) for x in all_networks if is_frag_node(x)]
-    for x in all_frag_nodes:
-        x.update()
+def get_all_frag_nodes(frag_type=None):
+    network_node_list = pm.ls('*.frag_type', r=True, o=True)
+    return_list = []
+    for network_node in network_node_list:
+        frag_node = FRAGNode(network_node)
+        if frag_type:
+            if isinstance(frag_type, str) and frag_node.frag_type != frag_type:
+                continue
+            elif not isinstance(frag_node, frag_type):
+                continue
+        return_list.append(frag_node)
+    return return_list

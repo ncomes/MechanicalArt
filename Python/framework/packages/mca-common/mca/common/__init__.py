@@ -53,8 +53,8 @@ def generate_unique_tracking_name():
 
 def set_logging_level():
     os.environ['MCA_LOGGING_LEVEL'] = 'INFO'
-    user_log_level_file = yamlio.read_yaml_file(MCA_LOGGING_LEVEL_FILE)
-    raw_user_data = yamlio.read_yaml_file(MCA_DCC_USER_DATA_FILE)
+    user_log_level_file = yamlio.read_yaml(MCA_LOGGING_LEVEL_FILE)
+    raw_user_data = yamlio.read_yaml(MCA_DCC_USER_DATA_FILE)
     hash_name = generate_unique_tracking_name()
     all_user_data = DCCUsernameData(raw_user_data, hash_name)
     print(hash_name)
@@ -81,7 +81,7 @@ class DCCUserData:
         return self.user_data.get(user_name, None)
 
     def export(self, file_name):
-        yamlio.write_to_yaml_file(self.user_data, file_name)
+        yamlio.write_yaml(file_name, self.user_data)
 
 
 class DCCUsernameData(DCCUserData):

@@ -1,15 +1,11 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Interactions with Qt Windows
 """
 
-# mca python imports
-from PySide2.QtWidgets import QApplication, QDockWidget
-
+# python imports
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets
 # software specific imports
-
 # mca python imports
 from mca.common import log
 
@@ -24,7 +20,7 @@ def get_main_qt_window():
     :rtype: QWidget or QMainWindow
     """
 
-    parent = QApplication.activeWindow()
+    parent = qtwidgets.QApplication.activeWindow()
     grand_parent = parent
     while grand_parent is not None:
         parent = grand_parent
@@ -42,7 +38,7 @@ def get_all_open_windows(skip_dialog=True):
     """
     
     wins = []
-    top_level_widgets = QApplication.topLevelWidgets()
+    top_level_widgets = qtwidgets.QApplication.topLevelWidgets()
     for widget in top_level_widgets:
         try:
             if widget.isWindow() and not widget.isHidden():
@@ -55,17 +51,17 @@ def get_all_open_windows(skip_dialog=True):
 
 def get_all_mca_windows():
     """
-    Returns all open MAT windows in PySide2
+    Returns all open MCA windows in PySide2
     
-    :return: Returns all open MAT windows in PySide2
+    :return: Returns all open MCA windows in PySide2
     :rtype: list[PySide2]
     """
     
     all_windows = get_all_open_windows()
     if not all_windows:
         return
-    mat_windows = [x for x in all_windows if 'MAT ' in x.windowTitle()]
-    return mat_windows
+    mca_windows = [x for x in all_windows if 'MCA ' in x.windowTitle()]
+    return mca_windows
 
 
 def get_mca_window_by_name(name):
@@ -86,14 +82,14 @@ def get_mca_window_by_name(name):
 
 def close_all_mca_windows():
     """
-    Closes all MAT Windows
+    Closes all MCA Windows
     """
     
-    mat_windows = get_all_mca_windows()
-    if not mat_windows:
+    mca_windows = get_all_mca_windows()
+    if not mca_windows:
         return
-    [x.close() for x in mat_windows]
-    [x.deleteLater() for x in mat_windows]
+    [x.close() for x in mca_windows]
+    [x.deleteLater() for x in mca_windows]
 
 
 def get_all_docked_windows(parent_window):
@@ -103,13 +99,13 @@ def get_all_docked_windows(parent_window):
     :param QMainWindow parent_window: The main window that the dock gets attached.
     """
     
-    docked_windows = parent_window.findChildren(QDockWidget)
+    docked_windows = parent_window.findChildren(qtwidgets.QDockWidget)
     return docked_windows
 
 
 def get_all_mca_docked_windows(parent_window):
     """
-    Gets all MAT docked windows attached to a parent window.
+    Gets all MCA docked windows attached to a parent window.
 
     :param QMainWindow parent_window: The main window that the dock gets attached.
     """
@@ -117,21 +113,21 @@ def get_all_mca_docked_windows(parent_window):
     docked_windows = get_all_docked_windows(parent_window)
     if not docked_windows:
         return
-    mat_docked_windows = [x for x in docked_windows if 'MAT' in x.windowTitle()]
-    return mat_docked_windows
+    MCA_docked_windows = [x for x in docked_windows if 'MCA' in x.windowTitle()]
+    return MCA_docked_windows
 
 
 def close_all_mca_docked_windows(parent_window):
     """
-    Closes all MAT docked windows attached to a parent window.
+    Closes all MCA docked windows attached to a parent window.
     
     :param QMainWindow parent_window: The main window that the dock gets attached.
     """
 
-    mat_docked_windows = get_all_mca_docked_windows(parent_window)
-    if not mat_docked_windows:
+    MCA_docked_windows = get_all_mca_docked_windows(parent_window)
+    if not MCA_docked_windows:
         return
-    [x.close() for x in mat_docked_windows]
-    [x.deleteLater() for x in mat_docked_windows]
+    [x.close() for x in MCA_docked_windows]
+    [x.deleteLater() for x in MCA_docked_windows]
     
     

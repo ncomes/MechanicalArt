@@ -1,39 +1,34 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains the mca decorators at a base python level
 """
 
 # mca python imports
-from PySide2.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter, QTextDocument
-from PySide2.QtCore import QRegExp
-
+# Qt imports
+from mca.common.pyqt.pygui import qtcore, qtgui
 # software specific imports
-
 # mca python imports
 
 
 def color_format(color, style=''):
 	"""
-	Return a QTextCharFormat with the given attributes.
+	Return a qtgui.QTextCharFormat with the given attributes.
 
 	:param str/list/tuple color: The string color or the RGBA color
 	:param str style: Bold or italic
-	:return: Return a QTextCharFormat with the given attributes.
-	:rtype: QTextCharFormat
+	:return: Return a qtgui.QTextCharFormat with the given attributes.
+	:rtype: qtgui.QTextCharFormat
 	"""
 	
-	_color = QColor()
+	_color = qtgui.QColor()
 	if isinstance(color, (list, tuple)):
 		_color.setRgb(color[0], color[1], color[2], color[3])
 	elif isinstance(color, str):
 		_color.setNamedColor(color)
 	
-	_format = QTextCharFormat()
+	_format = qtgui.QTextCharFormat()
 	_format.setForeground(_color)
 	if 'bold' in style:
-		_format.setFontWeight(QFont.Bold)
+		_format.setFontWeight(qtgui.QFont.Bold)
 	if 'italic' in style:
 		_format.setFontItalic(True)
 	
@@ -55,7 +50,7 @@ STYLES = {
 }
 
 
-class PythonHighlighter(QSyntaxHighlighter):
+class PythonHighlighter(qtgui.QSyntaxHighlighter):
 	"""
 	Syntax highlighter for the Python language.
 	"""
@@ -92,12 +87,17 @@ class PythonHighlighter(QSyntaxHighlighter):
 		'\{', '\}', '\(', '\)', '\[', '\]',
 	]
 	
-	def __init__(self, parent: QTextDocument) -> None:
+	def __init__(self, parent: qtgui.QTextDocument) -> None:
 		super().__init__(parent)
 		
 		# Multi-line strings (expression, flag, style)
-		self.tri_single = (QRegExp("'''"), 1, STYLES['string2'])
-		self.tri_double = (QRegExp('"""'), 2, STYLES['string2'])
+		try:
+			self.tri_single = (qtcore.QRegExp("'''"), 1, STYLES['string2'])
+			self.tri_double = (qtcore.QRegExp('"""'), 2, STYLES['string2'])
+		except:
+			self.tri_single = (qtcore.QRegularExpression("'''"), 1, STYLES['string2'])
+			self.tri_double = (qtcore.QRegularExpression('"""'), 2, STYLES['string2'])
+
 		rules = []
 		
 		# Keyword, operator, and brace rules
@@ -131,8 +131,11 @@ class PythonHighlighter(QSyntaxHighlighter):
 			(r'#[^\n]*', 0, STYLES['comment']),
 		]
 		
-		# Build a QRegExp for each pattern
-		self.rules = [(QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
+		# Build a qtcore.QRegExp for each pattern
+		try:
+			self.rules = [(qtcore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
+		except:
+			self.rules = [(qtcore.QRegularExpression(pat), index, fmt) for (pat, index, fmt) in rules]
 	
 	# This is an overwrite
 	def highlightBlock(self, text):
@@ -185,10 +188,10 @@ class PythonHighlighter(QSyntaxHighlighter):
 		inside a multi-line string when this function is finished.
 		
 		:param str text: text that will get highlighted
-		:param QRegExp delimiter: for triple-single-quotes or triple-double-quotes, and
+		:param qtcore.QRegExp delimiter: for triple-single-quotes or triple-double-quotes, and
 		state changes when inside those strings
 		:param int in_state: Unique integer to represent the corresponding
-		:param QTextCharFormat style: A Character Format
+		:param qtgui.QTextCharFormat style: A Character Format
 		:return: Return True if still inside a multi-line string, False otherwise
 		:rtype: bool
 		"""

@@ -1,6 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains utility methods related to write/read YAML files
 """
@@ -9,33 +6,13 @@ Module that contains utility methods related to write/read YAML files
 import os
 import yaml
 import yamlordereddictloader
-from yaml import representer
-
 # software specific imports
-
 # mca python imports
 from mca.common import log
-
 logger = log.MCA_LOGGER
 
 
-def validate_yaml(dict):
-    """
-    Validates whether the given dictionary can be dumped into a YAML file.
-
-    :param dict dict: dictionary to store.
-    :return: True if the dictionary is valid; False otherwise.
-    :rtype: bool
-    """
-
-    try:
-        yaml.dump(dict)
-        return True
-    except Exception:
-        return False
-
-
-def write_to_yaml_file(data, filename, **kwargs):
+def write_yaml(filename, data, **kwargs):
     """
     Writes data to YAML file.
 
@@ -65,7 +42,7 @@ def write_to_yaml_file(data, filename, **kwargs):
     return filename
 
 
-def read_yaml_file(filename, maintain_order=False):
+def read_yaml(filename, maintain_order=False):
     """
     Returns data from YAML file.
 

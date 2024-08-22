@@ -1,21 +1,16 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module Loads the mat_package.yaml and makes the data available.
 """
 
 # python imports
 import os
-
 # software specific imports
-
 # mca python imports
 from mca import common
 from mca.common.textio import yamlio, jsonio
 from mca.common import log
 from mca.common.startup.configs import consts
-from mca.common.paths import project_paths
+from mca.common.project import project_paths
 
 logger = log.MCA_LOGGER
 
@@ -38,7 +33,7 @@ def get_package_config_file():
 def read_config_file(config_file=None):
 	if not config_file:
 		config_file = get_package_config_file()
-	result = yamlio.read_yaml_file(config_file)
+	result = yamlio.read_yaml(config_file)
 	return result
 
 
@@ -50,7 +45,7 @@ def get_common_package():
 	
 
 def get_package_dict(yaml_pkg):
-	return yamlio.read_yaml_file(yaml_pkg)
+	return yamlio.read_yaml(yaml_pkg)
 
 
 def mat_package_env_vars(yaml_pkg):

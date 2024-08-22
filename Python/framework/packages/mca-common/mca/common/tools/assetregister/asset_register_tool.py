@@ -1,24 +1,18 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
-
 """
 Tool for adding and removing assets from asset list
 """
 
-# mca python imports
+# python imports
 import os
-
 # software specific imports
-# PySide2 imports
-from PySide2.QtWidgets import QFileDialog
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets
 # mca python imports
 from mca.common import log
 from mca.common.assetlist import assetlist
-from mca.common.paths import path_utils, project_paths
+from mca.common.project import project_paths
 from mca.common.pyqt import common_windows, messages
-from mca.common.tools.dcctracking import dcc_tracking
-from mca.common.utils import lists, strings
+from mca.common.utils import list_utils, path_utils, string_utils
 
 logger = log.MCA_LOGGER
 
@@ -112,11 +106,11 @@ class AssetRegister(common_windows.MCAMainWindow):
         current_path = self.ui.asset_path_lineEdit.text()
         start_path = path_utils.to_full_path(os.path.split(current_path)[0]) if current_path else os.path.join(project_paths.MCA_PROJECT_ROOT, 'Characters')
 
-        found_path = lists.get_first_in_list(common_windows.getOpenFilesAndDirs(None,
+        found_path = list_utils.get_first_in_list(common_windows.getOpenFilesAndDirs(None,
                                                                                 'Select a SM fbx file or folder:',
                                                                                 start_path,
                                                                                 'SM fbx (*.fbx)',
-                                                                                options=QFileDialog.DontConfirmOverwrite))
+                                                                                options=qtwidgets.QFileDialog.DontConfirmOverwrite))
         if not found_path:
             return
 
@@ -174,8 +168,6 @@ class AssetRegister(common_windows.MCAMainWindow):
         self._initialize_lists()
         self._clear_fields()
         logger.info('Asset removed successfully.')
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(fn=self._on_remove_asset_button_clicked, asset_id=asset_entry.asset_id, asset_name=asset_name)
 
     def _on_save_button_clicked(self):
         """
@@ -199,7 +191,7 @@ class AssetRegister(common_windows.MCAMainWindow):
             asset_entry = self.active_entry
         else:
             # We're adding a new asset.
-            asset_id = strings.generate_guid()
+            asset_id = string_utils.generate_guid()
             asset_entry = assetlist.MATAsset(asset_id, {})
 
         # Only allow registering of model type assets
@@ -220,8 +212,6 @@ class AssetRegister(common_windows.MCAMainWindow):
         self._clear_fields()
         self.active_entry = None
         logger.info('Asset saved successfully.')
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(fn=self._on_save_button_clicked, asset_id=asset_entry.asset_id, asset_name=asset_name)
 
     def _on_asset_name_changed(self):
         current_path = self.ui.asset_path_lineEdit.text()

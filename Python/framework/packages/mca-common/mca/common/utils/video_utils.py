@@ -1,17 +1,11 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
-Modules that contains useful functions related to reprocessign video.
+Modules that contains useful functions related to reprocessing video.
 """
 # System global imports
 import os
 import subprocess
-
-# PySide2 imports
-
 # mca python imports
-from mca.common.paths import paths
+from mca.common.project import paths
 from mca.common import log
 
 logger = log.MCA_LOGGER

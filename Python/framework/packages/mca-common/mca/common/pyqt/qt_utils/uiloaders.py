@@ -1,16 +1,11 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains the mca decorators at a base python level
 """
 
-# mca python imports
-from PySide2.QtCore import QObject, QFile
-from PySide2.QtUiTools import QUiLoader
-
+# python imports
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets, qtuitools
 # software specific imports
-
 # mca python imports
 
 
@@ -23,9 +18,9 @@ def ui_importer(ui_path):
 	:rtype: .ui file
 	"""
 	
-	ui_file = QFile(ui_path)
-	ui_file.open(QFile.ReadOnly)
-	loader = QUiLoader()
+	ui_file = qtwidgets.QFile(ui_path)
+	ui_file.open(qtwidgets.QFile.ReadOnly)
+	loader = qtuitools.QUiLoader()
 	ui_window = loader.load(ui_file)
 	ui_file.close()
 	return ui_window

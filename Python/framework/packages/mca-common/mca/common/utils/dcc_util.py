@@ -1,17 +1,13 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains utilities functions to verify dccs.
 """
 
-# mca python imports
+# python imports
 import os
 import sys
 import math
 from collections import OrderedDict
 # software specific imports
-
 # mca python imports
 from mca.common import log
 

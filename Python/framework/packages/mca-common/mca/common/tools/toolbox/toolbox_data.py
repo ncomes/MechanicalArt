@@ -1,22 +1,16 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains the mca decorators at a base python level
 """
 
-# mca python imports
+# python imports
 import os
-
 # software specific imports
-
 # mca python imports
 from mca.common import log
-
 from mca.common.modifiers import singleton
-from mca.common.paths import paths, path_utils
+from mca.common.project import paths
 from mca.common.textio import yamlio
-from mca.common.utils import fileio, strings
+from mca.common.utils import fileio, path_utils, string_utils
 
 logger = log.MCA_LOGGER
 
@@ -29,7 +23,7 @@ class ToolboxLayout:
 
     def __init__(self, guid, data_dict):
         if not guid:
-            guid = strings.generate_guid()
+            guid = string_utils.generate_guid()
         self._guid = guid
 
         self._children = data_dict.get('children', [])
@@ -116,7 +110,7 @@ class ToolboxAction:
 
     def __init__(self, guid, data_dict):
         if not guid:
-            guid = strings.generate_guid()
+            guid = string_utils.generate_guid()
         self._guid = guid
 
         self._display_name = data_dict.get('display_name', '')
@@ -202,7 +196,7 @@ class ToolboxReference:
 
     def __init__(self, guid, data_dict):
         if not guid:
-            guid = strings.generate_guid()
+            guid = string_utils.generate_guid()
         self._guid = guid
 
         self._reference_id = data_dict.get('reference_id')
@@ -303,7 +297,7 @@ class Toolbox:
         elif os.path.exists(self.path) and (not self._data_dict or force):
             # file is on disk and we want to read it because we have no data or we want to reread it by force
             # file is on disk and we want to re-read it.
-            self._data_dict = yamlio.read_yaml_file(self.path)
+            self._data_dict = yamlio.read_yaml(self.path)
         elif os.path.exists(self.path) and not force:
             # file is on disk but we don't want to re read it.
             return
@@ -337,7 +331,7 @@ class Toolbox:
     def commit(self):
         if self.DIRTY:
             fileio.touch_path(self.path)
-            yamlio.write_to_yaml_file(self._data_dict, self.path)
+            yamlio.write_yaml(self.path, self._data_dict)
             self.DIRTY = False
 
     def set_entry(self, toolbox_data_class, commit=False):

@@ -1,6 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Saving preferences for the toolbox
 """
@@ -9,9 +6,8 @@ Saving preferences for the toolbox
 import os
 
 # software specific imports
-
 # mca python imports
-from mca.common.paths import paths
+from mca.common.project import paths
 from mca.common.tools import toolbox
 from mca.common.textio import yamlio
 from mca.common import log
@@ -70,7 +66,7 @@ def get_toolbox_local_prefs_file(dcc):
 	prefs_file = os.path.join(prefs_folder, LOCAL_PREFS_FILE)
 	if not os.path.isfile(prefs_file):
 		#os.makedirs(os.path.dirname(prefs_file))
-		yamlio.write_to_yaml_file(TOOLBOX_PREFS_DICT, prefs_file)
+		yamlio.write_yaml(prefs_file, TOOLBOX_PREFS_DICT)
 	return os.path.normpath(prefs_file)
 	
 	
@@ -106,7 +102,7 @@ class AllToolBoxPreferences:
 		Reads the preferences file
 		"""
 		
-		data = yamlio.read_yaml_file(self.path)
+		data = yamlio.read_yaml(self.path)
 		return data
 	
 	def write_file(self):
@@ -114,7 +110,7 @@ class AllToolBoxPreferences:
 		Writes the preferences file
 		"""
 		
-		yamlio.write_to_yaml_file(self.data, self.path)
+		yamlio.write_yaml(self.path, self.data)
 	
 	def get_all_on_startups(self):
 		"""

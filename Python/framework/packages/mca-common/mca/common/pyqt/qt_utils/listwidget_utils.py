@@ -1,13 +1,8 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Toolbox main UI
 """
 
-# mca python imports
-# PySide2 imports
-from PySide2.QtWidgets import QWidget
+# python imports
 # software specific imports
 # mca python imports
 
@@ -71,7 +66,7 @@ def remove_qlist_widget_items(items, qlist_widget):
 def get_qlist_widget_selected_items(qlist_widget):
 	"""
 	Returns all the selected items in a QListWidget.
-	:param QWidget qlist_widget: QListWidget.
+	:param qtwidgets.QWidget qlist_widget: QListWidget.
 	:return: Returns all the selected items in a QListWidget.
 	:rtype: list(str)
 	"""

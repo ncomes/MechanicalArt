@@ -1,12 +1,10 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains the mca decorators at a base python level
 """
 
-# mca python imports
-from PySide2.QtCore import Qt
+# python imports
+# Qt imports
+from mca.common.pyqt.pygui import qtcore
 # software specific imports
 
 # mca python imports
@@ -59,11 +57,11 @@ def set_combobox_to_index_matching_string(combo_box, string_to_match, qmatch_fla
 	:return: True/False
 	"""
 	if not qmatch_flag:
-		qmatch_flag = Qt.MatchFixedString
+		qmatch_flag = qtcore.Qt.MatchFixedString
 	index = combo_box.findText(string_to_match, qmatch_flag)
 	if index < 0:
 		logger.info('No valid index found for string "{0}". '
-						'Try adjusting the qtcore.Qt.MatchFlag passed to '
+						'Try adjusting the Qt.MatchFlag passed to '
 						'qmatch_flag kwarg. Current : {1}'.format(string_to_match, qmatch_flag))
 		return False
 	combo_box.setCurrentIndex(index)

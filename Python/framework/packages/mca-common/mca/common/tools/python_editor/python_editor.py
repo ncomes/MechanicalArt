@@ -1,15 +1,10 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains the mca decorators at a base python level
 """
 
-# mca python imports
+# python imports
 from PySide2.QtWidgets import QPlainTextEdit
-
 # software specific imports
-
 # mca python imports
 from mca.common.pyqt import syntax_highlighter
 from mca.mya.pyqt import mayawindows

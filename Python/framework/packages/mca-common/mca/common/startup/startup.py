@@ -12,8 +12,9 @@ import sys
 
 from mca.common.startup.configs import common_env, consts, config
 from mca.common.textio import packages
-from mca.common.paths import project_paths, path_utils
+from mca.common.project import project_paths
 from mca.common.pyqt.qt_utils import windows
+from mca.common.utils import path_utils
 
 PACKAGE_LOADED = False
 CONFIG_FILE = None

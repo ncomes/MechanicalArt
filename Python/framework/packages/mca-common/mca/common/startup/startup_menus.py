@@ -13,7 +13,7 @@ import webbrowser
 
 # mca python imports
 from mca.common.textio import packages
-from mca.common.paths import project_paths
+from mca.common.project import project_paths
 
 PACKAGE_MANAGER = packages.ProjectPackageManager()
 

@@ -1,34 +1,37 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains fncs for dealing with mca's asset list.
 """
+
 # System global imports
 import copy
-import difflib
 import os
+import time
+import inspect
 # software specific imports
 # mca python imports
-from mca.common import log
 from mca.common.modifiers import singleton
-from mca.common.paths import path_utils, project_paths, paths
 from mca.common.textio import yamlio
-from mca.common.utils import fileio, lists
+from mca.common.utils import fileio, path_utils
 
+from mca.common import log
 logger = log.MCA_LOGGER
 
 NON_RIG_ASSETS = ['apparel', 'reference']
 
+local_file_path = inspect.getabsfile(inspect.currentframe())
+# Little bit hacky, but we're going to reconstruct the data path from this module's location.
+REGISTRY_FILE_PATH = os.path.join(local_file_path.lower().split('python')[0], r'Common\Tools\Assetlist\asset_registry.yaml')
+
 
 class AssetListRegistry(singleton.SimpleSingleton):
     REGISTRY_DICT = {}
-    NAME_REGISTRY = {}
     ASSET_ID_DICT = {}
     CATEGORY_DICT = {}
     CATEGORY_NAME_DICT = {}
-    PATH_DICT = {}
+    MESH_PATH_DICT = {}
     DIRTY = False
+
+    LAST_EDIT = None
 
     def __init__(self, force=False):
         self.reload(force=force)
@@ -40,39 +43,42 @@ class AssetListRegistry(singleton.SimpleSingleton):
         :param bool force: If the lookups should be regenerated. Normally once this is initialized they are not reloaded unless requested.
         """
         self.REGISTRY_DICT = {}
-        self.NAME_REGISTRY = {}
         self.ASSET_ID_DICT = {}
         self.CATEGORY_DICT = {}
         self.CATEGORY_NAME_DICT = {}
-        self.PATH_DICT = {}
+        self.MESH_PATH_DICT = {}
 
-        if os.path.exists(paths.get_asset_list_file_path()):
+        # Always sync before we load the registry, but do not force it in case there are local changes.
+        #sourcecontrol.p4_sync(REGISTRY_FILE_PATH)
+        if os.path.exists(REGISTRY_FILE_PATH):
             # Read the file or if the file is empty yield an empty dict.
-            self.REGISTRY_DICT = yamlio.read_yaml_file(paths.get_asset_list_file_path()) or {}
+            self.REGISTRY_DICT = yamlio.read_yaml(REGISTRY_FILE_PATH) or {}
         else:
             # could not find the registry file.
             if not force:
-                raise f'{paths.get_asset_list_file_path()} The registry file was not found on disk, please verify you have latest.'
+                raise IOError(f'{REGISTRY_FILE_PATH} The registry file was not found on disk, please verify you have latest.')
             self.REGISTRY_DICT = {}
 
+        if os.path.exists(REGISTRY_FILE_PATH):
+            self.LAST_EDIT = time.ctime(os.path.getmtime(REGISTRY_FILE_PATH))
         for asset_id, data_dict in self.REGISTRY_DICT.items():
             # Build our cached lookups.
             # The name registry is the asset_name to asset_entry
             # The asset_id_dict is unique identifier to asset_entry
             # the category_dict is the organization of type and subtype to asset_entry
-            # the path_dict is the asset's full sm_path to asset_entry
-            asset_entry = MATAsset(asset_id, data_dict)
+            # the mesh_path_dict is the asset's full mesh_path to asset_entry
+            asset_entry = Asset(asset_id, data_dict)
             self.ASSET_ID_DICT[asset_id] = asset_entry
-            self.NAME_REGISTRY[asset_entry.asset_name] = asset_entry
             if asset_entry.asset_type not in self.CATEGORY_DICT:
                 self.CATEGORY_DICT[asset_entry.asset_type] = {}
                 self.CATEGORY_NAME_DICT[asset_entry.asset_type] = {}
-            if asset_entry.asset_subtype not in self.CATEGORY_DICT[asset_entry.asset_type]:
-                self.CATEGORY_DICT[asset_entry.asset_type][asset_entry.asset_subtype] = {}
-                self.CATEGORY_NAME_DICT[asset_entry.asset_type][asset_entry.asset_subtype] = {}
-            self.CATEGORY_DICT[asset_entry.asset_type][asset_entry.asset_subtype][asset_id] = asset_entry
-            self.CATEGORY_NAME_DICT[asset_entry.asset_type][asset_entry.asset_subtype][asset_entry.asset_name] = asset_entry
-            self.PATH_DICT[asset_entry.sm_path] = asset_entry
+            for subtype in asset_entry.asset_subtype:
+                if subtype not in self.CATEGORY_DICT[asset_entry.asset_type]:
+                    self.CATEGORY_DICT[asset_entry.asset_type][subtype] = {}
+                    self.CATEGORY_NAME_DICT[asset_entry.asset_type][subtype] = {}
+                self.CATEGORY_DICT[asset_entry.asset_type][subtype][asset_id] = asset_entry
+                self.CATEGORY_NAME_DICT[asset_entry.asset_type][subtype][asset_entry.asset_name] = asset_entry
+            self.MESH_PATH_DICT[asset_entry.mesh_path] = asset_entry
 
     def commit(self):
         """
@@ -80,41 +86,43 @@ class AssetListRegistry(singleton.SimpleSingleton):
 
         """
         if self.DIRTY:
-            fileio.touch_path(paths.get_asset_list_file_path())
-            yamlio.write_to_yaml_file(self.REGISTRY_DICT, paths.get_asset_list_file_path())
+            fileio.touch_path(REGISTRY_FILE_PATH)
+            yamlio.write_yaml(REGISTRY_FILE_PATH, self.REGISTRY_DICT)
             self.DIRTY = False
 
-    def register_asset(self, mat_asset, commit=False):
+    def register_asset(self, asset_entry, commit=False):
         """
         This will serialize one of our data classes to the main register.
 
-        :param MATAsset mat_asset: The mca asset to be registered.
+        :param Asset asset_entry: The asset to be registered.
         :param bool commit: If the registry should be saved after the addition. For perf reasons this can be held until
             multiple registers are completed.
         """
 
-        existing_entry = self.ASSET_ID_DICT.get(mat_asset.asset_id)
+        existing_entry = self.ASSET_ID_DICT.get(asset_entry.asset_id)
 
-        if not mat_asset.DIRTY:
+        if not asset_entry.DIRTY:
             # If nothing has been changed.
             return
 
-        if existing_entry and existing_entry is not mat_asset:
-            if existing_entry.get_data_dict() == mat_asset.get_data_dict():
+        if existing_entry and existing_entry is not asset_entry:
+            if existing_entry.get_data_dict() == asset_entry.get_data_dict():
                 # We're using a replica of the entry and nothing has been changed.
                 return
 
-        mat_asset.DIRTY = False
-        registry_asset = copy.deepcopy(mat_asset)
+        asset_entry.DIRTY = False
+        registry_asset = copy.deepcopy(asset_entry)
+
         self.REGISTRY_DICT[registry_asset.asset_id] = registry_asset.get_data_dict()
         self.ASSET_ID_DICT[registry_asset.asset_id] = registry_asset
-        self.NAME_REGISTRY[registry_asset.asset_name] = registry_asset
         if registry_asset.asset_type not in self.CATEGORY_DICT:
             self.CATEGORY_DICT[registry_asset.asset_type] = {}
-        if registry_asset.asset_subtype not in self.CATEGORY_DICT[registry_asset.asset_type]:
-            self.CATEGORY_DICT[registry_asset.asset_type][registry_asset.asset_subtype] = {}
-        self.CATEGORY_DICT[registry_asset.asset_type][registry_asset.asset_subtype][registry_asset.asset_id] = registry_asset
-        self.PATH_DICT[registry_asset.sm_path] = registry_asset
+        for subtype in registry_asset.asset_subtype:
+            if subtype not in self.CATEGORY_DICT[registry_asset.asset_type]:
+                self.CATEGORY_DICT[registry_asset.asset_type][subtype] = {}
+            self.CATEGORY_DICT[registry_asset.asset_type][subtype][registry_asset.asset_id] = registry_asset
+        if registry_asset.mesh_path:
+            self.MESH_PATH_DICT[registry_asset.mesh_path] = registry_asset
 
         if commit:
             self.commit()
@@ -123,16 +131,17 @@ class AssetListRegistry(singleton.SimpleSingleton):
         """
         Remove an asset entry by asset_id.
 
-        :param str asset_id: The asset id associated with this MATAsset.
+        :param str asset_id: The asset id associated with this Asset.
         :param bool commit: If the changes should be committed to the registry as part of the remove.
         """
         if asset_id in self.ASSET_ID_DICT:
-            mat_asset = self.ASSET_ID_DICT[asset_id]
+            asset_entry = self.ASSET_ID_DICT[asset_id]
             del self.ASSET_ID_DICT[asset_id]
-            del self.NAME_REGISTRY[mat_asset.asset_name]
-            del self.REGISTRY_DICT[mat_asset.asset_id]
-            del self.CATEGORY_DICT[mat_asset.asset_type][mat_asset.asset_subtype][mat_asset.asset_id]
-            del self.PATH_DICT[mat_asset.sm_path]
+            del self.REGISTRY_DICT[asset_entry.asset_id]
+            for asset_subtype in asset_entry.asset_subtype:
+                del self.CATEGORY_DICT[asset_entry.asset_type][asset_subtype][asset_entry.asset_id]
+            if asset_entry.mesh_path:
+                del self.MESH_PATH_DICT[asset_entry.mesh_path]
             self.DIRTY = True
 
             if commit:
@@ -140,58 +149,69 @@ class AssetListRegistry(singleton.SimpleSingleton):
 
     def get_entry(self, asset_id):
         """
-        Return a MATAsset by asset_id.
+        Return an Asset by asset_id.
 
         :param str asset_id: The asset_id to look up an entry by.
-        :return: The found MATAsset or None
-        :rtype: MATAsset
+        :return: The found Asset or None
+        :rtype: Asset
         """
         return self.ASSET_ID_DICT.get(asset_id)
 
     def get_entry_by_name(self, asset_name):
         """
-        Return a MATAsset by asset_name.
+        Return an Asset by asset_name.
+
+        NOTE: This is generally not a safe way to look up an asset.
 
         :param str asset_name: The name of an asset to lookup.
-        :return: The found MATAsset or None
-        :rtype: MATAsset
+        :return: The found Asset or None
+        :rtype: Asset
         """
         return self.NAME_REGISTRY.get(asset_name)
 
-    def get_entry_by_path(self, sm_path):
+    def get_entry_by_path(self, mesh_path):
         """
-        Return a MATAsset by asset_path.
+        Return an Asset by asset_path.
 
-        :param str sm_path: The path to an entry's SM file.
-        :return: The found MATAsset or None
-        :rtype: MATAsset
+        :param str mesh_path: The path to an entry's SM file.
+        :return: The found Asset or None
+        :rtype: Asset
         """
-        sm_path = path_utils.to_full_path(sm_path)
-        return self.PATH_DICT.get(sm_path)
+        mesh_path = path_utils.to_full_path(mesh_path)
+        return self.PATH_DICT.get(mesh_path)
 
-
-class MATAsset(object):
+class Asset(object):
     _asset_name = ''
     _asset_namespace = ''
-    _sm_path = ''
-    _asset_type = ''
-    _asset_subtype = ''
-    _asset_archetype = ''
-    _local_asset_list = []
-    
+    _mesh_path = '' # This will always be to the skeletal mesh
+    _rig_path = ''
+    _skeleton_path = ''
+    _asset_type = '' # Primary organization method. "Model" will always have a mesh path.
+    _asset_subtype = [] # We'll overload the subtype with keywords.
+    _asset_parent = '' # This is the inheritance path.
+    _local_asset_list = [] # If there are any assets that should be subloaded.
+
     DIRTY = False
 
     def __init__(self, asset_id, data_dict):
+        """
+        This represents a single asset, and includes data about where it lives.
+
+        :param asset_id:
+        :param data_dict:
+        """
         self._asset_id = asset_id
         self._set_data(data_dict)
 
     def _set_data(self, data_dict):
         self._asset_name = data_dict.get('name', '')
         self._asset_namespace = data_dict.get('namespace', '')
-        self._sm_path = data_dict.get('path', '')
+        self._mesh_path = data_dict.get('mesh_path', '')
+        self._rig_path = data_dict.get('rig_path', '')
+        self._skeleton_path = data_dict.get('skeleton_path', '')
         self._asset_type = data_dict.get('type', '')
-        self._asset_subtype = data_dict.get('subtype', '')
-        self._asset_archetype = data_dict.get('archetype', '')
+        self._asset_subtype = data_dict.get('subtype', [])
+        self._asset_parent = data_dict.get('parent', '')
         self._local_asset_list = data_dict.get('local_asset_list', [])
         # We don't want to dirty the class here because this is used to initialize it.
         # If it's a new asset the registry will add it because the asset id is unique.
@@ -226,16 +246,21 @@ class MATAsset(object):
         if val != self._asset_namespace:
             self.DIRTY = True
         self._asset_namespace = str(val)
-
+    
+    # Note not all Assets will have a mesh path. Nor should we check for inheritance.
     @property
-    def file_name(self):
-        # Naming conventions
-        # All lower, replace any spaces with underscores.
-        return self._asset_name.lower().replace(' ', '_')
+    def mesh_path(self):
+        return path_utils.to_full_path(self._mesh_path)
+
+    @mesh_path.setter
+    def mesh_path(self, val):
+        if val != self._mesh_path:
+            self.DIRTY = True
+        self._mesh_path = path_utils.to_relative_path(str(val))
 
     @property
     def asset_type(self):
-        # This is the major category: model, collection, <<Gear_Slot>>
+        # This is the major category: model, collection
         # This should be used or organize the list by how the entry is to be used.
         return self._asset_type
 
@@ -255,24 +280,24 @@ class MATAsset(object):
     def asset_subtype(self, val):
         if val != self._asset_subtype:
             self.DIRTY = True
-        self._asset_subtype = str(val)
+        self._asset_subtype = val
 
     @property
-    def asset_archetype(self):
+    def asset_parent(self):
         # This lets us know if the asset is a derivative of another. This is useful for loading rigs from a similar skel type.
-        return self._asset_archetype
+        return self._asset_parent
 
-    @asset_archetype.setter
-    def asset_archetype(self, val):
-        if val != self._asset_archetype:
+    @asset_parent.setter
+    def asset_parent(self, val):
+        if val != self._asset_parent:
             self.DIRTY = True
-        self._asset_archetype = str(val)
+        self._asset_parent = str(val)
 
     @property
     def local_asset_list(self):
         return_list = []
         for entry in self._local_asset_list:
-            if isinstance(entry, MATAsset):
+            if isinstance(entry, Asset):
                 return_list.append(entry)
             else:
                 found_entry = get_asset_by_id(entry)
@@ -287,116 +312,111 @@ class MATAsset(object):
         self.DIRTY = True
         self._local_asset_list = val_list
 
-    # Files
+
+    # Path Helpers
+    # Model paths
     @property
-    def sk_path(self):
-        return path_utils.to_full_path(self._sm_path.replace('SM_', 'SK_'))
-
-    @property
-    def game_sk_path(self):
-        return os.path.join(project_paths.MCA_UNREAL_ROOT, '.'.join(self._sm_path.replace('SM_', 'SK_').split('.')[:-1]))
-
-    @property
-    def sm_path(self):
-        return path_utils.to_full_path(self._sm_path)
-
-    @sm_path.setter
-    def sm_path(self, val):
-        # All paths are derived from this original setter.
-        relative_val = path_utils.to_relative_path(val)
-        if self._sm_path != relative_val:
-            self.DIRTY = True
-        self._sm_path = relative_val
-
-    @property
-    def game_sm_path(self):
-        return os.path.join(project_paths.MCA_UNREAL_ROOT, '.'.join(self._sm_path.split('.')[:-1]))
-
-    @property
-    def skel_path(self):
-        skel_path = os.path.join(path_utils.to_full_path(self.rigs_path), f'{self.file_name}.skl')
-        if not os.path.exists(skel_path) and self.asset_archetype:
-            asset_entry = get_asset_by_id(self.asset_archetype)
-            if asset_entry:
-                skel_path = asset_entry.skel_path
-
-        if not os.path.exists(skel_path):
-            skel_list = path_utils.all_file_types_in_directory(self.rigs_path, '.skl')
-            # see if we have a local skeleton
-            if skel_list:
-                skel_path = skel_list[0]
-
-        return skel_path
+    def model_path(self):
+        # Returns the dir one above the mesh's local dir.
+        mesh_path = self._mesh_path
+        if mesh_path:
+            return os.path.split(os.path.dirname(path_utils.to_full_path(mesh_path)))[0]
 
     @property
     def skin_path(self):
-        # $TODO think about where to place this. It probably belongs in source but.
-        return '.'.join(path_utils.to_full_path(self.sm_path).split('.')[:-1])+'_skn.fbx'
+        mesh_path = self._mesh_path
+        if mesh_path:
+            skin_path = os.path.join(self.source_path, f'{self.asset_name}_skinning.fbx')
+            return skin_path
 
-    # Directories
-    @property
-    def general_path(self):
-        # Returns the dir one above the SM's local dir.
-        return os.path.split(os.path.dirname(path_utils.to_full_path(self._sm_path)))[0]
-
-    @property
-    def game_general_path(self):
-        return os.path.join(paths.get_unreal_content_path(), os.path.split(os.path.dirname(self._sm_path))[0])
-
-    @property
-    def animations_path(self):
-        return os.path.join(self.general_path, 'Animations')
-
-    @property
-    def game_animations_path(self):
-        return os.path.join(self.game_general_path, 'Animations')
+    def parent_skins(self):
+        skin_path = self.skin_path
+        if not skin_path or not os.path.exists(skin_path):
+            # Try snagging a local skeleton_path
+            skeleton_path = path_utils.to_full_path(self._skeleton_path)
+            if skeleton_path.lower().endswith('.fbx') or skeleton_path.lower().endswith('.ma'):
+                # If the skel is a fbx or ma it might have geo.
+                skin_path = skeleton_path
+            if self.asset_parent:
+                asset_entry = get_asset_by_id(self.asset_parent)
+                if asset_entry:
+                    skin_path = asset_entry.parent_skins()
+        return skin_path
 
     @property
-    def meshes_path(self):
-        return os.path.dirname(path_utils.to_full_path(self._sm_path))
-
-    @property
-    def game_meshes_path(self):
-        return os.path.join(project_paths.MCA_UNREAL_ROOT, os.path.dirname(self._sm_path))
-
-    @property
-    def textures_path(self):
-        return os.path.join(self.general_path, 'Textures')
-
-    @property
-    def game_textures_path(self):
-        return os.path.join(self.game_general_path, 'Textures')
-
-    @property
-    def game_material_path(self):
-        return os.path.join(self.game_general_path, 'Materials')
+    def texture_path(self):
+        return os.path.join(self.model_path, 'textures')
 
     @property
     def source_path(self):
-        return os.path.join(self.general_path, '_Source')
+        return os.path.join(self.model_path, '_source')
+
+    # Animation Paths
+    @property
+    def skeleton_path(self):
+        skel_path = path_utils.to_full_path(self._skeleton_path)
+        if not os.path.exists(skel_path) and self.asset_parent:
+            asset_entry = get_asset_by_id(self.asset_parent)
+            if asset_entry:
+                skel_path = asset_entry.skeleton_path
+
+        return skel_path
+
+    @skeleton_path.setter
+    def skeleton_path(self, val):
+        self._skeleton_path = path_utils.to_relative_path(val)
+
+    def parent_skeletons(self):
+        parent_skeleton_list = []
+        if self.asset_parent:
+            asset_entry = get_asset_by_id(self.asset_parent)
+            if asset_entry:
+                local_skel_path = asset_entry.skeleton_path
+                if local_skel_path:
+                    parent_skeleton_list.extend(local_skel_path)
+                parent_skeleton_list += asset_entry.parent_skeletons()
+        return parent_skeleton_list
 
     @property
-    def rigs_path(self):
-        return os.path.join(self.source_path, 'Rig')
+    def rig_path(self):
+        rig_path = path_utils.to_full_path(self._rig_path)
+        if not os.path.exists(rig_path) and self.asset_parent:
+            asset_entry = get_asset_by_id(self.asset_parent)
+            if asset_entry:
+                rig_path = asset_entry.rig_path
 
-    @property
-    def skin_data_path(self):
-        return os.path.join(self.rigs_path, 'Skin_Data')
+        return rig_path
+    
+    @rig_path.setter
+    def rig_path(self, val):
+        self._rig_path = path_utils.to_relative_path(val)
 
     @property
     def flags_path(self):
-        return os.path.join(self.rigs_path, 'Flags')
+        if self.rig_path:
+            return path_utils.to_full_path(os.path.join(os.path.dirname(self.rig_path), 'flags'))
+
+    @property
+    def animation_path(self):
+        # Return the path one above the rig path.
+        rig_path = self._rig_path
+        if rig_path:
+            return os.sep.join(rig_path.split(os.sep)[:-2])
 
     # Registry functions
     def get_data_dict(self):
         return_dict = {}
         return_dict['name'] = self.asset_name
         return_dict['namespace'] = self.asset_namespace
-        return_dict['path'] = path_utils.to_relative_path(self.sm_path)
+        return_dict['mesh_path'] = path_utils.to_relative_path(self.mesh_path)
+        # Do NOT grab inheritance when saving.
+        # Grabbing inheritance and saving it will defeat the purpose.
+        return_dict['rig_path'] = path_utils.to_relative_path(self._rig_path)
+        return_dict['skeleton_path'] = path_utils.to_relative_path(self._skeleton_path)
         return_dict['type'] = self.asset_type
         return_dict['subtype'] = self.asset_subtype
-        return_dict['archetype'] = self.asset_archetype
-        return_dict['local_asset_list'] = [entry.asset_id if isinstance(entry, MATAsset) else entry for entry in self.local_asset_list]
+        return_dict['parent'] = self.asset_parent
+        return_dict['local_asset_list'] = [entry.asset_id if isinstance(entry, Asset) else entry for entry in self.local_asset_list]
         return return_dict
 
     def register(self, commit=True):
@@ -408,96 +428,67 @@ class MATAsset(object):
             registry.DIRTY = True
             registry.register_asset(self, commit=commit)
 
-    # Helpers
-    def get_rig_list(self):
-        """
-        Find all rigs associated with this entry.
-        Start by looking for all local .rig files.
-        If we fail to find check for an explicit .ma rig file.
-        If we find no rigs at all check our archetype recursively.
-
-        :return: A list of all found rigs compatible with this asset.
-        :rtype: list
-        """
-
-        rig_list = path_utils.all_file_types_in_directory(self.rigs_path, '.ma')
-        rig_list = [x for x in rig_list if x.lower().endswith('_rig.ma') and all(True if y in os.path.basename(x) else False for y in self.asset_name.lower().replace('_', ' ').split(' '))]
-
-        if not rig_list and self.asset_archetype:
-            asset_entry = get_asset_by_id(self.asset_archetype)
-            if asset_entry:
-                rig_list = asset_entry.get_rig_list()
-
-        return rig_list
-
-
-def _find_best_match(asset_id):
+def get_registry():
     """
-    Legacy asset lookup. Some of our older asset used the assetname as their asset_id this lets us find a best match.
-
-    :param str asset_id: The asset id we're looking for.
-    :return: MATAsset that matches the original name based asset_id
-    :rtype: MATAsset
+    Validate the asset list registry, reload it if it's out of date, before returning it.
+    
     """
-    if not asset_id:
-        return
 
-    model_asset_dict = dict([(asset_name.lower(), mat_asset) for asset_name, mat_asset in get_asset_category_dict(None).items()])
-
-    found_match = lists.get_first_in_list(difflib.get_close_matches(asset_id.lower(), model_asset_dict))
-    if found_match:
-        return model_asset_dict[found_match]
+    registry = AssetListRegistry()
+    if  os.path.exists(REGISTRY_FILE_PATH) and time.ctime(os.path.getmtime(REGISTRY_FILE_PATH)) != registry.LAST_EDIT:
+        registry.reload(True)
+    return registry
 
 
 def get_asset_by_id(asset_id):
     """
-    Return a MATAsset by asset_id
+    Return an Asset by asset_id
 
     :param str asset_id: The asset_id to look up by.
-    :return: The MATAsset that matches the asset_id or None
-    :rtype: MATAsset
+    :return: The Asset that matches the asset_id or None
+    :rtype: Asset
     """
+
     if not asset_id:
         return
 
-    mat_asset_list = AssetListRegistry()
-    found_entry = mat_asset_list.get_entry(asset_id)
-    if not found_entry:
-        found_entry = _find_best_match(asset_id)
-    return found_entry
+    registry = get_registry()
+    return registry.get_entry(asset_id)
 
 
-def get_asset_by_name(asset_name):
+def get_asset_by_path(mesh_path):
     """
-    Return a MATAsset by asset name
+    Return an Asset by asset_path
 
-    :param str asset_name: The asset name to look up by.
-    :return: The MATAsset that matches the asset name or None
-    :rtype: MATAsset
+    :param str mesh_path: The asset_path to look up by.
+    :return: The Asset that matches the asset_path or None
+    :rtype: Asset
     """
-    if not asset_name:
+
+    if not mesh_path:
         return
 
-    logger.debug('Avoid using this function when possible it\'s a weak link to the MATAsset')
+    registry = get_registry()
+    return registry.get_entry_by_path(mesh_path)
 
-    mat_asset_list = AssetListRegistry()
-    return mat_asset_list.get_entry_by_name(asset_name)
-
-
-def get_asset_by_path(sm_path):
+def get_asset_skeleton(asset_id, local=False):
     """
-    Return a MATAsset by asset_path
+    Return the skeleton path of a given asset by asset id.
 
-    :param str sm_path: The asset_path to look up by.
-    :return: The MATAsset that matches the asset_path or None
-    :rtype: MATAsset
+    :param str asset_id: The asset_id to look up by.
+    :param bool local: If the asset's local path should be forced.
+    :return: The path to this asset's skeleton, or the inherited skeleton path.
+    :rtype: str
     """
-    if not sm_path:
-        return
 
-    mat_asset_list = AssetListRegistry()
-    return mat_asset_list.get_entry_by_path(sm_path)
-
+    registry = get_registry()
+    asset_entry = registry.get_entry(asset_id)
+    if asset_entry:
+        if local:
+            return asset_entry._skeleton_path
+        else:
+            return asset_entry.skeleton_path
+            
 
 def get_asset_category_dict(asset_subtype=None, asset_type='model', by_name=True):
     """
@@ -509,7 +500,8 @@ def get_asset_category_dict(asset_subtype=None, asset_type='model', by_name=True
     :return: A dictionary of all entries that match the lookup criteria
     :rtype: dict
     """
-    mat_asset_list = AssetListRegistry()
+
+    cpg_asset_list = AssetListRegistry()
     asset_type = asset_type or 'model'
 
     if asset_subtype and not isinstance(asset_subtype, list):
@@ -517,9 +509,9 @@ def get_asset_category_dict(asset_subtype=None, asset_type='model', by_name=True
 
     return_dict = {}
     if by_name:
-        lookup_dict = mat_asset_list.CATEGORY_NAME_DICT
+        lookup_dict = cpg_asset_list.CATEGORY_NAME_DICT
     else:
-        lookup_dict = mat_asset_list.CATEGORY_DICT
+        lookup_dict = cpg_asset_list.CATEGORY_DICT
     for subtype, entry_dict in lookup_dict.get(asset_type, {}).items():
         if asset_subtype and subtype not in asset_subtype:
             continue

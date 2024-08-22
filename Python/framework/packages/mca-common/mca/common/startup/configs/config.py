@@ -1,6 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Reads the configs file and sets the sys.paths
 """
@@ -8,14 +5,13 @@ Reads the configs file and sets the sys.paths
 # mca python imports
 import os
 import sys
-
 # software specific imports
-
 # mca python imports
 from mca.common import log
 from mca.common.textio import yamlio
-from mca.common.paths import project_paths, path_utils
+from mca.common.project import project_paths
 from mca.common.startup.configs import consts
+from mca.common.utils import path_utils
 
 logger = log.MCA_LOGGER
 CONFIG_DICT = None
@@ -32,7 +28,7 @@ def read_config_file(config_file=None):
 
     if not config_file:
         config_file = project_paths.get_package_python_config_path()
-    result = yamlio.read_yaml_file(config_file)
+    result = yamlio.read_yaml(config_file)
     return result
 
 
@@ -50,7 +46,7 @@ def get_config_packages(dcc='maya', config_file=None, skip_dialog=False):
     if not config_file or not isinstance(config_file, dict):
         config_file = read_config_file()
 
-    # The yaml file starts with jkg_directories.  Lets strip that namespace out.
+    # The yaml file starts with directories.  Lets strip that namespace out.
     directories = config_file.get('mca_directories', None)
 
     if not directories:
@@ -122,7 +118,7 @@ def remove_sys_packages(config_file, dcc='maya', skip_dialog=False):
     :rtype: list[]
     """
 
-    directories, loaded = get_config_packages(config_file, dcc=dcc, skip_dialog=False)
+    directories, loaded = get_config_packages(dcc=dcc, config_file=config_file, skip_dialog=False)
 
     unloaded = []
     for dir_path in directories:

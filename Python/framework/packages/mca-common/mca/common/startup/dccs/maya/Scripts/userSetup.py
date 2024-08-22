@@ -1,15 +1,24 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
-# MAT DCC Tools startup script for Autodesk Maya
+"""
+MCA DCC Tools startup script for Autodesk Maya
+"""
 
 import os
 import sys
 import subprocess
 import json
-#
+# maya imports
 import maya.cmds as cmds
 import maya.api.OpenMaya as OpenMaya
+
+
+root_paths = [os.path.dirname(os.path.dirname(os.getenv('COMMON_ROOT'))), os.getenv('DEP_PATH'),
+              os.getenv('MAYA_DEP_PATH')]
+
+for root_path in root_paths:
+    root_path = os.path.abspath(root_path)
+    if root_path not in sys.path:
+        sys.path.append(root_path)
+
 
 try:
     import pymel.core as pm
@@ -28,45 +37,7 @@ except:
     pass
 
 
-def read_json(file_name):
-    # Python program to read
-    # json file
-
-    path = file_name
-
-    # Opening JSON file
-    f = open(path)
-    # returns JSON object as
-    # a dictionary
-    data = json.load(f)
-    # Closing file
-    f.close()
-    return data
-
-
-def get_common_root():
-    """
-    Returns the path to the plastic art content folder.
-
-    :return: Returns the path to the plastic art content folder.
-    :rtype: str
-    """
-
-    this_path = os.path.dirname(os.path.realpath(__file__))
-    common_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(this_path))))
-    common_root = os.path.dirname(os.path.dirname(common_path))
-    return [common_root, common_path]
-
-
 def init_mca():
-    root_paths = [os.path.dirname(os.path.dirname(os.getenv('COMMON_ROOT'))),
-                  os.getenv('DEP_PATH')]
-    
-    for root_path in root_paths:
-        root_path = os.path.abspath(root_path)
-        if root_path not in sys.path:
-            sys.path.append(root_path)
-
     OpenMaya.MGlobal.displayInfo("Initializing MCA Python framework, please wait!")
     OpenMaya.MGlobal.displayInfo(f'MCA Python framework Root Path: \n"{root_paths[0]}"')
     from mca.common.startup import startup

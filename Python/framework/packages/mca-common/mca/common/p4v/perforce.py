@@ -1,17 +1,11 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains functions for interacting with p4v.
 """
 
 # mca python imports
-import os
 import subprocess
 import winreg
-
 # software specific imports
-
 # Project python imports
 from mca.common.modifiers import singleton
 
@@ -38,12 +32,31 @@ class P4Info(singleton.SimpleSingleton):
                     if found_data:
                         setattr(self, dict_key, found_data[0])
                 except:
-                    print(f'CRITICAL ERROR: Open and close your Connection >> Environment Settings in p4, ensure "Use current connection for environment settings" is checked. Unable to find registry key. {sub_key}')
+                    logger.error(f'CRITICAL ERROR: Open and close your Connection >> Environment Settings in p4, ensure "Use current connection for environment settings" is checked. Unable to find registry key. {sub_key}')
                     return
         except:
-            print(f'CRITICAL ERROR: Install perforce, primary registry key is missing.')
+            logger.debug(f'CRITICAL ERROR: Install perforce, primary registry key is missing.')
             return
 
+def p4_describe_cl(cl_val):
+    p4_info = P4Info()
+    if not p4_info:
+        return {}
+
+    p4_cmd = f'P4 describe {cl_val}'
+    cl_info = subprocess.Popen(p4_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.read().decode()
+    replace_str_list = [' ...', '... ', '\t']
+    for replace_str in replace_str_list:
+        cl_info = cl_info.replace(replace_str, '')
+    cl_info = [x for x in cl_info.split('\r\n') if x]
+    info_dict = {}
+    try:
+        info_dict['changelist'] = cl_info[0].split(' ')[1]
+        info_dict['description'] = cl_info[1]
+        info_dict['files'] = [x.split('#')[0] for x in cl_info[3:]]
+    except:
+        pass
+    return info_dict
 
 def p4_get_pending():
     """
@@ -62,8 +75,8 @@ def p4_get_pending():
     for x in cl_info:
         entry_str = x.decode("utf-8")
         cl_number = entry_str.split(' ')[1]
-        description = entry_str.split('*')[-1][2:-4]
-        cl_info_dict[cl_number] = description
+        info_dict = p4_describe_cl(cl_number)
+        cl_info_dict[cl_number] = info_dict.get('description')
     return cl_info_dict
 
 
@@ -126,7 +139,6 @@ def p4_reopen(cl_val, file_path):
     p4_cmd = f'P4 -p {p4_info.port} -c {p4_info.workspace} reopen -c {cl_val} {file_path}'
     subprocess.Popen(p4_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-
 def p4_reconcile(cl_val, file_path):
     """
     Correctly checks out a file using the appropriate operation to a given changelist.
@@ -141,11 +153,43 @@ def p4_reconcile(cl_val, file_path):
     p4_cmd = f'P4 -p {p4_info.port} -c {p4_info.workspace} reconcile -c {cl_val} {file_path}'
     subprocess.Popen(p4_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
+def p4_revert(file_path, safe=True):
+    """
+    Reverts a file if it is checked out.
+
+    :param str file_path: The absolute path to a given file.
+    :param bool safe: If only safe reverts should be performed. Will only revert unchanged files.
+    """
+    p4_info = P4Info()
+    if not p4_info:
+        return {}
+
+    p4_cmd = f'P4 -p {p4_info.port} -c {p4_info.workspace} revert -k {"-a " if safe else ""}{file_path}'
+    subprocess.Popen(p4_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+def p4_sync(file_path, force=False):
+    """
+    Correctly checks out a file using the appropriate operation to a given changelist.
+
+    :param str file_path: The absolute path to a given file.
+    :param bool force: If the file should be forcefully sunk. (revert, force to head)
+    """
+    p4_info = P4Info()
+    if not p4_info:
+        return {}
+
+    if force:
+        # If we're forcing this revert the file before syncing.
+        p4_revert(file_path, safe=False)
+
+    p4_cmd = f'P4 -p {p4_info.port} -c {p4_info.workspace} sync {"-f " if force else ""}{file_path}'
+    subprocess.Popen(p4_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 def p4_create_cl(cl_discript='pysc: New Pending Changelist'):
     """
+    Create a new changelist or find an existing changelist with the same description.
 
-    :param cl_discript:
+    :param str cl_discript: The description of the new changelist.
     :return: The CL number of the found or newly created changelist.
     :rtype: str
     """
@@ -160,7 +204,6 @@ def p4_create_cl(cl_discript='pysc: New Pending Changelist'):
     p4_cmd = f'p4 -p {p4_info.port} -c {p4_info.workspace} --field "Description={cl_discript}" --field "Files=" change -o | p4 change -i'
     return subprocess.Popen(p4_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout.readlines()[0].decode("utf-8").split(' ')[1]
 
-
 def checkout(cl_val, file_path_list, force=True):
     """
     Using p4 reconcile preform the correct operation on a given file and add it to the passed CL.
@@ -171,7 +214,6 @@ def checkout(cl_val, file_path_list, force=True):
     :param str cl_val: Unique int value as a string which represents a changelist.
     :param list(str) file_path_list: A list of the absolute path to a given file.
     :param bool force: If files should be moved to the specified changelist even if already checked out on a different one.
-    :return:
     """
     if not isinstance(file_path_list, list):
         file_path_list = [file_path_list]
@@ -180,3 +222,16 @@ def checkout(cl_val, file_path_list, force=True):
         p4_reconcile(cl_val, file_path)
         if force:
             p4_reopen(cl_val, file_path)
+
+def sync_files(file_path_list, force=False):
+    """
+    Sync the list of files to the head revision, optionally forcibly doing so.
+
+    :param list(str) file_path_list: A list of absolute paths to be sunk.
+    :param bool force: Forcibly revert and sync the files to the head revision.
+    """
+    if not isinstance(file_path_list, list):
+        file_path_list = [file_path_list]
+
+    for file_path in file_path_list:
+        p4_sync(file_path, force)

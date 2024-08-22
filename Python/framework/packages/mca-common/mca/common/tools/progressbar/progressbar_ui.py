@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Source data for faces.
 
@@ -10,8 +7,8 @@ import os
 import inspect
 import time
 # software specific imports
-# PySide2 imports
-from PySide2.QtWidgets import QApplication, QMainWindow, QFrame, QSizePolicy, QVBoxLayout
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets
 # mca python imports
 from mca.common.pyqt.qt_utils import uiloaders
 from mca.common.pyqt import common_windows
@@ -50,7 +47,7 @@ class ProgressBarStandard:
         :param str version: Version number as a string
         :param str style: Name of the stylesheet
         :return:  returns the .ui file
-        :rtype: QMainWindow
+        :rtype: qtwidgets.QMainWindow
         """
         
         self.ui = common_windows.ProgressBarWindow(title=title,
@@ -58,7 +55,7 @@ class ProgressBarStandard:
                                                     pb_inst=self,
                                                     style=style,
                                                     parent=self.parent)
-        self.ui.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.ui.setSizePolicy(qtwidgets.QSizePolicy.Fixed, qtwidgets.QSizePolicy.Fixed)
         return self.ui
     
     def add_progressbar(self):
@@ -103,7 +100,7 @@ class ProgressBarStandard:
             logger.warning(f'Value is less then 0.  Value is: {value}')
             return
         self.progressbar_list[-1].ui.main_progressBar.setValue(value)
-        QApplication.processEvents()
+        qtwidgets.QApplication.processEvents()
         if value >= 100:
             time.sleep(0.5)
             if len(self.progressbar_list) > 1:
@@ -127,7 +124,7 @@ class ProgressBarStandard:
         singleton.clear_cls(self)
 
 
-class ProgressBarFrame(QFrame):
+class ProgressBarFrame(qtwidgets.QFrame):
     def __init__(self, parent):
         super().__init__(parent=parent)
         # Load the .ui file
@@ -136,10 +133,10 @@ class ProgressBarFrame(QFrame):
         self.ui = uiloaders.ui_importer(ui_path)
         
         self.setContentsMargins(1, 0, 0, 1)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Fixed)
         self.setMinimumHeight(60)
         
-        self.progress_layout = QVBoxLayout(self)
+        self.progress_layout = qtwidgets.QVBoxLayout(self)
         self.progress_layout.setContentsMargins(0, 0, 0, 0)
         self.progress_layout.addWidget(self.ui)
 

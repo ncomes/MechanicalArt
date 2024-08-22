@@ -1,20 +1,15 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains math related classes and functions
 The implementation is intended for simple math operations. If you need more advanced functionality use
 mca.common.math3d classes.
 """
 
-# mca python imports
+# python imports
 import sys
 import math
 import struct
 import random
-
 # software specific imports
-
 # mca python imports
 
 
@@ -493,39 +488,7 @@ def inverse_distance_weight_1d(value_array, sample_value, value_domain=(0, 1), c
     return weight_array
 
 
-def max_index(numbers):
-    """
-    Returns the largest number in the given list of numbers.
-
-    :param list(int) or list(float) or list(str) numbers: list of numbers to get maximum value of.
-    :return: maximum value from given list of numbers.
-    :rtype: int or float or str
-    """
-
-    max_value = 0
-    result = 0
-    for i in numbers:
-        current_value = abs(float(i))
-        if current_value > max_value:
-            max_value = current_value
-            result = numbers.index(i)
-
-    return result
-
-
-def mean_value(numbers):
-    """
-    Returns the mean/average value of the given numbers.
-
-    :param list[int or float] numbers: list of numbers.
-    :return: mean/average value.
-    :rtype: int or float
-    """
-
-    return float(sum(numbers)) / max(len(numbers), 1)
-
-
-def find_vector_length(v1):
+def get_vector_length(v1):
     """
     For a given vector find the length
 
@@ -533,31 +496,47 @@ def find_vector_length(v1):
     :return: The total length of the given vector.
     :rtype: float
     """
+
     return math.sqrt(round(sum([x * x for x in v1]), 5))
 
 
-def find_midpoint_between_points(pt1, pt2):
+def get_dot_product(v1, v2):
+    """
+    Given two vectors find the cross product between them.
+
+    :param list[float|int] v1: The first vector.
+    :param list[float|int] v2: The second vector.
+    :return: A value representing the dot product.
+    :rtype: float
+    """
+
+    return sum([i*j for (i, j) in zip(v1, v2)])
+
+
+def get_midpoint_between_points(pt1, pt2, scale=0.5):
     """
     For two given points find the point between them.
 
     :param list[float|int] pt1: The first point in space
     :param list[float|int] pt2: The second point in space
     :return: A list containing of the final position.
-    :rtype list[float|int]
+    :rtype: list[float|int]
     """
-    return add_vectors(pt2, scale_vector(sub_vectors(pt1, pt2), .5))
+
+    return add_vectors(pt2, scale_vector(sub_vectors(pt1, pt2), scale))
 
 
-def find_distance_between_points(pt1, pt2):
+def get_distance_between_points(pt1, pt2):
     """
     For two given points find the distance between them.
 
     :param list[float|int] pt1: The first point in space
     :param list[float|int] pt2: The second point in space
     :return: A list containing of the final position.
-    :rtype list[float|int]
+    :rtype: list[float|int]
     """
-    return find_vector_length(sub_vectors(pt2, pt1))
+
+    return get_vector_length(sub_vectors(pt2, pt1))
 
 
 def normalize_vector(v1):
@@ -568,11 +547,11 @@ def normalize_vector(v1):
     :return: The normalized vector.
     :rtype: list[float|int]
     """
-    length = find_vector_length(v1)
+    length = get_vector_length(v1)
     return [round(x / length, 5) for x in v1]
 
 
-def find_cross_product(v1, v2):
+def get_cross_product(v1, v2):
     """
     Given two vectors find the cross product between them.
 
@@ -581,6 +560,7 @@ def find_cross_product(v1, v2):
     :return: A list representing the cross product.
     :rtype: list[float|int]
     """
+
     v_size = len(v1)
     return [round(v1[(index + 1) % v_size] * v2[(index + 2) % v_size] - v1[(index + 2) % v_size] * v2[(index + 1) % v_size], 5) for index in range(v_size)]
 
@@ -594,6 +574,7 @@ def add_vectors(v1, v2):
     :return: A list representing the final vector value
     :rtype: list[float|int]
     """
+
     return [round(a + b, 5) for a, b in zip(v1, v2)]
 
 
@@ -606,6 +587,7 @@ def sub_vectors(v1, v2):
     :return: A list representing the final vector value
     :rtype: list[float|int]
     """
+
     return [round(a - b, 5) for a, b in zip(v1, v2)]
 
 
@@ -617,6 +599,7 @@ def average_vectors(v_list):
     :return: A vector the represents the average of all passed vector magnitudes.
     :rtype: list[float|int]
     """
+
     base_v = v_list[0]
     for vec in v_list[1:]:
         base_v = add_vectors(base_v, vec)
@@ -632,7 +615,66 @@ def scale_vector(v1, sca):
     :return: The modified vector values
     :rtype: list[float|int]
     """
+
     return [round(v*sca, 5) for v in v1]
+
+
+def get_planar_up(pt1, pt2, pt3):
+    """
+    From three points get the xprod. Use it with an offset to the midpoint to determine an up vector for the triangle
+    created from the 3 points.
+
+    :param list(float, float, float) pt1: First point in the chain.
+    :param list(float, float, float) pt2: Second point in the chain.
+    :param list(float, float, float) pt3: Third point in the chain.
+    :return: A list containing the position of the up vector relative the joint chain.
+    :rtype: list(float, float, float)
+    """
+
+    pt_mid = get_midpoint_between_points(pt1, pt3)
+    # $HACK If the found midpoint is left/right. & If the first point is further Z+ than the last.
+    if pt_mid[0] > 0:
+        if pt_mid[2] > pt2[2]:
+            v_to_center = sub_vectors(pt_mid, pt2)
+        else:
+            v_to_center = sub_vectors(pt2, pt_mid)
+    else:
+        if pt_mid[2] > pt2[2]:
+            v_to_center = sub_vectors(pt2, pt_mid)
+        else:
+            v_to_center = sub_vectors(pt_mid, pt2)
+            
+    v_center_to_end = sub_vectors(pt3, pt2)
+    norm_xprod = normalize_vector(get_cross_product(v_to_center, v_center_to_end))
+
+    return norm_xprod
+
+
+def get_pole_vector_pos(pt1, pt2, pt3):
+    """
+    From three points get the pole vector position.
+    NOTE: [pm.xform(x, ws=True, q=True, t=True) for x in joint_chain]
+
+    :param list(float, float, float) pt1: First point in the chain.
+    :param list(float, float, float) pt2: Second point in the chain.
+    :param list(float, float, float) pt3: Third point in the chain.
+    :return: A list containing the position of the pole vector approximately 1/2 the distance of the chain away from the mid point along the same plane.
+    :rtype: list(float, float, float)
+    """
+
+    # Calculate the closest point on a line between first and last point.
+    v_pt1_pt3 = sub_vectors(pt3, pt1)
+    v_pt1_pt2 = sub_vectors(pt2, pt1)
+    proj = get_dot_product(v_pt1_pt2, v_pt1_pt3)
+    line_len = get_vector_length(v_pt1_pt3)
+    ablen = pow(line_len, 2.0)
+    d = proj/ablen
+    pd = add_vectors(pt1, scale_vector(v_pt1_pt3, d))
+
+    # From closest point draw through center point, half total distance to place pole vector.
+    pdp = sub_vectors(pt2, pd)
+    pvp = add_vectors(pt2, scale_vector(normalize_vector(pdp), line_len/2.0))
+    return pvp
 
 
 def create_random_list(min_max=None, length=None, int_only=False):
@@ -645,6 +687,7 @@ def create_random_list(min_max=None, length=None, int_only=False):
     :return: A list of random numeric values.
     :rtype: list[number]
     """
+
     min_max = min_max or (0, 1)
     length = length or 3
     if int_only:

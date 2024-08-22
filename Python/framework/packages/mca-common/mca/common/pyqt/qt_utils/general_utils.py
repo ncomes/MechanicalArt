@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains Test tool implementation.
 """
@@ -9,6 +6,26 @@ Module that contains Test tool implementation.
 # Software specific imports
 # PySide2 imports
 # mca python imports
+
+
+def delete_layout_and_children(parent_layout, layout_to_remove):
+    delete_items_of_layout(layout_to_remove)
+    for i in range(parent_layout.count()):
+        layout_item = parent_layout.itemAt(i)
+        if layout_item.layout() == layout_to_remove:
+            parent_layout.removeItem(layout_item)
+            return
+
+
+def delete_items_of_layout(layout):
+    if layout is not None:
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.setParent(None)
+            else:
+                delete_items_of_layout(item.layout())
 
 
 def get_qwidget_text(qwidget_list):

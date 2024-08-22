@@ -1,16 +1,13 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that provides a function to open a PySide2 file dialog.
 """
 
-# mca python imports
-# PySide2 imports
-from PySide2.QtWidgets import QFileDialog
+# python imports
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets
 # software specific imports
 # mca python imports
-from mca.common.paths import paths
+from mca.common.project import paths
 
 
 def open_file_dialog(start_dir=paths.get_common_tools_path(), filters="All Files *.*", parent=None):
@@ -25,11 +22,11 @@ def open_file_dialog(start_dir=paths.get_common_tools_path(), filters="All Files
     """
 
     filenames = []
-    dialog = QFileDialog(parent)
+    dialog = qtwidgets.QFileDialog(parent)
     dialog.setDirectory(start_dir)
-    dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
+    dialog.setFileMode(qtwidgets.QFileDialog.FileMode.ExistingFiles)
     dialog.setNameFilter(filters)
-    dialog.setViewMode(QFileDialog.ViewMode.List)
+    dialog.setViewMode(qtwidgets.QFileDialog.ViewMode.List)
     if dialog.exec():
         filenames = dialog.selectedFiles()
     return filenames

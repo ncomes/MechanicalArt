@@ -1,14 +1,11 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains Test tool implementation.
 """
 
 # System global imports
 # Software specific imports
-# PySide2 imports
-from PySide2.QtWidgets import QCheckBox
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets
 # mca python imports
 
 
@@ -25,7 +22,7 @@ def get_checkbox_text(checkbox_list, only_true=True):
     if not isinstance(checkbox_list, (tuple, list)):
         checkbox_list = [checkbox_list]
 
-    checkbox_list = [x for x in checkbox_list if isinstance(x, QCheckBox)]
+    checkbox_list = [x for x in checkbox_list if isinstance(x, qtwidgets.QCheckBox)]
     
     text = []
     for checkbox in checkbox_list:

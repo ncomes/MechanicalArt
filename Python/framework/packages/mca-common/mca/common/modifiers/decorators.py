@@ -1,22 +1,18 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains the mca decorators at a base python level
 """
 
-# mca python imports
+# python imports
 import os
 import sys
 import time
 import threading
 from functools import wraps
 # software specific imports
-
 # mca python imports
 from mca.common import log
-from mca.common.utils import process, strings
-from mca.common.tools.dcctracking import dcc_tracking
+from mca.common.utils import string_utils
+#from mca.common.tools.dcctracking import dcc_tracking
 
 
 logger = log.MCA_LOGGER
@@ -172,26 +168,26 @@ def debug(func):
     return func_wrapper
 
 
-def track_fnc(fn):
-    """
-    Function decorator that exports data to a google sheets for tracking functions.
-
-    :param callable fn: decorated function.
-    """
-
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        try:
-            process.cpu_threading(dcc_tracking.ddc_tool_entry(fn))
-            try:
-                result = fn(*args, **kwargs)
-            except Exception:
-                raise
-            return result
-        except Exception:
-            raise
-
-    return wrapper
+# def track_fnc(fn):
+#     """
+#     Function decorator that exports data to a google sheets for tracking functions.
+#
+#     :param callable fn: decorated function.
+#     """
+#
+#     @wraps(fn)
+#     def wrapper(*args, **kwargs):
+#         try:
+#             win_utils.cpu_threading(dcc_tracking.ddc_tool_entry(fn))
+#             try:
+#                 result = fn(*args, **kwargs)
+#             except Exception:
+#                 raise
+#             return result
+#         except Exception:
+#             raise
+#
+#     return wrapper
 
 def abstractmethod(fn):
     """
@@ -203,9 +199,9 @@ def abstractmethod(fn):
         msg = 'Abstract implementation has not been overridden.'
         mode = os.getenv('ABSTRACT_METHOD_MODE', None)
         if not mode or mode == 'raise':
-            raise NotImplementedError(strings.debug_object_string(fn, msg))
+            raise NotImplementedError(string_utils.debug_object_string(fn, msg))
         elif mode == 'warn':
-            logger.warning(strings.debug_object_string(fn, msg))
+            logger.warning(string_utils.debug_object_string(fn, msg))
         return fn(*args, **kwargs)
 
     return wrapper

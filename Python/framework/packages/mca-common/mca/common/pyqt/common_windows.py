@@ -1,20 +1,12 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains the mca decorators at a base python level
 """
 
-# mca python imports
+# python imports
 import os
-
 # Qt imports
-from PySide2.QtCore import QFile, QSettings, Qt
-from PySide2.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QSizePolicy, QDockWidget, QFrame, QDialog, QStackedWidget, QListView, QLineEdit, QFileDialog
-from PySide2 import QtUiTools
-
+from mca.common.pyqt.pygui import qtwidgets, qtcore, qtuitools
 # software specific imports
-
 # mca python imports
 from mca.common import log
 from mca.common.resources import resources
@@ -31,7 +23,7 @@ except:
     logger.warning('Unable to register resources.')
     
 
-class MCADockableWindow(QDockWidget):
+class MCADockableWindow(qtwidgets.QDockWidget):
     INITIAL_WIDTH_FALLBACK = 150
     INITIAL_HEIGHT_FALLBACK = 100
 
@@ -45,7 +37,7 @@ class MCADockableWindow(QDockWidget):
                         parent=None):
 
         super().__init__(parent=parent)
-        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setAttribute(qtcore.Qt.WA_DeleteOnClose)
         self.title = f'MCA {title}'
         if single_insta:
             self.single_window_instance()
@@ -55,12 +47,12 @@ class MCADockableWindow(QDockWidget):
             self.setWindowIcon(resources.icon(r'software\mca.png'))
         area = self.get_area(area)
 
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Expanding)
 
         minsize = self.minimumSize()
         self.setMinimumSize(minsize)
 
-        self.setAllowedAreas(Qt.RightDockWidgetArea|Qt.LeftDockWidgetArea)
+        self.setAllowedAreas(qtcore.Qt.RightDockWidgetArea|qtcore.Qt.LeftDockWidgetArea)
         if parent:
             parent.addDockWidget(area, self)
             childs = parent.findChildren(MCADockableWindow)
@@ -73,23 +65,23 @@ class MCADockableWindow(QDockWidget):
 
         self.setContentsMargins(0, 2, 0, 0)
 
-        self.main_frame = QFrame(self)
+        self.main_frame = qtwidgets.QFrame(self)
         self.main_frame.setMinimumSize(minsize)
-        self.main_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.main_frame.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Expanding)
         self.main_frame.setContentsMargins(0, 2, 0, 0)
         self.setWidget(self.main_frame)
 
-        self.main_layout = QVBoxLayout(self.main_frame)
+        self.main_layout = qtwidgets.QVBoxLayout(self.main_frame)
         self.main_layout.setContentsMargins(0, 2, 0, 0)
 
         if ui_path:
-            loader = QtUiTools.QUiLoader()
-            file = QFile(os.path.abspath(ui_path))
-            if file.open(QFile.ReadOnly):
+            loader = qtuitools.QUiLoader()
+            file = qtcore.QFile(os.path.abspath(ui_path))
+            if file.open(qtcore.QFile.ReadOnly):
                 self.ui = loader.load(file, parent)
                 file.close()
                 self.main_layout.addWidget(self.ui)
-                self.ui.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                self.ui.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Expanding)
 
         if not style:
             style = 'incrypt'
@@ -98,7 +90,7 @@ class MCADockableWindow(QDockWidget):
             self.setStyleSheet(stylesheet)
         
         username = os.getlogin()
-        self.settings = QSettings(username, self.title)
+        self.settings = qtcore.QSettings(username, self.title)
         geometry = self.settings.value('geometry', bytes('', 'utf-8'))
         self.restoreGeometry(geometry)
 
@@ -107,7 +99,7 @@ class MCADockableWindow(QDockWidget):
     def single_dock_instance(self, parent):
         if not parent:
             return
-        for dock in parent.findChildren(QDockWidget):
+        for dock in parent.findChildren(qtwidgets.QDockWidget):
             if self.title in dock.windowTitle():
                 dock.close()
                 logger.info(f'A duplicate of "{dock.windowTitle()}" was closed')
@@ -124,17 +116,17 @@ class MCADockableWindow(QDockWidget):
                 break
 
     def get_area(self, value):
-        if isinstance(value, Qt):
+        if isinstance(value, qtcore.Qt):
             return value
         elif isinstance(value, str):
             if value.lower() == 'left':
-                return Qt.LeftDockWidgetArea
+                return qtcore.Qt.LeftDockWidgetArea
             elif value.lower() == 'right':
-                return Qt.RightDockWidgetArea
+                return qtcore.Qt.RightDockWidgetArea
             else:
-                return Qt.LeftDockWidgetArea
+                return qtcore.Qt.LeftDockWidgetArea
         else:
-            return Qt.LeftDockWidgetArea
+            return qtcore.Qt.LeftDockWidgetArea
 
     def closeEvent(self, event):
         geometry = self.saveGeometry()
@@ -142,7 +134,7 @@ class MCADockableWindow(QDockWidget):
         super().closeEvent(event)
 
 
-class MCAMainWindow(QMainWindow):
+class MCAMainWindow(qtwidgets.QMainWindow):
     INITIAL_WIDTH_FALLBACK = 150
     INITIAL_HEIGHT_FALLBACK = 100
 
@@ -161,15 +153,15 @@ class MCAMainWindow(QMainWindow):
         self.setMinimumWidth(MCAMainWindow.INITIAL_WIDTH_FALLBACK)
         self.setContentsMargins(0,0,0,0)
         if ui_path:
-            loader = QtUiTools.QUiLoader()
-            file = QFile(os.path.abspath(ui_path))
-            if file.open(QFile.ReadOnly):
+            loader = qtuitools.QUiLoader()
+            file = qtcore.QFile(os.path.abspath(ui_path))
+            if file.open(qtcore.QFile.ReadOnly):
                 self.ui = loader.load(file, parent)
                 file.close()
                 self.setCentralWidget(self.ui)
         else:
-            self.central_widget = QWidget(self)
-            self.main_layout = QVBoxLayout(self.central_widget)
+            self.central_widget = qtwidgets.QWidget(self)
+            self.main_layout = qtwidgets.QVBoxLayout(self.central_widget)
             self.setCentralWidget(self.central_widget)
             self.main_layout.setContentsMargins(0, 0, 0, 0)
         
@@ -180,7 +172,7 @@ class MCAMainWindow(QMainWindow):
             self.setStyleSheet(stylesheet)
         
         username = os.getlogin()
-        self.settings = QSettings(username, self.title)
+        self.settings = qtcore.QSettings(username, self.title)
         geometry = self.settings.value('geometry', bytes('', 'utf-8'))
         self.restoreGeometry(geometry)
         if show_window:
@@ -202,7 +194,7 @@ class MCAMainWindow(QMainWindow):
                 break
 
 
-class ParentableWidget(QWidget):
+class ParentableWidget(qtwidgets.QWidget):
     def __init__(self, ui_path=None, style=None, parent=None):
         super().__init__(parent=parent)
 
@@ -214,18 +206,18 @@ class ParentableWidget(QWidget):
             stylesheet = resources.read_stylesheet(style)
             self.setStyleSheet(stylesheet)
         if ui_path:
-            loader = QtUiTools.QUiLoader()
-            file = QFile(os.path.abspath(ui_path))
-            if file.open(QFile.ReadOnly):
+            loader = qtuitools.QUiLoader()
+            file = qtcore.QFile(os.path.abspath(ui_path))
+            if file.open(qtcore.QFile.ReadOnly):
                 self.ui = loader.load(file, parent)
                 file.close()
         else:
-            self.main_layout = QVBoxLayout(self)
+            self.main_layout = qtwidgets.QVBoxLayout(self)
             self.setLayout(self.main_layout)
             self.main_layout.setContentsMargins(0, 0, 0, 0)
 
 
-class ProgressBarWindow(QMainWindow):
+class ProgressBarWindow(qtwidgets.QMainWindow):
     INITIAL_WIDTH_FALLBACK = 435
     INITIAL_HEIGHT_FALLBACK = 200
 
@@ -251,13 +243,13 @@ class ProgressBarWindow(QMainWindow):
         self.setMinimumWidth(MCAMainWindow.INITIAL_WIDTH_FALLBACK)
         self.setContentsMargins(0, 0, 0, 0)
 
-        self.central_widget = QWidget(self)
-        self.main_layout = QVBoxLayout(self.central_widget)
+        self.central_widget = qtwidgets.QWidget(self)
+        self.main_layout = qtwidgets.QVBoxLayout(self.central_widget)
         self.setCentralWidget(self.central_widget)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
 
         # username = os.getlogin()
-        # self.settings = QSettings(username, self.title)
+        # self.settings = qtcore.QSettings(username, self.title)
         # geometry = self.settings.value('geometry', bytes('', 'utf-8'))
         # self.restoreGeometry(geometry)
         self.show()
@@ -285,7 +277,7 @@ def getOpenFilesAndDirs(parent=None, caption='', directory='', filter='', initia
             selected.append('"{}"'.format(index.data()))
         lineEdit.setText(' '.join(selected))
 
-    dialog = QFileDialog(parent, windowTitle=caption)
+    dialog = qtwidgets.QFileDialog(parent, windowTitle=caption)
     dialog.setFileMode(dialog.ExistingFiles)
     if options:
         dialog.setOptions(options)
@@ -298,21 +290,21 @@ def getOpenFilesAndDirs(parent=None, caption='', directory='', filter='', initia
             dialog.selectNameFilter(initialFilter)
 
     # by default, if a directory is opened in file listing mode,
-    # QFileDialog.accept() shows the contents of that directory, but we
+    # qtwidgets.QFileDialog.accept() shows the contents of that directory, but we
     # need to be able to "open" directories as we can do with files, so we
-    # just override accept() with the default QDialog implementation which
+    # just override accept() with the default qtwidgets.QDialog implementation which
     # will just return exec_()
-    dialog.accept = lambda: QDialog.accept(dialog)
+    dialog.accept = lambda: qtwidgets.QDialog.accept(dialog)
 
     # there are many item views in a non-native dialog, but the ones displaying
-    # the actual contents are created inside a QStackedWidget; they are a
-    # QTreeView and a QListView, and the tree is only used when the
-    # viewMode is set to QFileDialog.Details, which is not this case
-    stackedWidget = dialog.findChild(QStackedWidget)
-    view = stackedWidget.findChild(QListView)
+    # the actual contents are created inside a qtwidgets.QStackedWidget; they are a
+    # QTreeView and a qtwidgets.QListView, and the tree is only used when the
+    # viewMode is set to qtwidgets.QFileDialog.Details, which is not this case
+    stackedWidget = dialog.findChild(qtwidgets.QStackedWidget)
+    view = stackedWidget.findChild(qtwidgets.QListView)
     view.selectionModel().selectionChanged.connect(updateText)
 
-    lineEdit = dialog.findChild(QLineEdit)
+    lineEdit = dialog.findChild(qtwidgets.QLineEdit)
     # clear the line edit contents whenever the current directory changes
     dialog.directoryEntered.connect(lambda: lineEdit.setText(''))
 

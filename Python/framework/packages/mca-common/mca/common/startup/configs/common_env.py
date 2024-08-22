@@ -1,20 +1,15 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that sets up the environment variables for MAT
 """
 
 # mca python imports
 import os
-
 # software specific imports
-
 # mca python imports
 from mca import common
 from mca.common import log
-from mca.common.textio import packages, yamlio
-from mca.common.paths import project_paths
+from mca.common.textio import packages
+from mca.common.project import project_paths
 from mca.common.startup.configs import consts, config
 
 

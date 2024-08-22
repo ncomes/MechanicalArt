@@ -8,15 +8,15 @@ Module that contains mca-common-resources library API
 # mca python imports
 import os
 import pathlib
-
-from PySide2.QtGui import QIcon, QPixmap
-
+# Qt imports
+from mca.common.pyqt.pygui import qtgui
 # software specific imports
 # mca python imports
-from mca.common.paths import paths, path_utils
+from mca.common.project import paths
 from mca.common.modifiers import singleton
 from mca.common.startup.configs import consts
 from mca.common import log
+from mca.common.utils import path_utils
 
 logger = log.MCA_LOGGER
 
@@ -64,8 +64,8 @@ class MATResources(singleton.SimpleSingleton):
                 if sub_dir == '.':
                     image_name = os.path.basename(image)
                 self.mat_resources[ResourceTypes.ICON][image_name] = {}
-                self.mat_resources[ResourceTypes.ICON][image_name][ResourceTypes.ICON] = QIcon(image)
-                self.mat_resources[ResourceTypes.ICON][image_name][ResourceTypes.PIXMAP] = QPixmap(image)
+                self.mat_resources[ResourceTypes.ICON][image_name][ResourceTypes.ICON] = qtgui.QIcon(image)
+                self.mat_resources[ResourceTypes.ICON][image_name][ResourceTypes.PIXMAP] = qtgui.QPixmap(image)
 
     def register_images(self):
         """
@@ -89,7 +89,7 @@ class MATResources(singleton.SimpleSingleton):
                 if sub_dir == '.':
                     image_name = os.path.basename(image)
                 self.mat_resources[ResourceTypes.IMAGE][image_name] = {}
-                self.mat_resources[ResourceTypes.IMAGE][image_name][ResourceTypes.IMAGE] = QPixmap(image)
+                self.mat_resources[ResourceTypes.IMAGE][image_name][ResourceTypes.IMAGE] = qtgui.QPixmap(image)
 
 
     def reset(self):
@@ -117,11 +117,11 @@ def get_movies_path():
 
 def icon(image_path, typ=ResourceTypes.ICON):
     """
-    Returns the QIcon for the given path
+    Returns the qtgui.QIcon for the given path
 
     :param image_path: the relative path to the image
-    :return: Returns the QIcon for the given path
-    :rtype: QIcon
+    :return: Returns the qtgui.QIcon for the given path
+    :rtype: qtgui.QIcon
     """
 
     mat_resources = MATResources()
@@ -139,11 +139,11 @@ def icon(image_path, typ=ResourceTypes.ICON):
 
 def pixmap(image_path, typ=ResourceTypes.PIXMAP):
     """
-    Returns the QPixmap for the given path
+    Returns the qtgui.QPixmap for the given path
 
     :param image_path: the relative path to the image
-    :return: Returns the QPixmap for the given path
-    :rtype: QPixmap
+    :return: Returns the qtgui.QPixmap for the given path
+    :rtype: qtgui.QPixmap
     """
 
     mat_resources = MATResources()
@@ -161,11 +161,11 @@ def pixmap(image_path, typ=ResourceTypes.PIXMAP):
 
 def image(image_path):
     """
-    Returns the QPixmap for the given path
+    Returns the qtgui.QPixmap for the given path
 
     :param image_path: the relative path to the image
-    :return: Returns the QPixmap for the given path
-    :rtype: QPixmap
+    :return: Returns the qtgui.QPixmap for the given path
+    :rtype: qtgui.QPixmap
     """
 
     mat_resources = MATResources()

@@ -1,13 +1,9 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Module that contains functions related with sounds.
 """
 
 # mca python imports
 import os
-
 WINSOUND_AVAILABLE = True
 try:
 	import winsound
@@ -16,7 +12,7 @@ except ModuleNotFoundError:
 
 # software specific imports
 # mca python imports
-from mca.common.paths import paths
+from mca.common.project import paths
 
 
 def play_sound(sound_file):

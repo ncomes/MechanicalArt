@@ -1,29 +1,16 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Toolbox main UI
 """
 
-# mca python imports
-import os
-
-# PySide2 imports
-from PySide2.QtWidgets import QPushButton, QVBoxLayout, QToolButton, QSizePolicy, QSpacerItem, QFrame, QHBoxLayout
-from PySide2.QtWidgets import QLabel, QLineEdit, QTextEdit, QWidget, QCheckBox, QScrollArea
-from PySide2.QtCore import Qt, QEvent
-from PySide2 import QtGui
-
+# python imports
+# Qt imports
+from mca.common.pyqt.pygui import qtwidgets, qtcore
 # software specific imports
-
 # mca python imports
 from mca.common.pyqt import common_windows, movies
 from mca.common.resources import resources
 from mca.common.utils import dcc_util
-from mca.common.tools.dcctracking import dcc_tracking
-
 from mca.common.tools.toolbox import toolbox_data, toolbox_prefs
-
 from mca.common import log
 
 logger = log.MCA_LOGGER
@@ -57,28 +44,25 @@ class ToolboxGui(common_windows.MCADockableWindow):
 
         # Get the Toolbox Preferences.  This gets the state of the toolbar buttons and checkboxes.
         TOOLBOX_PREFS = toolbox_prefs.ToolBoxPreferences(toolbox=self.toolbox_name, dcc=dcc_app)
-
-        # dcc data
-        dcc_tracking.ddc_tool_entry_thead(ToolboxGui, fn_name=self.toolbox_name)
         
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Expanding)
         self.setMinimumHeight(600)
         self.setMinimumWidth(300)
 
-        self.main_v_layout = QVBoxLayout()
+        self.main_v_layout = qtwidgets.QVBoxLayout()
         self.main_v_layout.setObjectName(f'MainVerticalLayout')
         self.main_v_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.addLayout(self.main_v_layout)
 
         # Main UI
         # Filter Layout
-        self.filter_layout = QHBoxLayout()
+        self.filter_layout = qtwidgets.QHBoxLayout()
         self.filter_layout.setContentsMargins(0, 4, 0, 1)
         self.filter_layout.setObjectName(f'FilterLayout')
         self.main_v_layout.addLayout(self.filter_layout)
 
         # Filter Label
-        self.filter_label = QLabel('  Filter: ')
+        self.filter_label = qtwidgets.QLabel('  Filter: ')
         self.filter_label.setContentsMargins(0, 0, 0, 0)
         self.filter_label.setMinimumHeight(25)
         self.filter_label.setMaximumHeight(25)
@@ -86,7 +70,7 @@ class ToolboxGui(common_windows.MCADockableWindow):
         self.filter_layout.addWidget(self.filter_label)
 
         # Filter Line Edit
-        self.filter_edit = QLineEdit()
+        self.filter_edit = qtwidgets.QLineEdit()
         self.filter_edit.setContentsMargins(2, 0, 2, 0)
         self.filter_edit.setMinimumHeight(25)
         self.filter_edit.setMaximumHeight(25)
@@ -98,88 +82,88 @@ class ToolboxGui(common_windows.MCADockableWindow):
                                             parent=self)
         self.movie_file.setObjectName(u"movie_logo")
         self.movie_file.setFixedSize(25, 22)
-        self.movie_file.setAlignment(Qt.AlignCenter)
+        self.movie_file.setAlignment(qtcore.Qt.AlignCenter)
         self.filter_layout.addWidget(self.movie_file)
         self.movie_file.setContentsMargins(0, 2, 4, 0)
 
-        # self.main_h_layout = QHBoxLayout()
+        # self.main_h_layout = qtwidgets.QHBoxLayout()
         # self.main_h_layout.setContentsMargins(0, 4, 0, 4)
         # self.main_h_layout.setObjectName(f'MainHorizontalLayout')
         # self.main_v_layout.addLayout(self.main_h_layout)
 
-        self.scroll_area = QScrollArea()
+        self.scroll_area = qtwidgets.QScrollArea()
         self.scroll_area.setObjectName(f'MainScrollFrame')
-        self.scroll_area.setFrameStyle(QFrame.WinPanel | QFrame.Sunken)
+        self.scroll_area.setFrameStyle(qtwidgets.QFrame.WinPanel | qtwidgets.QFrame.Sunken)
         self.scroll_area.setContentsMargins(0, 0, 4, 0)
         # self.scroll_area.setMinimumHeight(735)
-        self.scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Expanding)
+        self.scroll_area.setVerticalScrollBarPolicy(qtcore.Qt.ScrollBarAsNeeded)
+        self.scroll_area.setHorizontalScrollBarPolicy(qtcore.Qt.ScrollBarAlwaysOff)
         self.scroll_area.setWidgetResizable(True)
         self.main_v_layout.addWidget(self.scroll_area)
 
-        self.scrollAreaWidgetContents = QWidget(self.scroll_area)
+        self.scrollAreaWidgetContents = qtwidgets.QWidget(self.scroll_area)
         self.scrollAreaWidgetContents.setMinimumWidth(250)
         self.scrollAreaWidgetContents.setMinimumHeight(1700)
         self.scroll_area.setWidget(self.scrollAreaWidgetContents)
 
         # Create the layout that has all of the toolbar buttons and actions.
-        self.v_layout = QVBoxLayout(self.scrollAreaWidgetContents)
+        self.v_layout = qtwidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.v_layout.setObjectName(f'CategoryVerticalLayout')
         self.v_layout.setContentsMargins(0, 0, 0, 0)
         self.scrollAreaWidgetContents.setLayout(self.v_layout)
 
         # Create the info box at the bottom of the toolbox
-        self.infobox_layout = QHBoxLayout()
+        self.infobox_layout = qtwidgets.QHBoxLayout()
         self.infobox_layout.setContentsMargins(4, 4, 4, 4)
         self.infobox_layout.setObjectName(f'InfoBoxLayout')
         self.main_v_layout.addLayout(self.infobox_layout)
 
-        self.infobox_v_layout = QVBoxLayout()
+        self.infobox_v_layout = qtwidgets.QVBoxLayout()
         self.infobox_v_layout.setContentsMargins(4, 4, 4, 4)
         self.infobox_v_layout.setObjectName(f'InfoVBoxLayout')
         self.infobox_layout.addLayout(self.infobox_v_layout)
 
-        # self.v_spacer = QSpacerItem(40, 20, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        # self.v_spacer = qtwidgets.QSpacerItem(40, 20, qtwidgets.QSizePolicy.Minimum, qtwidgets.QSizePolicy.Expanding)
         # self.infobox_v_layout.addItem(self.v_spacer)
 
-        # self.description_label = QLabel()
+        # self.description_label = qtwidgets.QLabel()
         # self.description_label.setText('Description:')
         # self.description_label.setStyleSheet("font-weight: bold")
         # self.infobox_v_layout.addWidget(self.description_label)
         #
-        # self.info_box = QTextEdit()
+        # self.info_box = qtwidgets.QTextEdit()
         # self.info_box.setContentsMargins(4, 4, 4, 4)
         # self.info_box.setObjectName(f'InfoBox')
         # self.info_box.setMinimumHeight(100)
         # self.info_box.setMaximumHeight(100)
         # self.info_box.setReadOnly(True)
-        # self.info_box.setAlignment(Qt.AlignLeft)
-        # self.info_box.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # self.info_box.setAlignment(qtcore.Qt.AlignLeft)
+        # self.info_box.setVerticalScrollBarPolicy(qtcore.Qt.ScrollBarAlwaysOff)
         # self.info_box.setText('')
         # self.infobox_v_layout.addWidget(self.info_box)
 
-        self.startup_layout = QHBoxLayout()
+        self.startup_layout = qtwidgets.QHBoxLayout()
         self.startup_layout.setContentsMargins(4, 0, 8, 4)
         self.startup_layout.setObjectName(f'StartLayout')
         self.main_v_layout.addLayout(self.startup_layout)
 
-        self.on_start_checkBox = QCheckBox()
+        self.on_start_checkBox = qtwidgets.QCheckBox()
         self.on_start_checkBox.setText('Open on Startup')
         self.on_start_checkBox.setObjectName(f'OnStartupCheckBox')
         self.on_start_checkBox.setContentsMargins(4, 0, 0, 4)
-        self.on_start_checkBox.setLayoutDirection(Qt.RightToLeft)
+        self.on_start_checkBox.setLayoutDirection(qtcore.Qt.RightToLeft)
         self.on_start_checkBox.setCheckable(True)
         self.startup_layout.addWidget(self.on_start_checkBox)
 
-        self.startup_spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.startup_spacer = qtwidgets.QSpacerItem(40, 20, qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Minimum)
         self.startup_layout.addItem(self.startup_spacer)
 
-        self.docked_checkBox = QCheckBox()
+        self.docked_checkBox = qtwidgets.QCheckBox()
         self.docked_checkBox.setText('Start Docked')
         self.docked_checkBox.setObjectName(f'DockedCheckBox')
         self.docked_checkBox.setContentsMargins(0, 0, 8, 4)
-        self.docked_checkBox.setLayoutDirection(Qt.RightToLeft)
+        self.docked_checkBox.setLayoutDirection(qtcore.Qt.RightToLeft)
         self.docked_checkBox.setCheckable(True)
         self.startup_layout.addWidget(self.docked_checkBox)
 
@@ -282,66 +266,66 @@ class ToolboxGui(common_windows.MCADockableWindow):
 
     def get_category(self, category_id):
         """
-        Returns the Category QFrame using the id.
+        Returns the Category qtwidgets.QFrame using the id.
 
         :param str category_id: String name/id of the category
-        :return: Returns the Category QFrame using the id.
-        :rtype: QFrame
+        :return: Returns the Category qtwidgets.QFrame using the id.
+        :rtype: qtwidgets.QFrame
         """
 
-        category = self.findChild(QFrame, category_id)
+        category = self.findChild(qtwidgets.QFrame, category_id)
         return category
 
     def get_category_tool_button(self, category_id):
         """
-        Returns the QToolButton using the category id.
+        Returns the qtwidgets.QToolButton using the category id.
 
         :param str category_id: String name/id of the category
-        :return: Returns the QToolButton using the category id.
-        :rtype: QToolButton
+        :return: Returns the qtwidgets.QToolButton using the category id.
+        :rtype: qtwidgets.QToolButton
         """
 
         button_id = f'{category_id}_toolButton'
-        button = self.findChild(QToolButton, button_id)
+        button = self.findChild(qtwidgets.QToolButton, button_id)
         return button
 
     def get_category_frame(self, category_id):
         """
-        Returns a categories sub QFrame using the category id.
+        Returns a categories sub qtwidgets.QFrame using the category id.
 
         :param str category_id: String name/id of the category
-        :return: Returns a categories sub QFrame using the category id.
-        :rtype: QFrame
+        :return: Returns a categories sub qtwidgets.QFrame using the category id.
+        :rtype: qtwidgets.QFrame
         """
 
         frame_id = f'{category_id}_frame'
-        frame = self.findChild(QFrame, frame_id)
+        frame = self.findChild(qtwidgets.QFrame, frame_id)
         return frame
 
     def get_category_layout(self, category_id):
         """
-        Returns a categories sub QHBoxLayout using the category id.
+        Returns a categories sub qtwidgets.QHBoxLayout using the category id.
 
         :param str category_id: String name/id of the category
-        :return: Returns a categories sub QHBoxLayout using the category id.
-        :rtype: QHBoxLayout
+        :return: Returns a categories sub qtwidgets.QHBoxLayout using the category id.
+        :rtype: qtwidgets.QHBoxLayout
         """
 
         layout_id = f'{category_id}_category_layout'
-        layout = self.findChild(QVBoxLayout, layout_id)
+        layout = self.findChild(qtwidgets.QVBoxLayout, layout_id)
         return layout
 
     def get_layout(self, layout_id):
         """
-        Returns an actions QHBoxLayout using the layout id.
+        Returns an actions qtwidgets.QHBoxLayout using the layout id.
 
         :param str layout_id: String name/id of the layout
-        :return: Returns an actions QHBoxLayout using the layout id.
-        :rtype: QHBoxLayout
+        :return: Returns an actions qtwidgets.QHBoxLayout using the layout id.
+        :rtype: qtwidgets.QHBoxLayout
         """
 
         layout_id = f'{layout_id}_layout'
-        layout = self.findChild(QHBoxLayout, layout_id)
+        layout = self.findChild(qtwidgets.QHBoxLayout, layout_id)
         return layout
 
     def build_toolbox_ui(self):
@@ -354,7 +338,7 @@ class ToolboxGui(common_windows.MCADockableWindow):
             # From the root entry find all childen and add them to the main layout.
             self._build_ui(child_entry, self.v_layout)
 
-        self.vertical_spacer = QSpacerItem(40, 20, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.vertical_spacer = qtwidgets.QSpacerItem(40, 20, qtwidgets.QSizePolicy.Minimum, qtwidgets.QSizePolicy.Expanding)
         self.v_layout.addItem(self.vertical_spacer)
 
     def _build_ui(self, partial_build_dict, parent):
@@ -378,7 +362,7 @@ class ToolboxGui(common_windows.MCADockableWindow):
         parent_ui = None
         if isinstance(toolbox_data_class, toolbox_data.ToolboxCategory):
             # If we have a category
-            # Adds a category. This is a QToolButton to the Toolbox
+            # Adds a category. This is a qtwidgets.QToolButton to the Toolbox
             new_category = TBCategoryButton(toolbox_data_class.display_name,
                                             tb_id=toolbox_data_class.id,
                                             icon=toolbox_data_class.icon,
@@ -387,7 +371,7 @@ class ToolboxGui(common_windows.MCADockableWindow):
             parent.addWidget(new_category)
         elif isinstance(toolbox_data_class, toolbox_data.ToolboxLayout):
             # If we have a layout
-            # Adds a Layout. This is a QFrame that groups actions together under a category.
+            # Adds a Layout. This is a qtwidgets.QFrame that groups actions together under a category.
             new_layout = TBLayout(frame_id=toolbox_data_class.id, parent=self)
             parent_ui = self.get_layout(toolbox_data_class.id)
             parent.addWidget(new_layout)
@@ -428,7 +412,7 @@ class ToolboxGui(common_windows.MCADockableWindow):
 
     def clear_layout(self, layout):
         """
-        Removes all QWidgets from a QLayout
+        Removes all qtwidgets.QWidgets from a QLayout
 
         :param QLayout layout:
         """
@@ -444,7 +428,7 @@ class ToolboxGui(common_windows.MCADockableWindow):
 
     def eventFilter(self, obj, event):
         if obj is self:
-            if event.type() == QEvent.Close:
+            if event.type() == qtcore.QEvent.Close:
                 TOOLBOX_PREFS.write_file()
                 self.closeEvent(event)
                 return True
@@ -452,7 +436,7 @@ class ToolboxGui(common_windows.MCADockableWindow):
                 return super().eventFilter(obj, event)
 
 
-class TBCategoryButton(QFrame):
+class TBCategoryButton(qtwidgets.QFrame):
     def __init__(self, title, tb_id, icon=None, parent=None):
         super().__init__(parent=parent)
 
@@ -462,18 +446,18 @@ class TBCategoryButton(QFrame):
 
         self.setObjectName(tb_id)
         self.setContentsMargins(1, 0, 0, 1)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Fixed)
         self.setMinimumHeight(26)
 
-        self.tool_v_layout = QVBoxLayout(self)
+        self.tool_v_layout = qtwidgets.QVBoxLayout(self)
         self.tool_v_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.tool_button = QToolButton(self)
+        self.tool_button = qtwidgets.QToolButton(self)
         self.tool_button.setObjectName(f'{tb_id}_toolButton')
-        self.tool_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.tool_button.setArrowType(Qt.RightArrow)
+        self.tool_button.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Expanding)
+        self.tool_button.setArrowType(qtcore.Qt.RightArrow)
         self.tool_button.setText(title)
-        self.tool_button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.tool_button.setToolButtonStyle(qtcore.Qt.ToolButtonTextBesideIcon)
         self.tool_button.setContentsMargins(2, 0, 0, 1)
         self.tool_button.setMaximumHeight(25)
         self.tool_button.setMinimumHeight(25)
@@ -484,15 +468,15 @@ class TBCategoryButton(QFrame):
         #     qicon = resources.icon('software', self.icon)
         #     self.tool_button.setIcon(qicon)
 
-        self.q_frame = QFrame(self)
+        self.q_frame = qtwidgets.QFrame(self)
         self.q_frame.setObjectName(f'{tb_id}_frame')
         self.q_frame.setContentsMargins(2, 0, 1, 0)
         self.q_frame.setMinimumHeight(25)
         self.tool_v_layout.addWidget(self.q_frame)
         self.q_frame.setVisible(0)
-        self.q_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.q_frame.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Fixed)
 
-        self.tool_v2_layout = QVBoxLayout(self.q_frame)
+        self.tool_v2_layout = qtwidgets.QVBoxLayout(self.q_frame)
         self.tool_v2_layout.setContentsMargins(2, 0, 1, 0)
         self.tool_v2_layout.setObjectName(f'{tb_id}_category_layout')
 
@@ -529,7 +513,7 @@ class TBCategoryButton(QFrame):
         Opens the QToolbarButton
         """
 
-        self.tool_button.setArrowType(Qt.DownArrow)
+        self.tool_button.setArrowType(qtcore.Qt.DownArrow)
         self.q_frame.setVisible(1)
         TOOLBOX_PREFS.update_toolbar_button(self.id, 1)
 
@@ -538,24 +522,24 @@ class TBCategoryButton(QFrame):
         Closes the QToolbarButton
         """
 
-        self.tool_button.setArrowType(Qt.RightArrow)
+        self.tool_button.setArrowType(qtcore.Qt.RightArrow)
         self.q_frame.setVisible(0)
         TOOLBOX_PREFS.update_toolbar_button(self.id, 0)
 
 
-class TBLayout(QFrame):
+class TBLayout(qtwidgets.QFrame):
     def __init__(self, frame_id, parent=None):
         super().__init__(parent=parent)
         self.setObjectName(frame_id)
         self.id = frame_id
         self.setMinimumHeight(25)
 
-        self.tool_h_layout = QHBoxLayout(self)
+        self.tool_h_layout = qtwidgets.QHBoxLayout(self)
         self.tool_h_layout.setContentsMargins(2, 0, 2, 0)
         self.tool_h_layout.setObjectName(f'{self.id}_layout')
 
 
-class TBButton(QPushButton):
+class TBButton(qtwidgets.QPushButton):
     def __init__(self, title,
                  button_id,
                  command="print('Button Test!')",
@@ -573,7 +557,7 @@ class TBButton(QPushButton):
         self.color = color
         self.info_box = None
         for x in self.parent().children():
-            info_box = x.findChild(QTextEdit, 'InfoBox')
+            info_box = x.findChild(qtwidgets.QTextEdit, 'InfoBox')
             if info_box:
                 self.info_box = info_box
                 break
@@ -586,7 +570,7 @@ class TBButton(QPushButton):
         self.setMinimumHeight(25)
         self.setMaximumHeight(25)
         self.setContentsMargins(0, 0, 0, 0)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Fixed)
         self.setText(title)
         if self.color:
             r, g, b = self.color
@@ -604,7 +588,7 @@ class TBButton(QPushButton):
 
     def eventFilter(self, obj, event):
         if obj is self:
-            if event.type() == QEvent.HoverEnter:
+            if event.type() == qtcore.QEvent.HoverEnter:
                 if self.info_box:
                     self.info_box.setText(self.tooltip)
                     return True
@@ -612,7 +596,7 @@ class TBButton(QPushButton):
                 return super().eventFilter(obj, event)
 
 
-class TBUI(QWidget):
+class TBUI(qtwidgets.QWidget):
     def __init__(self, title,
                  id=None,
                  command=None,
@@ -628,10 +612,10 @@ class TBUI(QWidget):
         self.info = info
         self.action = action
         self.win = None
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.setSizePolicy(qtwidgets.QSizePolicy.Expanding, qtwidgets.QSizePolicy.Fixed)
         self.setContentsMargins(0, 0, 0, 0)
 
-        self.main_layout = QVBoxLayout()
+        self.main_layout = qtwidgets.QVBoxLayout()
         self.main_layout.setObjectName(f'{title}_tbui')
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.main_layout)
